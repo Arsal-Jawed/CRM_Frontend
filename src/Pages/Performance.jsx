@@ -147,7 +147,7 @@ function Performance() {
   }
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
+    <div className="p-4 max-w-7xl mx-auto z-20">
   <div className="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-100">
     {/* Header & Filters (More Compact) */}
     <div className="flex flex-col sm:flex-row gap-3 justify-between mb-4">

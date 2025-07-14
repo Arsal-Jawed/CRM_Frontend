@@ -2,10 +2,13 @@ import React from 'react';
 import { FaUser, FaBuilding, FaCalendarAlt } from 'react-icons/fa';
 
 function LeadCard({ lead, onSelect, selected }) {
+  const isClosureAssigned = lead.closure1 && lead.closure1 !== 'not specified';
   return (
     <div
-      className={`cursor-pointer p-3 rounded-md shadow-sm transition-all duration-200 mb-2 border-l-4 
-      ${selected ? 'border-clr1 bg-gradient-to-r from-clr1/10 to-white' : 'border-gray-200 bg-white hover:shadow-md'}`}
+      className={`cursor-pointer p-3 rounded-md shadow-sm transition-all duration-200 mb-2 border-l-4
+      ${selected ? 'border-clr1 bg-gradient-to-r from-clr1/10 to-white'
+        : isClosureAssigned ? 'border-green-500 bg-green-50 hover:shadow-md'
+        : 'border-gray-200 bg-white hover:shadow-md'}`}
       onClick={() => onSelect(lead)}
     >
       <div className="flex items-start">

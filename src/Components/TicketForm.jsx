@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { FiX, FiCheckCircle, FiUser, FiFileText, FiSend } from 'react-icons/fi';
+import { FiX, FiCheckCircle, FiUser, FiFileText, FiSend, FiMessageCircle } from 'react-icons/fi';
 import CONFIG from '../Configuration';
 
-function TicketForm({ onClose }) {
-  const [leadId, setLeadId] = useState('');
+function TicketForm({ onClose, prefill = {} }) {
+  const [leadId, setLeadId] = useState(prefill.clientId || '');
   const [details, setDetails] = useState('');
+  const [comment, setComment] = useState('');
   const [leads, setLeads] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -16,10 +17,21 @@ function TicketForm({ onClose }) {
   const IP = CONFIG.API_URL;
 
   useEffect(() => {
-    fetch(`${IP}/leads/all`)
-      .then((res) => res.json())
-      .then((data) => setLeads(data))
-      .catch((err) => console.error('Failed to load leads', err));
+    if (!prefill.clientId) {
+      fetch(`${IP}/leads/all`)
+        .then((res) => res.json())
+        .then((data) => setLeads(data))
+        .catch((err) => console.error('Failed to load leads', err));
+    } else {
+      setLeads([
+        {
+          _id: prefill.clientId,
+          lead_id: prefill.clientId,
+          person_name: prefill.clientName,
+          business_name: prefill.businessName
+        }
+      ]);
+    }
   }, []);
 
   const handleSubmit = async (e) => {
@@ -30,7 +42,8 @@ function TicketForm({ onClose }) {
       leadId,
       generatorType,
       generator,
-      details
+      details,
+      comment
     };
 
     try {
@@ -39,14 +52,9 @@ function TicketForm({ onClose }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       });
-      
-      // Show success message
+
       setShowSuccess(true);
-      
-      // Close after 2 seconds
-      setTimeout(() => {
-        onClose();
-      }, 2000);
+      setTimeout(() => onClose(), 2000);
     } catch (err) {
       console.error('Error creating ticket:', err);
     } finally {
@@ -84,9 +92,10 @@ function TicketForm({ onClose }) {
                 <FiUser className="mr-1" /> Client
               </label>
               <select
-                className="w-full border border-gray-300 px-3 py-2 outline-none rounded-md"
+                className="w-full border border-gray-300 px-3 py-2 outline-none rounded-md bg-white"
                 value={leadId}
                 onChange={(e) => setLeadId(e.target.value)}
+                disabled={!!prefill.clientId}
                 required
               >
                 <option value="">Select a client</option>
@@ -104,11 +113,24 @@ function TicketForm({ onClose }) {
               </label>
               <textarea
                 placeholder="Describe the issue or request..."
-                rows={5}
+                rows={4}
                 className="w-full border border-gray-300 px-3 py-2 outline-none rounded-md resize-none"
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
                 required
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 flex items-center">
+                <FiMessageCircle className="mr-1" /> Optional Comment
+              </label>
+              <input
+                type="text"
+                placeholder="Add comment..."
+                className="w-full border border-gray-300 px-3 py-2 outline-none rounded-md"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
               />
             </div>
 

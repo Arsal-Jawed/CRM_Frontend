@@ -61,9 +61,7 @@ function Schedules() {
   };
 
   const handleSave = (updated) => {
-    setSchedules(prev =>
-      prev.map(item => (item.id === updated.id ? updated : item))
-    );
+    fetchSchedules();
     setEditing(null);
   };
 
@@ -117,11 +115,11 @@ function Schedules() {
       </div>
 
       <button
-        onClick={() => setShowForm(true)}
-        className="absolute bottom-6 right-6 bg-clr1 text-white rounded-full w-14 h-14 flex items-center justify-center text-3xl shadow-xl hover:bg-[#db5f25]"
-      >
-        +
-      </button>
+      onClick={() => setShowForm(true)}
+      className="fixed bottom-10 right-[36vw] bg-clr1 text-white rounded-full w-14 h-14 flex items-center justify-center text-3xl shadow-xl hover:bg-[#db5f25] z-50"
+    >
+      +
+    </button>
 
       {showForm && (
         <ScheduleForm

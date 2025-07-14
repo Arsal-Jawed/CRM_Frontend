@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   FiCheckCircle, FiUser, FiBriefcase, FiClock,
-  FiAlertCircle, FiCheck, FiCalendar, FiEdit
+  FiAlertCircle, FiCheck, FiCalendar, FiEdit, FiMessageSquare
 } from 'react-icons/fi';
 import CONFIG from '../Configuration';
 
@@ -11,7 +11,7 @@ function TicketCard({ ticket }) {
   const [resolver, setResolver] = useState(ticket.resolver);
   const [resolveDate, setResolveDate] = useState(ticket.resolveDate);
   const [showEdit, setShowEdit] = useState(false);
-  const [newDetails, setNewDetails] = useState(ticket.details);
+  const [newComment, setNewComment] = useState(ticket.comment || '');
 
   const IP = CONFIG.API_URL;
 
@@ -34,18 +34,18 @@ function TicketCard({ ticket }) {
     }
   };
 
-  const handleEditDetails = async () => {
+  const handleEditComment = async () => {
     try {
       const res = await fetch(`${IP}/tickets/edit/${ticket._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ details: newDetails })
+        body: JSON.stringify({ comment: newComment })
       });
       const updated = await res.json();
-      ticket.details = updated.details;
+      ticket.comment = updated.comment;
       setShowEdit(false);
     } catch (err) {
-      console.error('Error editing details:', err);
+      console.error('Error editing comment:', err);
     }
   };
 
@@ -79,15 +79,22 @@ function TicketCard({ ticket }) {
         </div>
       </div>
 
-      <div className="bg-gray-50 p-2 rounded-lg mb-2 text-xs relative">
+      <div className="bg-gray-50 p-2 rounded-lg mb-2 text-xs">
         <p className="text-gray-700 pr-6">{ticket.details}</p>
-        <button
-          onClick={() => setShowEdit(true)}
-          className="absolute top-1 right-1 text-gray-400 hover:text-blue-500"
-        >
-          <FiEdit size={12} />
-        </button>
       </div>
+
+      {ticket.comment && (
+        <div className="bg-gray-50 p-2 rounded-lg mb-2 text-xs relative">
+          <label className="block text-[11px] font-medium text-gray-500 mb-0.5">Resolver Remarks</label>
+          <p className="text-gray-700 pr-6">{ticket.comment}</p>
+          <button
+            onClick={() => setShowEdit(true)}
+            className="absolute top-1 right-1 text-gray-400 hover:text-blue-500"
+          >
+            <FiEdit size={12} />
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-wrap justify-between text-xs text-gray-500 mb-2">
         <div className="flex items-center">
@@ -123,16 +130,15 @@ function TicketCard({ ticket }) {
         </div>
       )}
 
-      {/* Edit Modal */}
       {showEdit && (
         <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-white p-4 rounded-lg shadow-xl w-[90%] max-w-sm space-y-3">
-            <h2 className="text-sm font-semibold text-gray-700">Edit Ticket Details</h2>
+            <h2 className="text-sm font-semibold text-gray-700">Edit Resolver Comment</h2>
             <textarea
               className="w-full border px-2 py-1 outline-none rounded text-sm resize-none"
               rows={4}
-              value={newDetails}
-              onChange={(e) => setNewDetails(e.target.value)}
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
             />
             <div className="flex justify-end gap-2">
               <button
@@ -142,7 +148,7 @@ function TicketCard({ ticket }) {
                 Cancel
               </button>
               <button
-                onClick={handleEditDetails}
+                onClick={handleEditComment}
                 className="text-xs px-3 py-1 bg-clr1 text-white rounded hover:bg-blue-700 transition-colors"
               >
                 Update

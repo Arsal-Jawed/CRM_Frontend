@@ -30,7 +30,7 @@ function RemarksForm({ clientId, onClose, onUpdated, leadGen }) {
     'rapist', 'peeping', 'voyeur', 'scat', 'vomit', 'bestiality', 'pedophile', 'molester', 'maniac', 
     'pervert', 'necrophilia', 'zoophilia', 'gore', 'degradation', 'incel', 'simp', 'slut', 'hoe', 
     'hooker', 'bimbo', 'goldigger', 'smut', 'obscene', 'perversion', 'smutty', 'taboo', 'seduction', 
-    'lewd', 'lustful', 'adultwork','infidelity','pornstar','bbc','blacked','blackedraw','bbw','spank','brazzer'];
+    'lewd', 'lustful', 'adultwork','infidelity','pornstar','bbc','blacked','blackedraw','bbw','spank','brazzer','sthan','Than','than','thn','choosna','mamme','choosne'];
 
   const containsBadWords = (text) => {
     const lower = text.toLowerCase();

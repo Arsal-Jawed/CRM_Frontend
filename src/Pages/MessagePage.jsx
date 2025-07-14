@@ -42,11 +42,15 @@ function MessagePage() {
   });
 
   useEffect(() => {
-    fetchMessages();
-  }, []);
+  fetchMessages();
+  const intervalId = setInterval(fetchMessages, 10000);
+  return () => {
+    clearInterval(intervalId);
+  };
+}, []);
 
   return (
-    <div className="h-[86vh] w-[92vw] bg-white flex overflow-hidden">
+    <div className="h-[86vh] w-[92vw] bg-white flex overflow-hidden z-20">
       <div className="w-full md:w-2/5 flex flex-col border-r border-gray-200 h-full">
         <div className="p-5 border-b border-gray-200">
           <div className="relative">

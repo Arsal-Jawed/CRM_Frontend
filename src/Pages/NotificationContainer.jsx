@@ -42,7 +42,7 @@ const NotificationContainer = () => {
   return (
     <div 
       ref={containerRef}
-      className="w-[28vw] h-[84vh] mr-4 bg-white rounded-2xl shadow-xl p-0 border border-orange-100 flex flex-col"
+      className="w-[28vw] h-[84vh] mr-4 bg-white rounded-2xl shadow-xl p-0 border border-orange-100 flex flex-col z-10"
     >
       {/* Header - now properly contained */}
       <div className="sticky top-0 bg-white p-6 pb-4 z-10 rounded-2xl">

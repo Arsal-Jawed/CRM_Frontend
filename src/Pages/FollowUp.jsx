@@ -5,19 +5,22 @@ import {
   CallCard,
   ClientDetails,
   DocumentCard,
-  CallForm
+  CallForm,
+  EquipmentCard
 } from '../Components';
 import {
   FaPlus,
   FaSearch,
   FaFileAlt,
-  FaPhoneAlt
+  FaPhoneAlt,
+  FaTools
 } from 'react-icons/fa';
 
 function FollowUp() {
   const [selectedClient, setSelectedClient] = useState(null);
   const [calls, setCalls] = useState([]);
   const [documents, setDocuments] = useState([]);
+  const [equipments, setEquipments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [docSearch, setDocSearch] = useState('');
   const [activeTab, setActiveTab] = useState('calls');
@@ -41,12 +44,25 @@ function FollowUp() {
     }
   };
 
+  const fetchEquipments = async () => {
+    try {
+      const res = await fetch(`${CONFIG.API_URL}/equipments/client/${selectedClient.lead_id}`);
+      const data = await res.json();
+      setEquipments(data);
+    } catch (err) {
+      console.error('Failed to fetch equipments:', err);
+    }
+  };
+
   useEffect(() => {
-    if (selectedClient?._id) fetchDocs();
+    if (selectedClient?._id) {
+      fetchDocs();
+      fetchEquipments();
+    }
   }, [selectedClient]);
 
   return (
-    <div className="p-4 flex gap-4">
+    <div className="p-4 flex gap-4 z-20">
       <div className="w-[64vw] space-y-2">
         <ClientDetails client={selectedClient} />
         <FollowUpTable onSelectClient={setSelectedClient} setCalls={setCalls} />
@@ -63,7 +79,7 @@ function FollowUp() {
             }`}
           >
             <FaPhoneAlt size={12} />
-            Call Logs
+            Calls
           </button>
 
           <button
@@ -75,7 +91,19 @@ function FollowUp() {
             }`}
           >
             <FaFileAlt size={12} />
-            Documents
+            Docs
+          </button>
+
+          <button
+            onClick={() => setActiveTab('equipments')}
+            className={`flex items-center gap-1 px-3 py-1 text-sm font-semibold border-b-2 transition ${
+              activeTab === 'equipments'
+                ? 'border-clr1 text-clr1'
+                : 'border-transparent text-gray-500 hover:text-clr1'
+            }`}
+          >
+            <FaTools size={12} />
+            Equipments
           </button>
         </div>
 
@@ -100,6 +128,7 @@ function FollowUp() {
                 Add Call
               </button>
             </div>
+
             <div className="space-y-3 pt-2">
               {filteredCalls.length > 0 ? (
                 filteredCalls.map(call => <CallCard key={call._id} call={call} />)
@@ -141,6 +170,18 @@ function FollowUp() {
               )}
             </div>
           </>
+        )}
+
+        {activeTab === 'equipments' && (
+          <div className="space-y-3 pt-1">
+            {equipments.length > 0 ? (
+              equipments.map(equip => (
+                <EquipmentCard key={equip._id} equipment={equip} />
+              ))
+            ) : (
+              <p className="text-center text-gray-400 mt-5">No Equipments Found.</p>
+            )}
+          </div>
         )}
       </div>
 

@@ -7,7 +7,8 @@ const roleIcons = {
   1: <FaUserTie className="text-blue-500" />,
   2: <FaHandshake className="text-green-500" />,
   3: <FaUserFriends className="text-orange-500" />,
-  4: <FaCogs className="text-purple-500" />
+  4: <FaCogs className="text-purple-500" />,
+  5: <FaCogs className="text-purple-500" />
 };
 
 function EmployeeTable() {
@@ -116,7 +117,7 @@ function EmployeeTable() {
                   <td className="px-3 py-2 w-1/5">
                     <div className="flex items-center">
                       <span className="mr-1">{roleIcons[user.role]}</span>
-                      {user.role === 1 ? 'Manager' : user.role === 2 ? 'Sales' : user.role === 3 ?'Lead Gen': user.role === 4 ? 'Operation Agent': 'Unspecified'}
+                      {user.role === 1 ? 'Manager' : user.role === 2 ? 'Sales' : user.role === 3 ?'Lead Gen': user.role === 4 ? 'Operation Agent': 'Operation Agent'}
                     </div>
                   </td>
                   <td className="px-3 py-2 text-gray-600 w-1/5">{user.designation || '-'}</td>

@@ -13,7 +13,8 @@ import {
   FiGrid,
   FiDatabase,
   FiList,
-  FiUsers as FiMyTeam
+  FiUsers as FiMyTeam,
+  FiFolderPlus
 } from 'react-icons/fi';
 
 const menuByRole = {
@@ -24,28 +25,44 @@ const menuByRole = {
     { label: 'Messages', icon: FiMessageSquare, key: 'messages' },
     { label: 'Performance', icon: FiBarChart2, key: 'performance' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
-    { label: 'Clients', icon: FiBriefcase, key: 'clients' },
-    { label: 'Follow Ups', icon: FiRepeat, key: 'followup' }
+    { label: 'Clients', icon: FiBriefcase, key: 'myclient' },
+    { label: 'TicketDashboard', icon: FiDatabase, key: 'ticket-dashboard' },
+    { label: 'Follow Ups', icon: FiRepeat, key: 'followup' },
+    { label: 'Data', icon: FiFolderPlus, key: 'data' }
   ],
   2: [
     { label: 'Assigned Leads', icon: FiTrendingUp, key: 'assigned-leads' },
+    { label: 'Data', icon: FiFolderPlus, key: 'data' },
     { label: 'MyTeam', icon: FiUsers, key: 'myteam' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
+    { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
     { label: 'Messages', icon: FiMessageSquare, key: 'messages' }
   ],
   3: [
     { label: 'Lead Dashboard', icon: FiList, key: 'lead-dashboard' },
     { label: 'MyTeam', icon: FiUsers, key: 'myteam' },
-    { label: 'Messages', icon: FiMessageSquare, key: 'messages' }
+    { label: 'Messages', icon: FiMessageSquare, key: 'messages' },
+    { label: 'Data', icon: FiFolderPlus, key: 'data' },
+    { label: 'Schedules', icon: FiClock, key: 'schedules' },
   ],
   4: [
     { label: 'OperationDashboard', icon: FiGrid, key: 'operation-dashboard' },
     { label: 'TicketDashboard', icon: FiDatabase, key: 'ticket-dashboard' },
+    { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
-    { label: 'Messages', icon: FiMessageSquare, key: 'messages' }
+    { label: 'Messages', icon: FiMessageSquare, key: 'messages' },
+    { label: 'Data', icon: FiFolderPlus, key: 'data' }
+  ],
+  5: [
+    { label: 'Accounts', icon: FiUserCheck, key: 'accounts' },
+    { label: 'OperationDashboard', icon: FiGrid, key: 'operation-dashboard' },
+    { label: 'TicketDashboard', icon: FiDatabase, key: 'ticket-dashboard' },
+    { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
+    { label: 'Schedules', icon: FiClock, key: 'schedules' },
+    { label: 'Messages', icon: FiMessageSquare, key: 'messages' },
+    { label: 'Data', icon: FiFolderPlus, key: 'data' }
   ]
 };
-
 
 const Sidebar = ({ role, onSelect, active }) => {
   const menu = menuByRole[role] || [];

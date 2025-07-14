@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^13.5.0",
     "aos": "^2.3.4",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "emoji-picker-react": "^4.12.2",
     "framer-motion": "^12.16.0",
     "pdfjs-dist": "^5.3.31",

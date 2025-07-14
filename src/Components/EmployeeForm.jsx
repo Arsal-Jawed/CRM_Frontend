@@ -19,6 +19,7 @@ function EmployeeForm({ onClose, reload }) {
   });
 
   const [previewImage, setPreviewImage] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
   const IP = CONFIG.API_URL;
@@ -49,66 +50,72 @@ function EmployeeForm({ onClose, reload }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  setLoading(true);
 
-    const {
-      firstName, lastName, email, designation, contact, role,
-      password, confirmPassword, cnic, accountNo, achademics, profilePic
-    } = formData;
+  const {
+    firstName, lastName, email, designation, contact, role,
+    password, confirmPassword, cnic, accountNo, achademics, profilePic
+  } = formData;
 
-    if (!firstName || !lastName || !email || !designation || !contact || !role || !password || !confirmPassword) {
-      setError('Please fill all required fields');
-      return;
-    }
+  if (!firstName || !lastName || !email || !designation || !contact || !role || !password || !confirmPassword) {
+    setError('Please fill all required fields');
+    setLoading(false);
+    return;
+  }
 
-    if (!validatePassword(password)) {
-      setError('Password must be at least 8 characters and include a special character');
-      return;
-    }
+  if (!validatePassword(password)) {
+    setError('Password must be at least 8 characters and include a special character');
+    setLoading(false);
+    return;
+  }
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+  if (password !== confirmPassword) {
+    setError('Passwords do not match');
+    setLoading(false);
+    return;
+  }
 
-    const roleMap = {
-      "Manager": 1,
-      "Sales Closure": 2,
-      "Lead Gen": 3,
-      "Operation Agent": 4
-    };
-
-    const payload = new FormData();
-    payload.append('firstName', firstName);
-    payload.append('lastName', lastName);
-    payload.append('email', email);
-    payload.append('designation', designation);
-    payload.append('contact', contact);
-    payload.append('role', roleMap[role] || parseInt(role));
-    payload.append('password', password);
-    payload.append('joining_date', new Date().toISOString().split('T')[0]);
-    if (cnic) payload.append('cnic', cnic);
-    if (accountNo) payload.append('accountNo', accountNo);
-    if (achademics) payload.append('achademics', achademics);
-    if (profilePic) payload.append('profilePic', profilePic);
-
-    try {
-      const res = await fetch(`${IP}/users/createUser`, {
-        method: 'POST',
-        body: payload
-      });
-
-      if (res.ok) {
-        onClose();
-        if (reload) reload();
-      } else {
-        setError('Failed to create user');
-      }
-    } catch (err) {
-      console.error(err);
-      setError('Server error');
-    }
+  const roleMap = {
+    "Manager": 1,
+    "Sales Closure": 2,
+    "Lead Gen": 3,
+    "Operation Agent": 4
   };
+
+  const payload = new FormData();
+  payload.append('firstName', firstName);
+  payload.append('lastName', lastName);
+  payload.append('email', email);
+  payload.append('designation', designation);
+  payload.append('contact', contact);
+  payload.append('role', roleMap[role] || parseInt(role));
+  payload.append('password', password);
+  payload.append('joining_date', new Date().toISOString().split('T')[0]);
+  if (cnic) payload.append('cnic', cnic);
+  if (accountNo) payload.append('accountNo', accountNo);
+  if (achademics) payload.append('achademics', achademics);
+  if (profilePic) payload.append('profilePic', profilePic);
+
+  try {
+    const res = await fetch(`${IP}/users/createUser`, {
+      method: 'POST',
+      body: payload
+    });
+
+    if (res.ok) {
+      onClose();
+      if (reload) reload();
+    } else {
+      setError('Failed to create user');
+    }
+  } catch (err) {
+    console.error(err);
+    setError('Server error');
+  }
+
+  setLoading(false);
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
@@ -234,6 +241,11 @@ function EmployeeForm({ onClose, reload }) {
           </div>
         </form>
       </div>
+      {loading && (
+        <div className="absolute inset-0 bg-white bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 rounded-xl">
+          <div className="border-4 border-orange-500 border-t-transparent rounded-full w-8 h-8 animate-spin"></div>
+        </div>
+      )}
     </div>
   );
 }

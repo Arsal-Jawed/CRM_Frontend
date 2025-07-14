@@ -76,7 +76,7 @@ function Teams() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative z-20">
       <div className={`bg-white w-[60vw] h-[84vh] rounded-2xl shadow-lg p-6 border border-gray-100 flex flex-col gap-6 overflow-hidden transition-all ${isBlurred ? 'blur-sm pointer-events-none' : ''}`}>
 
         <div className="flex justify-between items-center">

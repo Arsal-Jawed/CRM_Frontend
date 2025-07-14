@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import {
   FaUser, FaEnvelope, FaPhone, FaBriefcase, FaMapMarkerAlt, FaCalendarAlt, FaStar,
   FaEdit, FaUserCircle, FaTrophy, FaTimesCircle, FaFileUpload, FaStickyNote, FaEye, FaTimes,FaQuoteLeft,
-  FaLandmark, FaMoneyBillWave, FaCreditCard
+  FaLandmark, FaMoneyBillWave, FaCreditCard,FaToolbox
 } from 'react-icons/fa';
 import CONFIG from '../Configuration';
-import { LeadEditForm, DocForm, RemarksForm } from '../Components';
+import { LeadEditForm, DocForm, RemarksForm, EquipementForm, AddEquipmentForm } from '../Components';
 
 function ClientDetails({ client, onUpdate }) {
   const userData = JSON.parse(localStorage.getItem('user'));
@@ -20,6 +20,7 @@ function ClientDetails({ client, onUpdate }) {
   const [showDocForm, setShowDocForm] = useState(false);
   const [showRemarksForm, setShowRemarksForm] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
+  const [showEquipModal, setShowEquipModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const IP = CONFIG.API_URL;
@@ -65,26 +66,25 @@ function ClientDetails({ client, onUpdate }) {
   };
 
   const handleStatusSubmit = async () => {
-  const route = statusModal === 'won' ? 'won' : 'loss';
-  try {
-    const response = await fetch(`${IP}/leads/${route}/${client._id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({ user: userEmail })
-    });
+    const route = statusModal === 'won' ? 'won' : 'loss';
+    try {
+      const response = await fetch(`${IP}/leads/${route}/${client._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user: userEmail })
+      });
 
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.error || 'Something went wrong');
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Something went wrong');
+      }
+
+      setStatusModal(null);
+    } catch (err) {
+      setStatusModal(null);
+      setErrorMessage(err.message);
     }
-
-    setStatusModal(null);
-    onUpdate?.();
-  } catch (err) {
-    setStatusModal(null);
-    setErrorMessage(err.message);
-  }
-};
+  };
 
   return (
     <>
@@ -144,12 +144,12 @@ function ClientDetails({ client, onUpdate }) {
         </div>
 
         <div className="pt-3 flex flex-wrap gap-5 items-center justify-between">
-          <div className="flex flex-wrap gap-5 text-xs font-medium">
+          <div className="flex flex-wrap gap-4 text-xs font-medium">
             <button onClick={() => setShowModal(true)} disabled={isFinalStatus} className={`flex items-center gap-1 text-clr1 hover:underline ${isFinalStatus ? 'opacity-50 cursor-not-allowed hover:no-underline' : ''}`}>
               <FaStar className="text-yellow-400" /> Rate Lead
             </button>
-            <button onClick={() => setShowEdit(true)} className="flex items-center gap-1 text-blue-500 hover:underline">
-              <FaEdit /> Edit Info
+            <button onClick={() => setShowEquipModal(true)} className="flex items-center gap-1 text-blue-500 hover:underline">
+              <FaToolbox /> Equipment
             </button>
             <button onClick={() => setStatusModal('won')} disabled={isFinalStatus} className={`flex items-center gap-1 text-green-600 hover:underline ${isFinalStatus ? 'opacity-50 cursor-not-allowed hover:no-underline' : ''}`}>
               <FaTrophy /> Mark as Won
@@ -281,6 +281,15 @@ function ClientDetails({ client, onUpdate }) {
             </div>
           </div>
         </div>
+      )}
+      {showEquipModal && (
+        <AddEquipmentForm
+          clientId={client.lead_id}
+          onClose={() => setShowEquipModal(false)}
+          onSuccess={() => {
+            setShowEquipModal(false);
+          }}
+        />
       )}
       {errorMessage && (
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">

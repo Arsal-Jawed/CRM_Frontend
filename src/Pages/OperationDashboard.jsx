@@ -40,7 +40,7 @@ function OperationDashboard() {
   });
 
   return (
-    <div className="h-[87vh] w-[92vw] flex gap-6 bg-gray-50 p-6">
+    <div className="h-[87vh] w-[92vw] flex gap-6 bg-gray-50 p-6 z-20">
       {/* Left Panel - Sales List */}
       <div className="w-[35%] bg-white rounded-lg shadow-sm p-4 overflow-hidden group border border-gray-100">
         {/* Header with title */}

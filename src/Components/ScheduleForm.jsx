@@ -13,16 +13,13 @@ const handleSubmit = () => {
     setSuccessMsg('Please select a schedule date.');
     return;
   }
+  const selectedDateStr = scheduleDate;
+  const todayStr = new Date().toISOString().slice(0, 10);
 
-  const selected = new Date(scheduleDate);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  if (selected < today) {
+  if (selectedDateStr < todayStr) {
     setSuccessMsg('You cannot select a past date.');
     return;
   }
-
   const data = {
     scheduler: JSON.parse(localStorage.getItem('user')).email,
     details,
@@ -30,7 +27,7 @@ const handleSubmit = () => {
     is_public: isPublic ? 1 : 0
   };
 
-  fetch(`${IP}/schedules/createSchedule`, {
+  fetch(`${CONFIG.API_URL}/schedules/createSchedule`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)

@@ -30,7 +30,7 @@ function LeadEditForm({ lead, onClose, onUpdate }) {
     accountType: lead.accountType || ''
   });
   const [errors, setErrors] = useState({});
-
+  console.log(lead);
   const IP = CONFIG.API_URL;
 
   const fieldIcons = {
@@ -61,9 +61,6 @@ function LeadEditForm({ lead, onClose, onUpdate }) {
   };
  
   const validators = {
-  personal_email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  business_email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  ssn: /^\d{3}-\d{2}-\d{4}$/,
   driversLicenseNumber: /^[A-Za-z0-9]{5,20}$/,
   rtn: /^\d{9}$/,
   accountNumber: /^\d{4,17}$/,

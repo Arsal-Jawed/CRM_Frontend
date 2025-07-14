@@ -14,7 +14,7 @@ function LeadForm({ onClose }) {
     followupDate: '',
     remarks: ''
   });
-
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const IP = CONFIG.API_URL;
   const user = JSON.parse(localStorage.getItem('user'));
@@ -49,43 +49,46 @@ function LeadForm({ onClose }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validateForm()) return;
 
-    const leadData = {
-      email,
-      person_name: formData.clientName,
-      personal_email: formData.clientEmail,
-      business_name: formData.businessName,
-      business_email: formData.businessEmail,
-      contact: formData.clientPhone,
-      business_contact: formData.businessPhone,
-      address: formData.address,
-      followupDate: formData.followupDate,
-      notes: formData.remarks
-    };
-
-    try {
-      const response = await fetch(`${IP}/leads/create`, {
-        method: 'POST',
-        body: JSON.stringify(leadData),
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create lead');
-      }
-
-      alert(`Lead created successfully!\nClient: ${formData.clientName}`);
-      onClose();
-
-    } catch (error) {
-      alert(`Error: ${error.message}`);
-      console.error('Error creating lead:', error);
-    }
+  const leadData = {
+    email,
+    person_name: formData.clientName,
+    personal_email: formData.clientEmail,
+    business_name: formData.businessName,
+    business_email: formData.businessEmail,
+    contact: formData.clientPhone,
+    business_contact: formData.businessPhone,
+    address: formData.address,
+    followupDate: formData.followupDate,
+    notes: formData.remarks
   };
+
+  try {
+    setLoading(true);
+    const response = await fetch(`${IP}/leads/create`, {
+      method: 'POST',
+      body: JSON.stringify(leadData),
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to create lead');
+    }
+
+    alert(`Lead created successfully!\nClient: ${formData.clientName}`);
+    onClose();
+  } catch (error) {
+    alert(`Error: ${error.message}`);
+    console.error('Error creating lead:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-30 backdrop-blur-sm">
@@ -184,13 +187,23 @@ function LeadForm({ onClose }) {
           )}
 
           <div className="flex justify-end space-x-2 pt-2">
-            <button type="button" onClick={onClose} className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-              Cancel
-            </button>
-            <button type="submit" className="px-3 py-1.5 text-xs font-medium text-white bg-clr1 rounded-lg hover:bg-clr2 transition-colors">
-              Save Lead
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            disabled={loading}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-3 py-1.5 text-xs font-medium text-white bg-clr1 rounded-lg hover:bg-clr2 transition-colors flex items-center gap-2"
+            disabled={loading}
+          >
+            {loading && <span className="animate-spin rounded-full w-3 h-3 border-t-2 border-white border-solid"></span>}
+            {loading ? 'Saving...' : 'Save Lead'}
+          </button>
+        </div>
         </form>
       </div>
     </div>

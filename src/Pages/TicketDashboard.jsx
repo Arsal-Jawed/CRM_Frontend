@@ -29,7 +29,7 @@ function TicketDashboard() {
   );
 
   return (
-    <div className="p-4 md:p-6 relative">
+    <div className="p-4 md:p-6 relative z-20">
       {/* Search & Filter Bar */}
       <div className="bg-white shadow-md rounded-xl p-4 mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-all">
         <div className="flex flex-col md:flex-row gap-3 flex-1">

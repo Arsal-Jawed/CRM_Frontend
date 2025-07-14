@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import CONFIG from '../Configuration';
 import { LeadCard,FollowUpPopup } from '../Components';
-import {
-  FaUser, FaBuilding, FaEnvelope, FaPhone, FaMapMarkerAlt,
-  FaStar, FaCalendarAlt, FaClock, FaCheckCircle, FaTimesCircle,
-  FaCalendarPlus, FaListUl
-} from 'react-icons/fa';
+import { FaUser, FaBuilding, FaEnvelope, FaPhone, FaMapMarkerAlt,FaStar, FaCalendarAlt, FaClock,FaCalendarPlus, FaListUl} from 'react-icons/fa';
 
 function LeadAdmin() {
   const [leads, setLeads] = useState([]);
@@ -23,12 +19,16 @@ function LeadAdmin() {
       if (!isMounted) return;
       
       setLeads(prevLeads => {
-        if (JSON.stringify(prevLeads) !== JSON.stringify(data)) {
-          return data;
-        }
-        return prevLeads;
-      });
-      
+      const filteredData = data
+        .filter(lead => lead.status === 'in process')
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      if (JSON.stringify(prevLeads) !== JSON.stringify(filteredData)) {
+        return filteredData;
+      }
+      return prevLeads;
+    });
+       
       setSelected(prevSelected => 
         !prevSelected || !data.find(lead => lead._id === prevSelected._id) 
           ? data[0] 
@@ -74,8 +74,8 @@ function LeadAdmin() {
 
 
   return (
-    <div className="flex h-[85vh] bg-white rounded-xl overflow-hidden shadow-sm">
-      <div className="w-[35%] border-r border-gray-100 p-4 bg-white flex flex-col">
+    <div className="flex h-[85vh] bg-white rounded-xl overflow-hidden shadow-sm z-20">
+      <div className="w-[38%] border-r border-gray-100 p-4 bg-white flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
             <FaListUl className="text-clr1" />
@@ -85,7 +85,7 @@ function LeadAdmin() {
             </span>
           </h2>
         </div>
-        <div className="flex-1 overflow-y-auto pr-2 space-y-2">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-2">
           {leads.map(lead => (
             <LeadCard
               key={lead._id}
@@ -169,20 +169,6 @@ function LeadAdmin() {
                 className="bg-white text-clr1 border border-clr1 hover:text-white hover:bg-clr1"
                 icon={<FaCalendarPlus className="text-lg" />}
                 label="Followup"
-                disabled={selected?.status === 'won' || selected?.status === 'lost'}
-              />
-              <ActionButton
-                onClick={() => handleAction('Mark as Won')}
-                className="bg-gradient-to-br from-green-500 to-green-600 text-white hover:shadow-md hover:from-green-600 hover:to-green-700"
-                icon={<FaCheckCircle className="text-lg" />}
-                label="Mark Won"
-                disabled={selected?.status === 'won' || selected?.status === 'lost'}
-              />
-              <ActionButton
-                onClick={() => handleAction('Mark as Lost')}
-                className="bg-gradient-to-br from-red-500 to-red-600 text-white hover:shadow-md hover:from-red-600 hover:to-red-700"
-                icon={<FaTimesCircle className="text-lg" />}
-                label="Mark Lost"
                 disabled={selected?.status === 'won' || selected?.status === 'lost'}
               />
             </div>

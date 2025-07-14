@@ -1,45 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { FaSearch, FaFilter } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaPlus } from 'react-icons/fa';
 import CONFIG from '../Configuration';
+import { LeadForm } from './index.js';
 
 function FollowUpTable({ onSelectClient, setCalls }) {
   const [leads, setLeads] = useState([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showForm, setShowForm] = useState(false);
 
   const email = JSON.parse(localStorage.getItem('user')).email;
   const IP = CONFIG.API_URL;
 
   useEffect(() => {
-  const fetchLeads = async () => {
+    const fetchLeads = async () => {
+      try {
+        const response = await fetch(`${IP}/leads/getByClosure/${email}`);
+        if (!response.ok) throw new Error('Failed to fetch leads');
+        const data = await response.json();
+        setLeads(data);
+      } catch (error) {
+        console.error('Error fetching leads:', error.message);
+      }
+    };
+    fetchLeads();
+    const intervalId = setInterval(fetchLeads, 20000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const handleClick = async (client) => {
+    onSelectClient(client);
     try {
-      const response = await fetch(`${IP}/leads/getByClosure/${email}`);
-      if (!response.ok) throw new Error('Failed to fetch leads');
+      const response = await fetch(`${CONFIG.API_URL}/calls/client/${client._id}`);
       const data = await response.json();
-      setLeads(data);
+      setCalls(data);
     } catch (error) {
-      console.error('Error fetching leads:', error.message);
+      console.error('Failed to fetch calls:', error);
+      setCalls([]);
     }
   };
-  fetchLeads();
-  const intervalId = setInterval(fetchLeads, 20000);
-  return () => clearInterval(intervalId);
-}, []);
-
-
- const handleClick = async (client) => {
-  onSelectClient(client);
-
-  try {
-    const response = await fetch(`${CONFIG.API_URL}/calls/client/${client._id}`);
-    const data = await response.json();
-
-    setCalls(data); // assuming backend sends array of calls
-  } catch (error) {
-    console.error('Failed to fetch calls:', error);
-    setCalls([]); // fallback
-  }
-};
 
   const filtered = leads
     .filter(lead =>
@@ -69,6 +68,14 @@ function FollowUpTable({ onSelectClient, setCalls }) {
         <h2 className="text-base font-semibold text-clr1">Follow Ups</h2>
         
         <div className="flex items-center gap-3 flex-wrap flex-1 justify-end">
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 bg-clr1 text-white px-3 py-1.5 rounded text-xs hover:bg-orange-600 transition"
+          >
+            <FaPlus className="text-xs" />
+            Create New Lead
+          </button>
+
           <div className="relative min-w-[200px]">
             <FaSearch className="absolute left-3 top-2.5 text-gray-400 text-xs" />
             <input
@@ -79,6 +86,7 @@ function FollowUpTable({ onSelectClient, setCalls }) {
               className="w-full pl-8 pr-3 py-1.5 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-clr1"
             />
           </div>
+
           <div className="relative w-[160px]">
             <FaFilter className="absolute left-3 top-2.5 text-gray-400 text-xs" />
             <select
@@ -132,6 +140,15 @@ function FollowUpTable({ onSelectClient, setCalls }) {
           )}
         </tbody>
       </table>
+
+      {showForm && (
+        <LeadForm
+          onClose={() => setShowForm(false)}
+          onCreated={() => {
+            setShowForm(false);
+          }}
+        />
+      )}
     </div>
   );
 }
