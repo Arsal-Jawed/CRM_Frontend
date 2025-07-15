@@ -17,22 +17,25 @@ function TicketForm({ onClose, prefill = {} }) {
   const IP = CONFIG.API_URL;
 
   useEffect(() => {
-    if (!prefill.clientId) {
-      fetch(`${IP}/leads/all`)
-        .then((res) => res.json())
-        .then((data) => setLeads(data))
-        .catch((err) => console.error('Failed to load leads', err));
-    } else {
-      setLeads([
-        {
-          _id: prefill.clientId,
-          lead_id: prefill.clientId,
-          person_name: prefill.clientName,
-          business_name: prefill.businessName
-        }
-      ]);
-    }
-  }, []);
+  if (!prefill.clientId) {
+    fetch(`${IP}/leads/all`)
+      .then((res) => res.json())
+      .then((data) => {
+        const wonLeads = data.filter(lead => lead.status?.toLowerCase() === 'won');
+        setLeads(wonLeads);
+      })
+      .catch((err) => console.error('Failed to load leads', err));
+  } else {
+    setLeads([
+      {
+        _id: prefill.clientId,
+        lead_id: prefill.clientId,
+        person_name: prefill.clientName,
+        business_name: prefill.businessName
+      }
+    ]);
+  }
+}, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

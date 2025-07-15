@@ -114,6 +114,15 @@ function MyClientDetails({ client }) {
               }`}>
                 {client.status === 'won' ? 'Application' : 'Lease'}: {getApplicationStatus()}
               </span>
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  client.sale.leaseApprovalStatus === 'Approved'
+                    ? 'bg-green-100 text-green-800'
+                    : client.sale.leaseApprovalStatus === 'Pending'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-red-100 text-red-800'
+                }`}>
+                  Lease: {client.sale.leaseApprovalStatus || 'N/A'}
+                </span>
             </div>
 
             {/* Personal Information Section */}
