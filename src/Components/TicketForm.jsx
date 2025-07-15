@@ -37,12 +37,13 @@ function TicketForm({ onClose, prefill = {} }) {
   }
 }, []);
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     const body = {
-      leadId,
+      leadId: prefill.lead_id,
       generatorType,
       generator,
       details,

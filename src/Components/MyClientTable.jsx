@@ -167,7 +167,8 @@ function MyClientTable({ clients, onSelect }) {
               prefill={{
                 clientId: selectedClient._id,
                 clientName: selectedClient.person_name,
-                businessName: selectedClient.business_name
+                businessName: selectedClient.business_name,
+                lead_id: selectedClient.lead_id
               }}
             />
           </div>

@@ -58,7 +58,7 @@ const Navbar = ({onNavigate}) => {
         </div>
         <div
           className="relative group"
-          onClick={() => onNavigate(user?.role === 1 || user?.role === 2 ? 'followup' : 'schedules')}
+          onClick={() => onNavigate(user?.role === 1 || user?.role === 2 ? 'schedules' : 'schedules')}
         >
           <FiCalendar className="hover:text-orange-500 cursor-pointer transition-colors" />
           {count > 0 && (
