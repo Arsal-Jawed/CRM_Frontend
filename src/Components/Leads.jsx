@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { LeadForm, LeadInfo } from './index';
 import CONFIG from '../Configuration';
+import { FaEye, FaStickyNote, FaEdit } from 'react-icons/fa';
 
 function Leads() {
   const [leads, setLeads] = useState([]);
@@ -10,12 +11,46 @@ function Leads() {
   const [showAddPopup, setShowAddPopup] = useState(false);
   const [selectedLead, setSelectedLead] = useState(null);
   const [focusedRowIndex, setFocusedRowIndex] = useState(-1);
+  const [showNotesPopup, setShowNotesPopup] = useState(false);
+  const [noteLead, setNoteLead] = useState(null);
+  const [notes, setNotes] = useState('');
+  const [editingNote, setEditingNote] = useState(false);
+
   const tableContainerRef = useRef(null);
   const tableBodyRef = useRef(null);
 
   const user = JSON.parse(localStorage.getItem('user'));
   const email = user.email;
   const IP = CONFIG.API_URL;
+
+  const handleNotesUpdate = async () => {
+  try {
+    const res = await fetch(`${IP}/leads/notes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clientId: noteLead.lead_id,
+        remarks: notes
+      }),
+    });
+
+    if (res.ok) {
+      setEditingNote(false);
+      setShowNotesPopup(false);
+
+      const refreshed = await fetch(`${IP}/leads/email/${email}`);
+      const data = await refreshed.json();
+      setLeads(data);
+      setFilteredLeads(data);
+    } else {
+      const errorData = await res.json();
+      console.error('Server error:', errorData);
+      alert(errorData.error || 'Failed to update notes');
+    }
+  } catch (err) {
+    console.error('Note update failed:', err);
+  }
+};
 
   useEffect(() => {
     fetch(`${IP}/leads/email/${email}`)
@@ -153,12 +188,26 @@ function Leads() {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">{lead.date}</td>
                     <td className="px-6 py-4 text-sm text-gray-500">
-                      <button
-                        onClick={() => setSelectedLead(lead)}
-                        className="text-blue-600 hover:text-blue-800 text-xs font-medium px-2 py-1 bg-blue-50 rounded"
-                      >
-                        View
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setSelectedLead(lead)}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="View"
+                        >
+                          <FaEye />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setNoteLead(lead);
+                            setNotes(lead.notes || '');
+                            setShowNotesPopup(true);
+                          }}
+                          className="text-green-600 hover:text-green-800"
+                          title="Notes"
+                        >
+                          <FaStickyNote />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -177,6 +226,39 @@ function Leads() {
       {selectedLead && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
           <LeadInfo lead={selectedLead} onClose={() => setSelectedLead(null)} />
+        </div>
+      )}
+      {showNotesPopup && noteLead && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md space-y-4 shadow">
+            <h2 className="text-lg font-semibold text-clr1">Remarks - {noteLead.person_name}</h2>
+            {editingNote ? (
+              <>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="w-full border border-gray-300 rounded p-2 text-sm outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300"
+                  rows={6}
+                />
+                <div className="flex justify-end gap-3">
+                  <button onClick={() => setEditingNote(false)} className="text-sm text-gray-500">Cancel</button>
+                  <button onClick={handleNotesUpdate} className="text-sm text-white bg-clr1 hover:bg-orange-600 px-4 py-1.5 rounded">Save</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-gray-700 whitespace-pre-wrap">{notes || 'No notes available.'}</p>
+                <div className="flex justify-end">
+                  <button onClick={() => setEditingNote(true)} className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                    <FaEdit /> Edit
+                  </button>
+                </div>
+              </>
+            )}
+            <div className="flex justify-end pt-2">
+              <button onClick={() => setShowNotesPopup(false)} className="text-sm text-gray-500">Close</button>
+            </div>
+          </div>
         </div>
       )}
     </>

@@ -47,3 +47,4 @@ export {default as ClientForm} from './ClientForm';
 export {default as EquipmentCard} from './EquipmentCard';
 export {default as AddEquipmentForm} from './AddEquipmentForm';
 export {default as SaleEditForm} from './SaleEditForm';
+export {default as FollowUpModal} from './FollowUpModal';

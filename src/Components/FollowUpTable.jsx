@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { FaSearch, FaFilter, FaPlus } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaPlus, FaCalendarPlus, FaEdit } from 'react-icons/fa';
 import CONFIG from '../Configuration';
-import { LeadForm } from './index.js';
+import { LeadForm, FollowUpModal,LeadEditForm } from './index.js';
 
 function FollowUpTable({ onSelectClient, setCalls }) {
   const [leads, setLeads] = useState([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
+  const [editLead, setEditLead] = useState(null);
+  const [selectedLead, setSelectedLead] = useState(null);
 
   const email = JSON.parse(localStorage.getItem('user')).email;
   const IP = CONFIG.API_URL;
@@ -63,10 +65,10 @@ function FollowUpTable({ onSelectClient, setCalls }) {
 
   return (
     <div className="bg-white shadow-md h-[42vh] rounded-lg border border-gray-200 p-4 space-y-3 overflow-hidden hover:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-      
+
       <div className="flex items-center justify-between flex-wrap gap-4">
         <h2 className="text-base font-semibold text-clr1">Follow Ups</h2>
-        
+
         <div className="flex items-center gap-3 flex-wrap flex-1 justify-end">
           <button
             onClick={() => setShowForm(true)}
@@ -102,16 +104,17 @@ function FollowUpTable({ onSelectClient, setCalls }) {
           </div>
         </div>
       </div>
-
+     <div className="overflow-hidden hover:overflow-y-auto max-h-[26vh] hover:scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
       <table className="min-w-full text-xs divide-y divide-gray-200 select-none">
         <thead className="bg-gray-50 text-gray-600 uppercase tracking-wider font-semibold">
           <tr>
-            <th className="px-4 py-2 text-left">#</th>
-            <th className="px-4 py-2 text-left">Name</th>
-            <th className="px-4 py-2 text-left">Email</th>
-            <th className="px-4 py-2 text-left">Contact</th>
-            <th className="px-4 py-2 text-left">Status</th>
-            <th className="px-4 py-2 text-left">Date</th>
+            <th className="px-2 py-2 text-left">#</th>
+            <th className="px-2 py-2 text-left">Name</th>
+            <th className="px-2 py-2 text-left">Email</th>
+            <th className="px-2 py-2 text-left">Contact</th>
+            <th className="px-2 py-2 text-left">Status</th>
+            <th className="px-2 py-2 text-left">Date</th>
+            <th className="px-2 py-2 text-left">Actions</th>
           </tr>
         </thead>
         <tbody className="bg-white text-gray-800 divide-y divide-gray-100">
@@ -122,31 +125,69 @@ function FollowUpTable({ onSelectClient, setCalls }) {
               onClick={() => handleClick(lead)}
               tabIndex={0}
             >
-              <td className="px-4 py-2">{index + 1}</td>
-              <td className="px-4 py-2">
+              <td className="px-2 py-2">{index + 1}</td>
+              <td className="px-2 py-2">
                 <div className="font-medium">{lead.person_name}</div>
                 <div className="text-[10px] text-gray-500">{lead.business_name}</div>
               </td>
-              <td className="px-4 py-2">{lead.personal_email}</td>
-              <td className="px-4 py-2">{lead.contact}</td>
-              <td className="px-4 py-2">{getBadge(lead.status)}</td>
-              <td className="px-4 py-2">{lead.date}</td>
+              <td className="px-2 py-2">{lead.personal_email}</td>
+              <td className="px-2 py-2">{lead.contact}</td>
+              <td className="px-2 py-2">{getBadge(lead.status)}</td>
+              <td className="px-2 py-2">{lead.date}</td>
+              <td className="px-2 py-2 flex gap-2 items-center">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedLead(lead);
+                  }}
+                  className="text-clr1 hover:text-orange-700"
+                  title="Schedule Follow-up"
+                >
+                  <FaCalendarPlus />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditLead(lead);
+                  }}
+                  className="text-blue-500 hover:text-blue-700"
+                  title="Edit Lead"
+                >
+                  <FaEdit />
+                </button>
+              </td>
             </tr>
           ))}
           {filtered.length === 0 && (
             <tr>
-              <td colSpan="6" className="text-center py-4 text-gray-400">No leads found</td>
+              <td colSpan="7" className="text-center py-4 text-gray-400">No leads found</td>
             </tr>
           )}
         </tbody>
-      </table>
 
+      </table>
+    </div>
       {showForm && (
         <LeadForm
           onClose={() => setShowForm(false)}
           onCreated={() => {
             setShowForm(false);
           }}
+        />
+      )}
+
+      {selectedLead && (
+        <FollowUpModal
+          lead={selectedLead}
+          onClose={() => setSelectedLead(null)}
+          onScheduled={() => setSelectedLead(null)}
+        />
+      )}
+      {editLead && (
+        <LeadEditForm
+          lead={editLead}
+          onClose={() => setEditLead(null)}
+          onUpdated={() => setEditLead(null)}
         />
       )}
     </div>

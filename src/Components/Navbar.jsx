@@ -3,7 +3,7 @@ import { FiBell, FiSettings, FiSearch, FiMessageSquare, FiCalendar } from 'react
 import { FaUser } from 'react-icons/fa';
 import CONFIG from '../Configuration';
 
-const Navbar = () => {
+const Navbar = ({onNavigate}) => {
   const [count, setCount] = useState(0);
   const [unseenCount, setUnseenCount] = useState(0);
   const [lastChecked, setLastChecked] = useState(null);
@@ -56,8 +56,10 @@ const Navbar = () => {
             <p className="text-xs text-gray-400 mt-1">Last checked: {lastChecked?.toLocaleTimeString()}</p>
           </div>
         </div>
-
-        <div className="relative group">
+        <div
+          className="relative group"
+          onClick={() => onNavigate(user?.role === 1 || user?.role === 2 ? 'followup' : 'schedules')}
+        >
           <FiCalendar className="hover:text-orange-500 cursor-pointer transition-colors" />
           {count > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
@@ -69,7 +71,6 @@ const Navbar = () => {
             <p className="text-xs text-gray-400 mt-1">Last checked: {lastChecked?.toLocaleTimeString()}</p>
           </div>
         </div>
-
         <FiBell className="hover:text-orange-500 cursor-pointer transition-colors" />
         <FiSettings className="hover:text-orange-500 cursor-pointer transition-colors" />
       </div>

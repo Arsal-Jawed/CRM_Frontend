@@ -75,7 +75,7 @@ console.log(`${CONFIG}/schedules/scheduler/${parsedUser.email}`);
       <Sidebar role={user.role} onSelect={setActivePage} active={activePage} />
 
       <div className="flex-1 flex flex-col">
-        <Navbar username={user.firstName} />
+        <Navbar username={user.firstName} onNavigate={setActivePage}/>
 
         <div className="flex flex-1 overflow-hidden relative">
           <div className="flex-1 p-2 overflow-y-auto bg-gray-50">
