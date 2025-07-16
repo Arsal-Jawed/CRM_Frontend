@@ -83,7 +83,7 @@ const Sidebar = ({ role, onSelect, active }) => {
           <button
             key={item.key}
             onClick={() => onSelect(item.key)}
-            className={`group flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 
+            className={`group flex items-center justify-center w-10 h-12 rounded-full transition-all duration-300 
               ${isActive ? 'bg-white text-clr1 scale-125' : 'text-white'} 
               hover:bg-white hover:text-clr1`}
           >

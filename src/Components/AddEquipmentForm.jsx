@@ -19,7 +19,7 @@ function AddEquipementForm({ clientId, onClose, onSuccess }) {
   const equipementOptions = {
     Clover: [
       'CLOVER FLEX', 'CLOVER MINI', 'CLOVER STATION SOLO', 'CLOVER STATION DUO',
-      'CLOVER KIOSK', 'CLOVER COMPACT', 'CLOVER GO', 'CLOVER POCKET'
+      'CLOVER KIOSK', 'CLOVER COMPACT', 'CLOVER GO', 'CLOVER POCKET', 'KITCHEN PRINTER'
     ],
     NRS: ['NRS POS', 'NRS Pay Tablet', 'NRS Register'],
     Elavon: ['Elavon Smart Terminal', 'Elavon Converge']

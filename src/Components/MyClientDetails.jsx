@@ -59,7 +59,7 @@ function MyClientDetails({ client }) {
       <div className="text-clr1 mt-0.5">{icon}</div>
       <div>
         <p className="font-medium text-gray-500 text-xs">{label}</p>
-        <p className="text-gray-800 text-sm">{value || '—'}</p>
+        <p className="text-gray-800 text-[0.8vw]">{value || '—'}</p>
       </div>
     </div>
   );

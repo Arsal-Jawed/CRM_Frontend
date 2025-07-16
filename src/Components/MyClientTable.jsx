@@ -107,7 +107,7 @@ function MyClientTable({ clients, onSelect }) {
             </div>
           </div>
         </div>
-
+       <div className="max-h-[68vh] overflow-hidden hover:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
         <table className="min-w-full text-[11px] divide-y divide-gray-200 select-none">
           <thead className="bg-gray-50 text-gray-600 uppercase tracking-wider font-semibold">
             <tr>
@@ -151,6 +151,7 @@ function MyClientTable({ clients, onSelect }) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {showTicketForm && selectedClient && (
