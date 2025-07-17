@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  FiCheckCircle, FiCalendar, FiUser, FiTruck, 
-  FiDollarSign, FiClipboard, FiX
-} from 'react-icons/fi';
+import { FiX } from 'react-icons/fi';
 import CONFIG from '../Configuration';
 
 function SaleEditForm({ sale, clientId, onClose, onSave }) {
@@ -48,208 +45,126 @@ function SaleEditForm({ sale, clientId, onClose, onSave }) {
         
         <div className="p-4 overflow-y-auto flex-1">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-3">
-              <div className="bg-clr1/5 p-3 rounded-lg border border-clr1/20">
-                <h3 className="font-medium text-clr1 text-sm mb-2 flex items-center gap-1">
-                  <FiClipboard size={14} /> Submission
-                </h3>
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Submit Date</label>
-                    <input 
-                      type="date" 
-                      name="submitDate" 
-                      max={new Date().toISOString().slice(0,10)}
-                      value={formData.submitDate?.slice(0,10)} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Submit By</label>
-                    <select 
-                      name="submitBy" 
-                      value={formData.submitBy} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
-                    >
-                      <option value="">Select Person</option>
-                      {userOptions}
-                    </select>
-                  </div>
-                </div>
+            {/* Column 1 */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Submit Date</label>
+                <input 
+                  type="date" 
+                  name="submitDate" 
+                  max={new Date().toISOString().slice(0,10)}
+                  value={formData.submitDate?.slice(0,10)} 
+                  onChange={handleChange}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent" 
+                />
               </div>
 
-              <div className="bg-clr1/5 p-3 rounded-lg border border-clr1/20">
-                <h3 className="font-medium text-clr1 text-sm mb-2 flex items-center gap-1">
-                  <FiCheckCircle size={14} /> Approval
-                </h3>
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Credit Score</label>
-                    <input 
-                      name="creditScore" 
-                      value={formData.creditScore} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Approval Status</label>
-                    <select 
-                      name="approvalStatus" 
-                      value={formData.approvalStatus} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
-                    >
-                      {['Pending','Approved','Rejected'].map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Approve Date</label>
-                    <input 
-                      type="date" 
-                      name="approveDate" 
-                      max={new Date().toISOString().slice(0,10)}
-                      value={formData.approveDate?.slice(0,10)} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Approve By</label>
-                    <select 
-                      name="approveBy" 
-                      value={formData.approveBy} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
-                    >
-                      <option value="">Select Person</option>
-                      {userOptions}
-                    </select>
-                  </div>
-                </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Credit Score</label>
+                <input 
+                  name="creditScore" 
+                  value={formData.creditScore} 
+                  onChange={handleChange}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Approval Status</label>
+                <select 
+                  name="approvalStatus" 
+                  value={formData.approvalStatus} 
+                  onChange={handleChange}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
+                >
+                  {['Pending','Approved','Rejected'].map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Approve Date</label>
+                <input 
+                  type="date" 
+                  name="approveDate" 
+                  max={new Date().toISOString().slice(0,10)}
+                  value={formData.approveDate?.slice(0,10)} 
+                  onChange={handleChange}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent" 
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Delivered Date</label>
+                <input 
+                  type="date" 
+                  name="deliveredDate" 
+                  max={new Date().toISOString().slice(0,10)}
+                  value={formData.deliveredDate?.slice(0,10)} 
+                  onChange={handleChange}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent" 
+                />
               </div>
             </div>
 
-            <div className="space-y-3">
-              <div className="bg-clr1/5 p-3 rounded-lg border border-clr1/20">
-                <h3 className="font-medium text-clr1 text-sm mb-2 flex items-center gap-1">
-                  <FiTruck size={14} /> Delivery
-                </h3>
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Delivered Date</label>
-                    <input 
-                      type="date" 
-                      name="deliveredDate" 
-                      max={new Date().toISOString().slice(0,10)}
-                      value={formData.deliveredDate?.slice(0,10)} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Delivered By</label>
-                    <select 
-                      name="deliveredBy" 
-                      value={formData.deliveredBy} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
-                    >
-                      <option value="">Select Person</option>
-                      {userOptions}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Activation Date</label>
-                    <input 
-                      type="date" 
-                      name="activationDate" 
-                      max={new Date().toISOString().slice(0,10)}
-                      value={formData.activationDate?.slice(0,10)} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Activated By</label>
-                    <select 
-                      name="activatedBy" 
-                      value={formData.activatedBy} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
-                    >
-                      <option value="">Select Person</option>
-                      {userOptions}
-                    </select>
-                  </div>
-                </div>
+            {/* Column 2 */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Activation Date</label>
+                <input 
+                  type="date" 
+                  name="activationDate" 
+                  max={new Date().toISOString().slice(0,10)}
+                  value={formData.activationDate?.slice(0,10)} 
+                  onChange={handleChange}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent" 
+                />
               </div>
 
-              <div className="bg-clr1/5 p-3 rounded-lg border border-clr1/20">
-                <h3 className="font-medium text-clr1 text-sm mb-2 flex items-center gap-1">
-                  <FiDollarSign size={14} /> Lease
-                </h3>
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Lease Submit Date</label>
-                    <input 
-                      type="date" 
-                      name="leaseSubmitDate" 
-                      max={new Date().toISOString().slice(0,10)}
-                      value={formData.leaseSubmitDate?.slice(0,10)} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Lease Submit By</label>
-                    <select 
-                      name="leaseSubmitBy" 
-                      value={formData.leaseSubmitBy} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
-                    >
-                      <option value="">Select Person</option>
-                      {userOptions}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Lease Approval Status</label>
-                    <select 
-                      name="leaseApprovalStatus" 
-                      value={formData.leaseApprovalStatus} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
-                    >
-                      {['Pending','Approved','Rejected'].map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Lease Approval Date</label>
-                    <input 
-                      type="date" 
-                      name="leaseApprovalDate" 
-                      max={new Date().toISOString().slice(0,10)}
-                      value={formData.leaseApprovalDate?.slice(0,10)} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Lease Approved By</label>
-                    <select 
-                      name="leaseApprovedBy" 
-                      value={formData.leaseApprovedBy} 
-                      onChange={handleChange}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
-                    >
-                      <option value="">Select Person</option>
-                      {userOptions}
-                    </select>
-                  </div>
-                </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Activated By</label>
+                <select 
+                  name="activatedBy" 
+                  value={formData.activatedBy} 
+                  onChange={handleChange}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
+                >
+                  <option value="">Select Person</option>
+                  {userOptions}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Leasing Company</label>
+                <input 
+                  name="leasingCompany" 
+                  value={formData.leasingCompany || ''} 
+                  onChange={handleChange}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
+                  placeholder="Enter leasing company name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Lease Approval Status</label>
+                <select 
+                  name="leaseApprovalStatus" 
+                  value={formData.leaseApprovalStatus} 
+                  onChange={handleChange}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
+                >
+                  {['Pending','Approved','Rejected'].map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Lease Approval Date</label>
+                <input 
+                  type="date" 
+                  name="leaseApprovalDate" 
+                  max={new Date().toISOString().slice(0,10)}
+                  value={formData.leaseApprovalDate?.slice(0,10)} 
+                  onChange={handleChange}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent" 
+                />
               </div>
             </div>
           </div>

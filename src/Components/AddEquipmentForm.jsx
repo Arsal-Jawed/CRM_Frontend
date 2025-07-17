@@ -17,9 +17,13 @@ function AddEquipementForm({ clientId, onClose, onSuccess }) {
   const [error, setError] = useState('');
 
   const equipementOptions = {
-    Clover: [
+    CardConnect: [
       'CLOVER FLEX', 'CLOVER MINI', 'CLOVER STATION SOLO', 'CLOVER STATION DUO',
-      'CLOVER KIOSK', 'CLOVER COMPACT', 'CLOVER GO', 'CLOVER POCKET', 'KITCHEN PRINTER'
+      'CLOVER KIOSK', 'CLOVER COMPACT', 'CLOVER GO', 'CLOVER POCKET', 'KITCHEN PRINTER','KITCHEN DISPLAY 14', 'KITCHEN DISPLAY 24', 'BARCODE SCANNER HANDHELD', 'BARCODE SCANNER HANDSFREE'
+    ],
+    Payroc: [
+      'CLOVER FLEX', 'CLOVER MINI', 'CLOVER STATION SOLO', 'CLOVER STATION DUO',
+      'CLOVER KIOSK', 'CLOVER COMPACT', 'CLOVER GO', 'CLOVER POCKET', 'KITCHEN PRINTER','KITCHEN DISPLAY 14', 'KITCHEN DISPLAY 24', 'BARCODE SCANNER HANDHELD', 'BARCODE SCANNER HANDSFREE'
     ],
     NRS: ['NRS POS', 'NRS Pay Tablet', 'NRS Register'],
     Elavon: ['Elavon Smart Terminal', 'Elavon Converge']
@@ -90,7 +94,8 @@ function AddEquipementForm({ clientId, onClose, onSuccess }) {
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md bg-clr2 bg-opacity-10 focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-clr2"
             >
               <option value="">Select Brand</option>
-              <option value="Clover">Clover</option>
+              <option value="CardConnect">CardConnect</option>
+              <option value="Payroc">Payroc</option>
               <option value="NRS">NRS</option>
               <option value="Elavon">Elavon</option>
             </select>

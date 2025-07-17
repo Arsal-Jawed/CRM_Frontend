@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import CONFIG from '../Configuration';
 import { LeadCard,FollowUpPopup } from '../Components';
 import { FaUser, FaBuilding, FaEnvelope, FaPhone, FaMapMarkerAlt,FaStar, FaCalendarAlt, FaClock,FaCalendarPlus, FaListUl} from 'react-icons/fa';
@@ -7,37 +7,48 @@ function LeadAdmin() {
   const [leads, setLeads] = useState([]);
   const [selected, setSelected] = useState(null);
   const [showFollowUp, setShowFollowUp] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const isFirstLoad = useRef(true);
 
  useEffect(() => {
   let isMounted = true;
   
-  const fetchLeads = async () => {
-    try {
-      const response = await fetch(`${CONFIG.API_URL}/leads/all`);
-      const data = await response.json();
-      
-      if (!isMounted) return;
-      
-      setLeads(prevLeads => {
-      const filteredData = data
-        .filter(lead => lead.status === 'in process')
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
+const fetchLeads = async () => {
+  try {
+    if (isFirstLoad.current) setLoading(true);
 
+    const response = await fetch(`${CONFIG.API_URL}/leads/all`);
+    const data = await response.json();
+
+    if (!isMounted) return;
+
+    const filteredData = data
+      .filter(lead => lead.status === 'in process')
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    setLeads(prevLeads => {
       if (JSON.stringify(prevLeads) !== JSON.stringify(filteredData)) {
         return filteredData;
       }
       return prevLeads;
     });
-       
-      setSelected(prevSelected => 
-        !prevSelected || !data.find(lead => lead._id === prevSelected._id) 
-          ? data[0] 
-          : prevSelected
-      );
-    } catch (error) {
-      console.error(error);
+
+    setSelected(prevSelected =>
+      !prevSelected || !filteredData.find(lead => lead._id === prevSelected?._id)
+        ? filteredData[0]
+        : prevSelected
+    );
+
+    if (isFirstLoad.current) {
+      setLoading(false);
+      isFirstLoad.current = false;
     }
-  };
+  } catch (error) {
+    console.error(error);
+    setLoading(false);
+  }
+};
 
   fetchLeads();
   const intervalId = setInterval(fetchLeads, 10000);
@@ -86,14 +97,20 @@ function LeadAdmin() {
           </h2>
         </div>
         <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-2">
-          {leads.map(lead => (
-            <LeadCard
-              key={lead._id}
-              lead={lead}
-              onSelect={setSelected}
-              selected={selected?._id === lead._id}
-            />
-          ))}
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="w-6 h-6 border-2 border-t-transparent border-clr1 rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            leads.map(lead => (
+              <LeadCard
+                key={lead._id}
+                lead={lead}
+                onSelect={setSelected}
+                selected={selected?._id === lead._id}
+              />
+            ))
+          )}
         </div>
       </div>
 
@@ -157,7 +174,7 @@ function LeadAdmin() {
                 <div className="grid grid-cols-2 gap-4">
                   <DetailItem icon={<FaEnvelope className="text-gray-400" />} label="Business Email" value={selected.business_email} />
                   <DetailItem icon={<FaPhone className="text-gray-400" />} label="Business Phone" value={selected.business_contact} />
-                  <DetailItem icon={<FaMapMarkerAlt className="text-gray-400" />} label="Address" value={selected.address} />
+                  <DetailItem icon={<FaMapMarkerAlt className="text-gray-400" />} label="Address" value={selected.business_address} />
                   <DetailItem icon={<FaCalendarAlt className="text-gray-400" />} label="Follow-up Date" value={selected.followupDate ? selected.followupDate.slice(0, 10) : '-'} />
                 </div>
               </div>

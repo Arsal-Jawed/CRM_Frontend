@@ -10,7 +10,7 @@ function LeadForm({ onClose }) {
     businessName: '',
     businessEmail: '',
     businessPhone: '',
-    address: '',
+    business_address: '',
     followupDate: '',
     remarks: ''
   });
@@ -61,7 +61,7 @@ function LeadForm({ onClose }) {
     business_email: formData.businessEmail,
     contact: formData.clientPhone,
     business_contact: formData.businessPhone,
-    address: formData.address,
+    business_address: formData.business_address,
     followupDate: formData.followupDate,
     notes: formData.remarks
   };
@@ -133,16 +133,16 @@ function LeadForm({ onClose }) {
             </div>
           </div>
 
-          {/* Address Section */}
+          {/* business_address Section */}
           <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Address</h4>
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">business address</h4>
             <div className="flex items-start border border-gray-300 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-transparent">
               <FaMapMarkerAlt className="text-gray-400 mr-2 mt-1 text-sm" size={14} />
               <textarea
-                name="address"
+                name="business_address"
                 placeholder="Full Address"
                 rows={2}
-                value={formData.address}
+                value={formData.business_address}
                 onChange={handleChange}
                 className="w-full text-sm focus:outline-none resize-none"
               ></textarea>

@@ -15,9 +15,13 @@ function EquipementForm({ clientId, onClose, onSuccess, equipmentId }) {
   const [error, setError] = useState('');
 
   const equipementOptions = {
-    Clover: [
+    CardConnect: [
       'CLOVER FLEX', 'CLOVER MINI', 'CLOVER STATION SOLO', 'CLOVER STATION DUO',
-      'CLOVER KIOSK', 'CLOVER COMPACT', 'CLOVER GO', 'CLOVER POCKET'
+      'CLOVER KIOSK', 'CLOVER COMPACT', 'CLOVER GO', 'CLOVER POCKET', 'KITCHEN PRINTER','KITCHEN DISPLAY 14', 'KITCHEN DISPLAY 24', 'BARCODE SCANNER HANDHELD', 'BARCODE SCANNER HANDSFREE'
+    ],
+    Payroc: [
+      'CLOVER FLEX', 'CLOVER MINI', 'CLOVER STATION SOLO', 'CLOVER STATION DUO',
+      'CLOVER KIOSK', 'CLOVER COMPACT', 'CLOVER GO', 'CLOVER POCKET', 'KITCHEN PRINTER','KITCHEN DISPLAY 14', 'KITCHEN DISPLAY 24', 'BARCODE SCANNER HANDHELD', 'BARCODE SCANNER HANDSFREE'
     ],
     NRS: ['NRS POS', 'NRS Pay Tablet', 'NRS Register'],
     Elavon: ['Elavon Smart Terminal', 'Elavon Converge']

@@ -90,58 +90,56 @@ function ClientDetails({ client, onUpdate }) {
     <>
       <div className="h-[38vh] bg-white p-4 rounded-xl shadow-xs border border-gray-100 flex flex-col">
         <div className="flex justify-between items-start mb-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <FaUserCircle className="text-clr1 text-lg" />
-              <h2 className="text-base font-semibold text-gray-800">
-                {client.person_name || 'Client'}
-              </h2>
-              <div className="flex items-center gap-1 ml-1">
-                {stars}
-                <span className="text-xs text-gray-500 ml-1">({rating.toFixed(1)})</span>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">{client.business_name}</p>
-          </div>
-          <div className="flex flex-col items-end">
-            <button
-              onClick={() => setShowEdit(true)}
-              className="text-gray-400 hover:text-clr1 p-1 rounded-full hover:bg-clr1/10 transition"
-            >
-              <FaEdit size={12} />
-            </button>
-            <span className="text-xs text-gray-400 mt-1">{client.lead_gen || 'Lead Source'}</span>
-          </div>
-        </div>
+  <div>
+    <div className="flex items-center gap-2">
+      <FaUserCircle className="text-clr1 text-lg" />
+      <h2 className="text-base font-semibold text-gray-800">
+        {client.person_name || 'Client'}
+      </h2>
+      <div className="flex items-center gap-1 ml-1">
+        {stars}
+        <span className="text-xs text-gray-500 ml-1">({rating.toFixed(1)})</span>
+      </div>
+    </div>
+    <p className="text-xs text-gray-500 mt-1">{client.business_name}</p>
+  </div>
+  <div className="flex flex-col items-end">
+    <button
+      onClick={() => setShowEdit(true)}
+      className="text-gray-400 hover:text-clr1 p-1 rounded-full hover:bg-clr1/10 transition"
+    >
+      <FaEdit size={12} />
+    </button>
+    <span className="text-xs text-gray-400 mt-1">{client.lead_gen || 'Lead Source'}</span>
+  </div>
+</div>
 
-        <div className="flex-1 grid grid-cols-3 gap-3 overflow-y-hidden pr-1 hover:overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-          {[
-            ['Personal Email', client.personal_email],
-            ['Contact', client.contact],
-            ['Business Email', client.business_email],
-            ['Business Contact', client.business_contact],
-            ['DOB', client.dob ? new Date(client.dob).toLocaleDateString() : '-'],
-            ['SSN', client.ssn],
-            ['DL Number', client.driversLicenseNumber],
-            ['Ownership %', client.ownershipPercentage],
-            ['Years in Business', client.yearsInBusiness],
-            ['Business Role', client.businessRole],
-            ['Locations', client.locations],
-            ['Incorporate State', client.incorporateState],
-            ['Sale Type', client.saleType],
-            ['Address', client.address, true],
-            // Bank related details
-            ['Bank Name', client.bankName],
-            ['RTN', client.rtn],
-            ['Account Number', client.accountNumber],
-            ['Account Type', client.accountType]
-          ].map(([label, value, wide], i) => (
-            <div key={i} className={`bg-gray-50 rounded-lg p-3 ${wide ? 'col-span-2' : ''}`}>
-              <p className="text-[11px] text-gray-500 font-medium">{label}</p>
-              <p className="text-xs text-gray-800 font-semibold truncate">{value ?? '-'}</p>
-            </div>
-          ))}
-        </div>
+<div className="flex-1 grid grid-cols-3 gap-3 overflow-y-hidden pr-1 hover:overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+  {[
+    ['Client Name', client.person_name],
+    ['Personal Email', client.personal_email],
+    ['Contact', client.contact],
+    ['DOB', client.dob ? new Date(client.dob).toLocaleDateString() : '-'],
+    ['SSN', client.ssn],
+    ['DL Number', client.driversLicenseNumber],
+    ['Business Name', client.business_name],
+    ['Designation', client.businessRole],
+    ['Business Email', client.business_email],
+    ['Business Contact', client.business_contact],
+    ['Business Address', client.business_address, true],
+    ['Established', client.established],
+    ['Ownership %', client.ownershipPercentage],
+    ['Bank Name', client.bankName],
+    ['RTN', client.rtn],
+    ['Account Number', client.accountNumber, true]
+  ].map(([label, value, wide], i) => (
+    <div key={i} className={`bg-gray-50 rounded-lg p-3 ${wide ? 'col-span-2' : ''}`}>
+      <p className="text-[11px] text-gray-500 font-medium">{label}</p>
+      <p className="text-xs text-gray-800 font-semibold truncate">{value ?? '-'}</p>
+    </div>
+  ))}
+</div>
+
 
         <div className="pt-3 flex flex-wrap gap-5 items-center justify-between">
           <div className="flex flex-wrap gap-4 text-xs font-medium">

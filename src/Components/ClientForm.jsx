@@ -25,6 +25,7 @@ function ClientForm({ onComplete }) {
   const [formData, setFormData] = useState({
     email,
     person_name: '',
+    legal_name: '',
     personal_email: '',
     contact: '',
     dob: '',
@@ -36,13 +37,11 @@ function ClientForm({ onComplete }) {
     businessRole: '',
     business_contact: '',
     ownershipPercentage: '',
-    yearsInBusiness: '',
-    locations: '',
-    incorporateState: '',
+    business_address:'',
+    established:'',
     bankName: '',
     rtn: '',
-    accountNumber: '',
-    accountType: ''
+    accountNumber: ''
   });
 
   const [equipmentData, setEquipmentData] = useState({
@@ -56,19 +55,16 @@ function ClientForm({ onComplete }) {
 
   const [saleData, setSaleData] = useState({
     submitDate: '',
-    submitBy: '',
     approvalStatus: 'Pending',
     approveDate: '',
-    approveBy: '',
     deliveredDate: '',
     deliveredBy: '',
     activationDate: '',
     activatedBy: '',
     leaseSubmitDate: '',
-    leaseSubmitBy: '',
     leaseApprovalStatus: 'Pending',
     leaseApprovalDate: '',
-    leaseApprovedBy: '',
+    leasingCompany: '',
     creditScore: 'C'
   });
 
@@ -233,12 +229,13 @@ function ClientForm({ onComplete }) {
     if (step === 0) return container(
      <>
       {field('Full Name', <input name="person_name" placeholder="Enter client's full name" value={formData.person_name} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiUser />)}
+      {field('Legal Name', <input name="legal_name" placeholder="Enter client's legal name" value={formData.legal_name} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiUser />)}
       {field('Personal Email', <input type="email" name="personal_email" placeholder="Enter personal email" value={formData.personal_email} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiUser />)}
       {field('Contact', <input name="contact" placeholder="Enter contact number" value={formData.contact} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiUser />)}
       {field('Date of Birth', <input type="date" name="dob" placeholder="Select date of birth" value={formData.dob} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCalendar />)}
       {field('SSN', <input name="ssn" placeholder="Enter social security number" value={formData.ssn} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiUser />)}
       {field("Driver's License No.", <input name="driversLicenseNumber" placeholder="Enter license number" value={formData.driversLicenseNumber} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiUser />)}
-      {field("Address", <input name="address" placeholder="Enter residential address" value={formData.address} onChange={handleChange} className="border w-[31vw] px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiUser />)}
+      {field("Address", <input name="address" placeholder="Enter residential address" value={formData.address} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiUser />)}
     </>
     );
     if (step === 1) return container(
@@ -248,9 +245,8 @@ function ClientForm({ onComplete }) {
         {field('Designation / Role', <input name="businessRole" placeholder="Enter designation or role" value={formData.businessRole} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiBriefcase />)}
         {field('Business Contact', <input name="business_contact" placeholder="Enter business contact number" value={formData.business_contact} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiBriefcase />)}
         {field('Ownership %', <input type="number" name="ownershipPercentage" placeholder="Ownership percentage" value={formData.ownershipPercentage} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiBriefcase />)}
-        {field('Years in Business', <input type="number" name="yearsInBusiness" placeholder="Enter number of years" value={formData.yearsInBusiness} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiBriefcase />)}
-        {field('Locations', <input type="number" name="locations" placeholder="Enter number of locations" value={formData.locations} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiBriefcase />)}
-        {field('Incorporate State', <input name="incorporateState" placeholder="Enter state of incorporation" value={formData.incorporateState} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiBriefcase />)}
+        {field('Established', <input type="date" name="established" placeholder="Established Date" value={formData.established} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiBriefcase />)}
+        {field('Business Address', <input name="business_address" placeholder="Enter Business Address" value={formData.business_address} onChange={handleChange} className="border w-[31vw] px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiBriefcase />)}
       </>
 
     );
@@ -259,16 +255,7 @@ function ClientForm({ onComplete }) {
       <>
         {field('Bank Name', <input name="bankName" placeholder="Enter bank name" value={formData.bankName} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCreditCard />)}
         {field('Routing Number', <input name="rtn" placeholder="Enter routing number" value={formData.rtn} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCreditCard />)}
-        {field('Account Number', <input name="accountNumber" placeholder="Enter account number" value={formData.accountNumber} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCreditCard />)}
-        {field('Account Type', (
-          <select name="accountType" value={formData.accountType} onChange={handleChange} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
-            <option value="">Select Account Type</option>
-            <option>Checking</option>
-            <option>Savings</option>
-            <option>Money Market</option>
-            <option>Business Checking</option>
-          </select>
-        ), <FiCreditCard />)}
+        {field('Account Number', <input name="accountNumber" placeholder="Enter account number" value={formData.accountNumber} onChange={handleChange} className="border w-[31vw] px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCreditCard />)}
       </>
     );
 
@@ -277,14 +264,21 @@ function ClientForm({ onComplete }) {
         {field('Brand', (
           <select value={equipmentData.brand} onChange={e => setEquipmentData(p => ({ ...p, brand: e.target.value, equipement: '' }))} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
             <option value="">Select Brand</option>
-            <option>Clover</option><option>NRS</option><option>Elavon</option>
+            <option>CardConnect</option><option>Payroc</option><option>NRS</option><option>Elavon</option>
           </select>
         ), <FiSettings />)}
         {field('Equipment', (
           <select value={equipmentData.equipement} onChange={e => setEquipmentData(p => ({ ...p, equipement: e.target.value }))} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" disabled={!equipmentData.brand}>
             <option value="">Select Equipment</option>
             {({
-              Clover: ['CLOVER FLEX', 'CLOVER MINI', 'CLOVER STATION SOLO', 'CLOVER STATION DUO', 'CLOVER KIOSK', 'CLOVER COMPACT', 'CLOVER GO', 'CLOVER POCKET'],
+              CardConnect: [
+                'CLOVER FLEX', 'CLOVER MINI', 'CLOVER STATION SOLO', 'CLOVER STATION DUO',
+                'CLOVER KIOSK', 'CLOVER COMPACT', 'CLOVER GO', 'CLOVER POCKET', 'KITCHEN PRINTER','KITCHEN DISPLAY 14', 'KITCHEN DISPLAY 24', 'BARCODE SCANNER HANDHELD', 'BARCODE SCANNER HANDSFREE'
+              ],
+              Payroc: [
+                'CLOVER FLEX', 'CLOVER MINI', 'CLOVER STATION SOLO', 'CLOVER STATION DUO',
+                'CLOVER KIOSK', 'CLOVER COMPACT', 'CLOVER GO', 'CLOVER POCKET', 'KITCHEN PRINTER','KITCHEN DISPLAY 14', 'KITCHEN DISPLAY 24', 'BARCODE SCANNER HANDHELD', 'BARCODE SCANNER HANDSFREE'
+              ],
               NRS: ['NRS POS', 'NRS Pay Tablet', 'NRS Register'],
               Elavon: ['Elavon Smart Terminal', 'Elavon Converge']
             })[equipmentData.brand]?.map(eq => <option key={eq} value={eq}>{eq}</option>)}
@@ -306,12 +300,6 @@ function ClientForm({ onComplete }) {
   <div className="max-h-[38vh] overflow-y-auto pr-2">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-5xl">
       {field('Submit Date', <input type="date" max={today} value={saleData.submitDate} onChange={e => setSaleData(p => ({ ...p, submitDate: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCalendar />)}
-      {field('Submit By', (
-        <select value={saleData.submitBy} onChange={e => setSaleData(p => ({ ...p, submitBy: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
-          <option value="" disabled>Select submitter</option>
-          {opsReps.map(rep => <option key={rep.id} value={rep.name}>{rep.name}</option>)}
-        </select>
-      ), <FiUser />)}
       {field('Credit Score', (
         <select value={saleData.creditScore} onChange={e => setSaleData(p => ({ ...p, creditScore: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
           <option value="" disabled>Select credit score</option>
@@ -321,23 +309,11 @@ function ClientForm({ onComplete }) {
       {field('Approval Status', (
         <select value={saleData.approvalStatus} onChange={e => setSaleData(p => ({ ...p, approvalStatus: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
           <option value="" disabled>Select approval status</option>
-          {['Pending', 'Approved', 'Rejected'].map(opt => <option key={opt}>{opt}</option>)}
+          {['Pending', 'Approved', 'Rejected', 'Underwriting', 'Buyback'].map(opt => <option key={opt}>{opt}</option>)}
         </select>
       ), <FiCheck />)}
       {field('Approve Date', <input type="date" max={today} value={saleData.approveDate} onChange={e => setSaleData(p => ({ ...p, approveDate: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCalendar />)}
-      {field('Approve By', (
-        <select value={saleData.approveBy} onChange={e => setSaleData(p => ({ ...p, approveBy: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
-          <option value="" disabled>Select approver</option>
-          {opsReps.map(rep => <option key={rep.id} value={rep.name}>{rep.name}</option>)}
-        </select>
-      ), <FiUser />)}
       {field('Delivered Date', <input type="date" max={today} value={saleData.deliveredDate} onChange={e => setSaleData(p => ({ ...p, deliveredDate: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCalendar />)}
-      {field('Delivered By', (
-        <select value={saleData.deliveredBy} onChange={e => setSaleData(p => ({ ...p, deliveredBy: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
-          <option value="" disabled>Select deliverer</option>
-          {opsReps.map(rep => <option key={rep.id} value={rep.name}>{rep.name}</option>)}
-        </select>
-      ), <FiUser />)}
       {field('Activation Date', <input type="date" max={today} value={saleData.activationDate} onChange={e => setSaleData(p => ({ ...p, activationDate: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCalendar />)}
       {field('Activated By', (
         <select value={saleData.activatedBy} onChange={e => setSaleData(p => ({ ...p, activatedBy: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
@@ -346,12 +322,6 @@ function ClientForm({ onComplete }) {
         </select>
       ), <FiUser />)}
       {field('Lease Submit Date', <input type="date" max={today} value={saleData.leaseSubmitDate} onChange={e => setSaleData(p => ({ ...p, leaseSubmitDate: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCalendar />)}
-      {field('Lease Submit By', (
-        <select value={saleData.leaseSubmitBy} onChange={e => setSaleData(p => ({ ...p, leaseSubmitBy: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
-          <option value="" disabled>Select lease submitter</option>
-          {opsReps.map(rep => <option key={rep.id} value={rep.name}>{rep.name}</option>)}
-        </select>
-      ), <FiUser />)}
       {field('Lease Approval Status', (
         <select value={saleData.leaseApprovalStatus} onChange={e => setSaleData(p => ({ ...p, leaseApprovalStatus: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
           <option value="" disabled>Select lease approval</option>
@@ -359,12 +329,12 @@ function ClientForm({ onComplete }) {
         </select>
       ), <FiCheck />)}
       {field('Lease Approval Date', <input type="date" max={today} value={saleData.leaseApprovalDate} onChange={e => setSaleData(p => ({ ...p, leaseApprovalDate: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCalendar />)}
-      {field('Lease Approved By', (
-        <select value={saleData.leaseApprovedBy} onChange={e => setSaleData(p => ({ ...p, leaseApprovedBy: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
-          <option value="" disabled>Select lease approver</option>
-          {opsReps.map(rep => <option key={rep.id} value={rep.name}>{rep.name}</option>)}
-        </select>
-      ), <FiUser />)}
+      {field('Leasing Company', (
+          <select value={saleData.leasingCompany} onChange={e => setSaleData(p => ({ ...p, leasingCompany: e.target.value }))} className="border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
+            <option value="">Leasing Company</option>
+            <option>PCL</option><option>ELG</option>
+          </select>
+        ), <FiBriefcase />)}
     </div>
   </div>
 );

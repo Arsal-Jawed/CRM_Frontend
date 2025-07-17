@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import CONFIG from '../Configuration';
-import { DocumentCard, LeadEditForm, EquipementForm, EquipmentCard, AddEquipmentForm,SaleEditForm } from '../Components';
+import { DocumentCard, LeadEditForm, EquipementForm, EquipmentCard, AddEquipmentForm,SaleEditForm, DocForm } from '../Components';
 import {
   FiUser, FiBriefcase, FiStar, FiMail, FiPhone, FiHome,
   FiCalendar, FiFileText, FiDollarSign, FiCreditCard,
@@ -14,6 +14,7 @@ function MyClientDetails({ client }) {
   const [showEquipEdit, setShowEquipEdit] = useState(false);
   const [showNewEquipForm, setShowNewEquipForm] = useState(false);
   const [showSaleEdit, setShowSaleEdit] = useState(false);
+  const [showDocForm, setShowDocForm] = useState(false);
 
   const containerRef = useRef(null);
 
@@ -75,11 +76,11 @@ function MyClientDetails({ client }) {
           <>
             <div className="pb-4 border-b border-gray-100 flex justify-between items-start">
               <div>
-                <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+                <h2 className="text-[1.1vw] font-semibold text-gray-800 flex items-center">
                   <FiUser className="mr-2 text-clr1" />
-                  {client.person_name}
+                  {client.person_name} {'('+client.legal_name+')'}
                 </h2>
-                <p className="text-gray-600 flex items-center mt-1">
+                <p className="text-gray-600 text-[0.9vw] flex items-center mt-1">
                   <FiBriefcase className="mr-2 text-clr2" />
                   {client.business_name}
                 </p>
@@ -109,6 +110,7 @@ function MyClientDetails({ client }) {
                 getApplicationStatus() === 'Approved'
                   ? 'bg-green-100 text-green-800'
                   : getApplicationStatus() === 'Pending'
+                    ? 'bg-yellow-100 text-yellow-800' : getApplicationStatus() === 'Underwriting'
                     ? 'bg-yellow-100 text-yellow-800'
                     : 'bg-red-100 text-red-800'
               }`}>
@@ -123,6 +125,11 @@ function MyClientDetails({ client }) {
                 }`}>
                   Lease: {client.sale.leaseApprovalStatus || 'N/A'}
                 </span>
+                {client.sale?.creditScore && (
+                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    Credit Score: {client.sale.creditScore}
+                  </span>
+                )}
             </div>
 
             {/* Personal Information Section */}
@@ -138,8 +145,6 @@ function MyClientDetails({ client }) {
                 <InfoItem icon={<FiCalendar />} label="Date of Birth" value={client.dob?.slice(0, 10)} />
                 <InfoItem icon={<FiCreditCard />} label="SSN" value={client.ssn} />
                 <InfoItem icon={<FiCreditCard />} label="Driver License #" value={client.driversLicenseNumber} />
-                <InfoItem icon={<FiPercent />} label="Ownership %" value={client.ownershipPercentage} />
-                <InfoItem icon={<FiCalendar />} label="Follow-Up Date" value={client.followupDate?.slice(0, 10)} />
               </div>
             </div>
 
@@ -153,13 +158,9 @@ function MyClientDetails({ client }) {
                 <InfoItem icon={<FiMail />} label="Business Email" value={client.business_email} />
                 <InfoItem icon={<FiPhone />} label="Business Contact" value={client.business_contact} />
                 <InfoItem icon={<FiFileText />} label="Business Role" value={client.businessRole} />
-                <InfoItem icon={<FiCalendar />} label="Years in Business" value={client.yearsInBusiness} />
-                <InfoItem icon={<FiMapPin />} label="Incorporate State" value={client.incorporateState} />
-                <InfoItem icon={<FiGlobe />} label="Locations" value={client.locations} />
-                <InfoItem icon={<FiAward />} label="Type" value={client.type === 1 ? 'Normal' : 'Premium'} />
-                <InfoItem icon={<FiDollarSign />} label="Sale Type" value={client.saleType} />
-                <InfoItem icon={<FiClock />} label="Sale Close" value={client.saleCloseDateTime?.slice(0, 10)} />
-                <InfoItem icon={<FiCreditCard />} label="Credit Score" value={client.sale?.creditScore} />
+                <InfoItem icon={<FiPercent />} label="Ownership %" value={client.ownershipPercentage} />
+                <InfoItem icon={<FiCalendar />} label="Established" value={client.established} />
+                <InfoItem icon={<FiHome />} label="Business Address" value={client.business_address} />
               </div>
             </div>
 
@@ -173,7 +174,6 @@ function MyClientDetails({ client }) {
                 <InfoItem icon={<FiBriefcase />} label="Bank" value={client.bankName} />
                 <InfoItem icon={<FiCreditCard />} label="RTN" value={client.rtn} />
                 <InfoItem icon={<FiCreditCard />} label="Account #" value={client.accountNumber} />
-                <InfoItem icon={<FiFileText />} label="Account Type" value={client.accountType} />
               </div>
             </div>
 
@@ -229,21 +229,16 @@ function MyClientDetails({ client }) {
                   </button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <InfoItem icon={<FiCheckCircle />} label="Current Status" value={client.sale.currentStatus} />
-                  <InfoItem icon={<FiUser />} label="Submitted By" value={client.sale.submitBy} />
                   <InfoItem icon={<FiCalendar />} label="Submit Date" value={client.sale.submitDate?.slice(0, 10)} />
                   <InfoItem icon={<FiCheckCircle />} label="Approval Status" value={client.sale.approvalStatus} />
-                  <InfoItem icon={<FiUser />} label="Approved By" value={client.sale.approveBy} />
                   <InfoItem icon={<FiCalendar />} label="Approval Date" value={client.sale.approveDate?.slice(0, 10)} />
-                  <InfoItem icon={<FiTruck />} label="Delivered By" value={client.sale.deliveredBy} />
                   <InfoItem icon={<FiCalendar />} label="Delivered Date" value={client.sale.deliveredDate?.slice(0, 10)} />
                   <InfoItem icon={<FiUser />} label="Activated By" value={client.sale.activatedBy} />
                   <InfoItem icon={<FiCalendar />} label="Activation Date" value={client.sale.activationDate?.slice(0, 10)} />
-                  <InfoItem icon={<FiUser />} label="Lease Submit By" value={client.sale.leaseSubmitBy} />
                   <InfoItem icon={<FiCalendar />} label="Lease Submit Date" value={client.sale.leaseSubmitDate?.slice(0, 10)} />
                   <InfoItem icon={<FiCheckCircle />} label="Lease Approval Status" value={client.sale.leaseApprovalStatus} />
-                  <InfoItem icon={<FiUser />} label="Lease Approved By" value={client.sale.leaseApprovedBy} />
                   <InfoItem icon={<FiCalendar />} label="Lease Approval Date" value={client.sale.leaseApprovalDate?.slice(0, 10)} />
+                  <InfoItem icon={<FiGlobe />} label="Leasing Company" value={client.sale.leasingCompnay} />
                 </div>
               </div>
             )}
@@ -254,21 +249,30 @@ function MyClientDetails({ client }) {
                 clientId={client._id}
               />
             )}
-
-            {docs.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-clr1 font-medium mb-3 flex items-center">
+            <div className="mt-6">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-clr1 font-medium flex items-center">
                   <FiLayers className="mr-2" />
                   Client Documents
                 </h3>
+                <button
+                  onClick={() => setShowDocForm(true)}
+                  className="text-clr1 hover:text-clr2 text-sm p-1 rounded-full border border-clr1"
+                  title="Add Document"
+                >
+                  <FiPlus size={16} />
+                </button>
+              </div>
+              {docs.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {docs.map(doc => (
                     <DocumentCard key={doc._id} doc={doc} />
                   ))}
                 </div>
-              </div>
-            )}
-
+              ) : (
+                <p className="text-sm text-gray-400 italic">No documents uploaded yet.</p>
+              )}
+            </div>
             {showLeadEdit && (
               <LeadEditForm
                 lead={client}
@@ -290,6 +294,15 @@ function MyClientDetails({ client }) {
             <p className="text-sm">Select a client to view details</p>
           </div>
         )}
+        {showDocForm && (
+        <DocForm
+          clientId={client.lead_id}
+          onClose={() => setShowDocForm(false)}
+          onSuccess={() => {
+            setShowDocForm(false);
+          }}
+            />
+          )}
       </div>
     </div>
   );
