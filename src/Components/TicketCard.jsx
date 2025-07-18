@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   FiCheckCircle, FiUser, FiBriefcase, FiClock,
-  FiAlertCircle, FiCheck, FiCalendar, FiEdit, FiMessageSquare
+  FiAlertCircle, FiCheck, FiCalendar, FiEdit
 } from 'react-icons/fi';
 import CONFIG from '../Configuration';
 
@@ -12,6 +12,7 @@ function TicketCard({ ticket }) {
   const [resolveDate, setResolveDate] = useState(ticket.resolveDate);
   const [showEdit, setShowEdit] = useState(false);
   const [newComment, setNewComment] = useState(ticket.comment || '');
+  const [shouldResolveAfterComment, setShouldResolveAfterComment] = useState(false);
 
   const IP = CONFIG.API_URL;
 
@@ -44,6 +45,7 @@ function TicketCard({ ticket }) {
       const updated = await res.json();
       ticket.comment = updated.comment;
       setShowEdit(false);
+      if (shouldResolveAfterComment) handleResolve();
     } catch (err) {
       console.error('Error editing comment:', err);
     }
@@ -83,18 +85,19 @@ function TicketCard({ ticket }) {
         <p className="text-gray-700 pr-6">{ticket.details}</p>
       </div>
 
-      {ticket.comment && (
-        <div className="bg-gray-50 p-2 rounded-lg mb-2 text-xs relative">
-          <label className="block text-[11px] font-medium text-gray-500 mb-0.5">Resolver Remarks</label>
-          <p className="text-gray-700 pr-6">{ticket.comment}</p>
-          <button
-            onClick={() => setShowEdit(true)}
-            className="absolute top-1 right-1 text-gray-400 hover:text-blue-500"
-          >
-            <FiEdit size={12} />
-          </button>
-        </div>
-      )}
+      <div className="bg-gray-50 p-2 rounded-lg mb-2 text-xs relative">
+        <label className="block text-[11px] font-medium text-gray-500 mb-0.5">Resolver Remarks</label>
+        <p className="text-gray-700 pr-6">{ticket.comment || 'No remarks yet.'}</p>
+        <button
+          onClick={() => {
+            setShowEdit(true);
+            setShouldResolveAfterComment(false);
+          }}
+          className="absolute top-1 right-1 text-gray-400 hover:text-blue-500"
+        >
+          <FiEdit size={12} />
+        </button>
+      </div>
 
       <div className="flex flex-wrap justify-between text-xs text-gray-500 mb-2">
         <div className="flex items-center">
@@ -110,7 +113,10 @@ function TicketCard({ ticket }) {
       {status === 'Pending' ? (
         <div className="flex justify-end">
           <button
-            onClick={handleResolve}
+            onClick={() => {
+              setShouldResolveAfterComment(true);
+              setShowEdit(true);
+            }}
             className="text-xs border border-clr1 text-clr1 py-1 px-2 rounded hover:bg-blue-50 transition-colors"
           >
             <FiCheckCircle size={12} className="inline-block mr-1" />
@@ -142,7 +148,10 @@ function TicketCard({ ticket }) {
             />
             <div className="flex justify-end gap-2">
               <button
-                onClick={() => setShowEdit(false)}
+                onClick={() => {
+                  setShowEdit(false);
+                  setShouldResolveAfterComment(false);
+                }}
                 className="text-xs px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
               >
                 Cancel
