@@ -8,19 +8,9 @@ function FollowUpPopup({ onClose, lead }) {
   const [closure2, setClosure2] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
   const IP = CONFIG.API_URL;
   const leadId = lead?._id;
-
-  useEffect(() => {
-    if (lead?.closure1) {
-      const existingUser = users.find(u => u.email === lead.closure1);
-      setClosure1(existingUser?._id || '');
-    }
-    if (lead?.closure2) {
-      const existingUser = users.find(u => u.email === lead.closure2);
-      setClosure2(existingUser?._id || '');
-    }
-  }, [lead, users]);
 
   useEffect(() => {
     fetch(`${IP}/users/getAllUsers`)
@@ -31,7 +21,18 @@ function FollowUpPopup({ onClose, lead }) {
       });
   }, []);
 
-  const handleAssign = () => {
+  useEffect(() => {
+    if (lead?.closure1) {
+      const user1 = users.find(u => u.email === lead.closure1);
+      if (user1) setClosure1(user1._id);
+    }
+    if (lead?.closure2) {
+      const user2 = users.find(u => u.email === lead.closure2);
+      if (user2) setClosure2(user2._id);
+    }
+  }, [lead, users]);
+
+  const handleAssign = async () => {
     if (!closure1 && closure2) {
       setErrorMsg('Please select Closure 1 first');
       return;
@@ -43,16 +44,22 @@ function FollowUpPopup({ onClose, lead }) {
 
     if (Object.keys(payload).length === 0) return;
 
-    fetch(`${IP}/leads/assign/${leadId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    })
-      .then(res => res.json())
-      .then(() => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${IP}/leads/assign/${leadId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
         setErrorMsg('');
         setShowSuccess(true);
-      });
+      }
+    } catch (err) {
+      console.error('Error assigning follow-up:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -77,10 +84,7 @@ function FollowUpPopup({ onClose, lead }) {
             >
               <option value="">-- Choose User --</option>
               {users.map(user => (
-                <option
-                  key={user._id}
-                  value={user._id}
-                >
+                <option key={user._id} value={user._id}>
                   {user.firstName + ' ' + user.lastName} ({user.role === 1 ? 'Admin' : 'Sales'})
                 </option>
               ))}
@@ -108,15 +112,20 @@ function FollowUpPopup({ onClose, lead }) {
           <div className="flex justify-end gap-4 pt-4">
             <button
               onClick={onClose}
+              disabled={loading}
               className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-100 transition"
             >
               Cancel
             </button>
             <button
               onClick={handleAssign}
-              className="bg-clr1 text-white px-5 py-2 text-sm rounded shadow hover:bg-clr1/90 transition"
+              disabled={loading}
+              className="bg-clr1 text-white px-5 py-2 text-sm rounded shadow hover:bg-clr1/90 transition flex items-center gap-2"
             >
-              Assign
+              {loading && (
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              )}
+              {loading ? 'Assigning...' : 'Assign'}
             </button>
           </div>
         </div>

@@ -16,3 +16,4 @@ export {default as OperationDashbaord} from './OperationDashboard';
 export {default as TicketDashboard} from './TicketDashboard';
 export {default as MyClient} from './MyClient';
 export {default as DataPage} from './DataPage';
+export {default as Attendance} from './Attendance';

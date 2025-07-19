@@ -20,6 +20,7 @@ function EditUserForm({ onClose, reload, userData }) {
 
   const [previewImage, setPreviewImage] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
   const IP = CONFIG.API_URL;
 
@@ -76,65 +77,71 @@ function EditUserForm({ onClose, reload, userData }) {
   };
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  setLoading(true);
 
-    const {
-      firstName, lastName, email, designation, contact, role,
-      password, confirmPassword
-    } = formData;
+  const {
+    firstName, lastName, email, designation, contact, role,
+    password, confirmPassword
+  } = formData;
 
-    if (!firstName || !lastName || !email || !designation || !contact || !role) {
-      setError('Please fill all required fields');
-      return;
-    }
+  if (!firstName || !lastName || !email || !designation || !contact || !role) {
+    setError('Please fill all required fields');
+    setLoading(false);
+    return;
+  }
 
-    if (password && !validatePassword(password)) {
-      setError('Password must be at least 8 characters and include a special character');
-      return;
-    }
+  if (password && !validatePassword(password)) {
+    setError('Password must be at least 8 characters and include a special character');
+    setLoading(false);
+    return;
+  }
 
-    if (password && password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+  if (password && password !== confirmPassword) {
+    setError('Passwords do not match');
+    setLoading(false);
+    return;
+  }
 
-    const roleMap = {
-      "Manager": 1,
-      "Sales Closure": 2,
-      "Lead Gen": 3,
-      "Operation Agent": 4
-    };
-
-    const payload = new FormData();
-    payload.append('firstName', firstName);
-    payload.append('lastName', lastName);
-    payload.append('email', email);
-    payload.append('designation', designation);
-    payload.append('contact', contact);
-    payload.append('role', roleMap[role] || parseInt(role));
-    if (password) payload.append('password', password);
-    if (formData.cnic) payload.append('cnic', formData.cnic);
-    if (formData.accountNo) payload.append('accountNo', formData.accountNo);
-    if (formData.achademics) payload.append('achademics', formData.achademics);
-    if (formData.profilePic) payload.append('profilePic', formData.profilePic);
-
-    try {
-      const res = await fetch(`${IP}/users/editUser/${userData._id}`, {
-        method: 'PUT',
-        body: payload
-      });
-
-      if (res.ok) {
-        onClose();
-        if (reload) reload();
-      } else {
-        setError('Failed to update user');
-      }
-    } catch (err) {
-      console.error(err);
-      setError('Server error');
-    }
+  const roleMap = {
+    "Manager": 1,
+    "Sales Closure": 2,
+    "Lead Gen": 3,
+    "Operation Agent": 4
   };
+
+  const payload = new FormData();
+  payload.append('firstName', firstName);
+  payload.append('lastName', lastName);
+  payload.append('email', email);
+  payload.append('designation', designation);
+  payload.append('contact', contact);
+  payload.append('role', roleMap[role] || parseInt(role));
+  if (password) payload.append('password', password);
+  if (formData.cnic) payload.append('cnic', formData.cnic);
+  if (formData.accountNo) payload.append('accountNo', formData.accountNo);
+  if (formData.achademics) payload.append('achademics', formData.achademics);
+  if (formData.profilePic) payload.append('profilePic', formData.profilePic);
+
+  try {
+    const res = await fetch(`${IP}/users/editUser/${userData._id}`, {
+      method: 'PUT',
+      body: payload
+    });
+
+    if (res.ok) {
+      onClose();
+      if (reload) reload();
+    } else {
+      setError('Failed to update user');
+    }
+  } catch (err) {
+    console.error(err);
+    setError('Server error');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
@@ -245,14 +252,18 @@ function EditUserForm({ onClose, reload, userData }) {
           <div className="grid grid-cols-2 gap-2 pt-1">
             <button
               type="submit"
-              className="w-full bg-clr1 text-white py-1 rounded-md hover:bg-orange-700 transition text-sm"
+              disabled={loading}
+              className={`w-full py-1 rounded-md text-sm text-white transition ${
+                loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-clr1 hover:bg-orange-700'
+              }`}
             >
-              Update Employee
+              {loading ? 'Updating...' : 'Update Employee'}
             </button>
 
             <button
               type="button"
               onClick={onClose}
+              disabled={loading}
               className="w-full text-xs text-gray-500 border py-1 rounded-md hover:bg-gray-100 transition"
             >
               Cancel

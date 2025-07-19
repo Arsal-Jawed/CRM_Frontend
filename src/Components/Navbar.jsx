@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { FiBell, FiSettings, FiSearch, FiMessageSquare, FiCalendar } from 'react-icons/fi';
-import { FaUser } from 'react-icons/fa';
+import { FiCalendar, FiMessageSquare, FiSearch, FiSettings, FiBell, 
+  FiUsers, FiBarChart2, FiUserCheck, FiFileText,FiTrendingUp,FiDatabase } from 'react-icons/fi';
+import { FaRegAddressCard, FaUserTie, FaUser } from 'react-icons/fa';
 import CONFIG from '../Configuration';
 
 const Navbar = ({onNavigate}) => {
@@ -13,6 +14,32 @@ const Navbar = ({onNavigate}) => {
   const email = user?.email;
   const profilePic = user?.profilePic?.trim() ? user.profilePic : null;
   const IP = CONFIG.API_URL;
+
+  const roleIconMap = {
+  1: [ // Admin
+    { icon: FiTrendingUp, label: 'Leads', page: 'leads' },
+    { icon: FiUsers, label: 'Teams', page: 'teams' },
+    { icon: FiBarChart2, label: 'Performance', page: 'performance' },
+    { icon: FaRegAddressCard, label: 'Clients', page: 'myclient' },
+    { icon: FiUserCheck, label: 'Attendance', page: 'attendance' },
+    { icon: FiDatabase, label: 'Data', page: 'data' }
+  ],
+  2: [ // Team Lead
+    { icon: FaUserTie, label: 'Clients', page: 'clients' },
+    { icon: FiDatabase, label: 'Data', page: 'data' }
+  ],
+  3: [ // Agent
+    { icon: FiDatabase, label: 'Data', page: 'data' }
+  ],
+  4: [ // Support / Ops
+    { icon: FiFileText, label: 'Tickets', page: 'ticket-dashboard' },
+    { icon: FaUserTie, label: 'Clients', page: 'clients' },
+    { icon: FiSearch, label: 'Data', page: 'data' }
+  ]
+};
+
+const extraIcons = roleIconMap[user?.role] || [];
+
 
   const fetchNotifications = async () => {
     if (!email) return;
@@ -43,7 +70,7 @@ const Navbar = ({onNavigate}) => {
     <div className="w-full h-16 bg-white shadow flex items-center justify-between px-6 border-b">
       <h1 className="text-2xl font-bold text-orange-600">CallSid CRM</h1>
 
-      <div className="flex gap-6 text-gray-500 text-xl relative">
+      <div className="flex gap-6 text-gray-500 text-xl relative ml-[8vw]">
         <div className="relative group">
           <FiMessageSquare className="hover:text-orange-500 cursor-pointer transition-colors" />
           {unseenCount > 0 && (
@@ -71,6 +98,18 @@ const Navbar = ({onNavigate}) => {
             <p className="text-xs text-gray-400 mt-1">Last checked: {lastChecked?.toLocaleTimeString()}</p>
           </div>
         </div>
+        {extraIcons.map(({ icon: Icon, label, page }, idx) => (
+          <div
+            key={idx}
+            className="relative group cursor-pointer"
+            onClick={() => onNavigate(page)}
+          >
+            <Icon className="hover:text-orange-500 transition-colors" />
+            <div className="absolute hidden group-hover:block right-0 top-full mt-2 w-max bg-white shadow-lg rounded-md p-2 z-50 whitespace-nowrap">
+              <p className="text-xs text-gray-600">{label}</p>
+            </div>
+          </div>
+        ))}
         <FiBell className="hover:text-orange-500 cursor-pointer transition-colors" />
         <FiSettings className="hover:text-orange-500 cursor-pointer transition-colors" />
       </div>
