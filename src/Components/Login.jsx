@@ -15,6 +15,7 @@ const Login = () => {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
+  
   const res = await fetch(`${IP}/users/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -25,7 +26,17 @@ const handleSubmit = async (e) => {
 
   if (res.ok) {
     localStorage.setItem('user', JSON.stringify(data.user));
-    console.log(data.user);
+
+    try {
+      await fetch(`${IP}/attendance/mark`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: data.user.email })
+      });
+    } catch (err) {
+      console.error('Attendance marking failed:', err);
+    }
+
     navigate('/dashboard');
   } else {
     alert(data.error || 'Login failed');
@@ -35,14 +46,6 @@ const handleSubmit = async (e) => {
   return (
     <div className="w-[30vw] p-8 bg-white rounded-xl shadow-2xl border border-orange-100">
       <div className="flex justify-center mb-6">
-        {/* <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center shadow-md">
-            <FaChartLine className="text-white text-2xl" />
-          </div>
-          <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center">
-            <FiArrowRight className="text-white text-xs" />
-          </div>
-        </div> */}
         <img src='/logo.PNG' className='w-[6vw] h-[6vw]'/>
       </div>
 

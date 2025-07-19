@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Sidebar, NotificationCard } from '../Components';
-import {NotificationContainer,LeadDashboard,Profile,Accounts,LeadAdmin,Schedules,Teams,FollowUp,MessagePage,Clients,MyTeam,Performance,OperationDashbaord,TicketDashboard,MyClient,DataPage} from './index';
+import {NotificationContainer,LeadDashboard,Profile,Accounts,LeadAdmin,Schedules,Teams,FollowUp,MessagePage,Clients,MyTeam,Performance,OperationDashbaord,TicketDashboard,MyClient,DataPage,Attendance} from './index';
 import CONFIG from '../Configuration';
 
 const Dashboard = () => {
@@ -23,7 +23,6 @@ const Dashboard = () => {
         case 5: setActivePage('accounts'); break;
         default: setActivePage('profile');
       }
-console.log(`${CONFIG}/schedules/scheduler/${parsedUser.email}`);
       fetch(`${IP}/schedules/scheduler/${parsedUser.email}`)
   .then(res => res.json())
   .then(data => {
@@ -32,8 +31,6 @@ console.log(`${CONFIG}/schedules/scheduler/${parsedUser.email}`);
       item.schedule_date?.slice(0, 10) === todayStr
     );
     setNotifications(todays);
-    console.log('Fetched schedules:', data);
-    console.log('Today\'s notifications:', todays);
   })
   .catch(err => console.error('Schedule fetch error:', err));
 
@@ -60,10 +57,22 @@ console.log(`${CONFIG}/schedules/scheduler/${parsedUser.email}`);
       case 'ticket-dashboard': return <TicketDashboard />;
       case 'myclient': return <MyClient/>;
       case 'data': return <DataPage/>;
+      case 'attendance': return <div><Attendance/></div>;
       case 'logout':
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (user?.email) {
+          fetch(`${IP}/attendance/checkout`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email })
+          }).catch((err) => console.error('Checkout failed:', err));
+        }
+
         localStorage.clear();
         window.location.href = '/';
         return null;
+
       default: return <LeadDashboard />;
     }
   };
@@ -81,27 +90,8 @@ console.log(`${CONFIG}/schedules/scheduler/${parsedUser.email}`);
           <div className="flex-1 p-2 overflow-y-auto bg-gray-50">
             {renderContent()}
           </div>
-          {/* {user.role === 1 &&
-            !['followup','clients','myclient'].includes(activePage) &&(
-              <div className="absolute right-[2vw] top-[2vh] bg-transparent w-[28vw] h-[60vh] z-20 p-4 overflow-y-auto space-y-3">
-            {notifications.map(n => (
-              <NotificationCard
-                key={n._id}
-                message={n.message || n.details || 'Scheduled task'}
-                timestamp={new Date(n.schedule_date).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
-                scheduleId={n.id}
-                onMark={() =>
-                  setNotifications(prev => prev.filter(i => i._id !== n._id))
-                }
-              />
-            ))}
-          </div>
-            )} */}
           {user.role === 1 &&
-            !['followup', 'messages', 'clients','myclient','ticket-dashboard'].includes(activePage) && (
+            !['followup', 'messages', 'clients','myclient','ticket-dashboard','attendance'].includes(activePage) && (
               <div className="p-4 bg-gray-50">
                 <NotificationContainer />
               </div>

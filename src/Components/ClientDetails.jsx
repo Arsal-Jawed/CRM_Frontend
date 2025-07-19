@@ -243,7 +243,7 @@ function ClientDetails({ client, onUpdate }) {
       )}
 
       {showDocForm && (
-        <DocForm clientId={client._id} onClose={() => setShowDocForm(false)} onUploaded={onUpdate} />
+        <DocForm clientId={client.lead_id} onClose={() => setShowDocForm(false)} onUploaded={onUpdate} />
       )}
 
       {showRemarksForm && (

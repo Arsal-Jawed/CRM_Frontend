@@ -69,7 +69,7 @@ function ClientForm({ onComplete }) {
   });
 
   const requiredDocs = ['Driving License', 'Application Form', 'Void Check'];
-  const [availableDocs, setAvailableDocs] = useState([...requiredDocs, 'Business License', 'Agreement Form']);
+  const [availableDocs, setAvailableDocs] = useState([...requiredDocs, 'Business License', 'Agreement Form','IRS']);
   const [uploadedDocs, setUploadedDocs] = useState([]);
   const [selectedDoc, setSelectedDoc] = useState('');
   const [file, setFile] = useState(null);

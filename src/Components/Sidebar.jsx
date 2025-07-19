@@ -14,6 +14,7 @@ import {
   FiDatabase,
   FiList,
   FiUsers as FiMyTeam,
+  FiFileText,
   FiFolderPlus
 } from 'react-icons/fi';
 
@@ -21,18 +22,15 @@ const menuByRole = {
   1: [
     { label: 'Accounts', icon: FiUserCheck, key: 'accounts' },
     { label: 'Leads', icon: FiTrendingUp, key: 'leads' },
-    { label: 'Teams', icon: FiUsers, key: 'teams' },
     { label: 'Messages', icon: FiMessageSquare, key: 'messages' },
-    { label: 'Performance', icon: FiBarChart2, key: 'performance' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
     { label: 'Clients', icon: FiBriefcase, key: 'myclient' },
-    { label: 'TicketDashboard', icon: FiDatabase, key: 'ticket-dashboard' },
-    { label: 'Follow Ups', icon: FiRepeat, key: 'followup' },
-    { label: 'Data', icon: FiFolderPlus, key: 'data' }
+    { label: 'Tickets', icon: FiFileText, key: 'ticket-dashboard' },
+    { label: 'Follow Ups', icon: FiRepeat, key: 'followup' }
   ],
   2: [
     { label: 'Assigned Leads', icon: FiTrendingUp, key: 'assigned-leads' },
-    { label: 'Data', icon: FiFolderPlus, key: 'data' },
+    { label: 'Data', icon: FiDatabase, key: 'data' },
     { label: 'MyTeam', icon: FiUsers, key: 'myteam' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
     { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
@@ -42,25 +40,25 @@ const menuByRole = {
     { label: 'Lead Dashboard', icon: FiList, key: 'lead-dashboard' },
     { label: 'MyTeam', icon: FiUsers, key: 'myteam' },
     { label: 'Messages', icon: FiMessageSquare, key: 'messages' },
-    { label: 'Data', icon: FiFolderPlus, key: 'data' },
+    { label: 'Data', icon: FiDatabase, key: 'data' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
   ],
   4: [
     { label: 'OperationDashboard', icon: FiGrid, key: 'operation-dashboard' },
-    { label: 'TicketDashboard', icon: FiDatabase, key: 'ticket-dashboard' },
+    { label: 'Tickets', icon: FiFileText, key: 'ticket-dashboard' },
     { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
     { label: 'Messages', icon: FiMessageSquare, key: 'messages' },
-    { label: 'Data', icon: FiFolderPlus, key: 'data' }
+    { label: 'Data', icon: FiDatabase, key: 'data' }
   ],
   5: [
     { label: 'Accounts', icon: FiUserCheck, key: 'accounts' },
     { label: 'OperationDashboard', icon: FiGrid, key: 'operation-dashboard' },
-    { label: 'TicketDashboard', icon: FiDatabase, key: 'ticket-dashboard' },
+    { label: 'Tickets', icon: FiFileText, key: 'ticket-dashboard' },
     { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
     { label: 'Messages', icon: FiMessageSquare, key: 'messages' },
-    { label: 'Data', icon: FiFolderPlus, key: 'data' }
+    { label: 'Data', icon: FiDatabase, key: 'data' }
   ]
 };
 
@@ -80,15 +78,19 @@ const Sidebar = ({ role, onSelect, active }) => {
         const isActive = active === item.key;
 
         return (
+          <div key={item.key} className="flex flex-col items-center">
           <button
-            key={item.key}
             onClick={() => onSelect(item.key)}
-            className={`group flex items-center justify-center w-10 h-12 rounded-full transition-all duration-300 
-              ${isActive ? 'bg-white text-clr1 scale-125' : 'text-white'} 
+            className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 
+              ${isActive ? 'bg-white text-clr1 scale-110' : 'text-white'} 
               hover:bg-white hover:text-clr1`}
           >
-            <Icon className="text-2xl" />
+            <Icon className="text-[2vw]" />
           </button>
+          <span className={`text-[0.7rem] font-medium ${isActive ? 'text-white' : 'text-white/70'}`}>
+            {item.label}
+          </span>
+        </div>
         );
       })}
     </div>

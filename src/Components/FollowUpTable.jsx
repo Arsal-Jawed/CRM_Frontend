@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaSearch, FaFilter, FaPlus, FaCalendarPlus, FaEdit } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaPlus, FaCalendarPlus, FaEdit,FaSpinner } from 'react-icons/fa';
 import CONFIG from '../Configuration';
 import { LeadForm, FollowUpModal,LeadEditForm } from './index.js';
 
@@ -10,6 +10,7 @@ function FollowUpTable({ onSelectClient, setCalls }) {
   const [showForm, setShowForm] = useState(false);
   const [editLead, setEditLead] = useState(null);
   const [selectedLead, setSelectedLead] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const email = JSON.parse(localStorage.getItem('user')).email;
   const IP = CONFIG.API_URL;
@@ -17,12 +18,15 @@ function FollowUpTable({ onSelectClient, setCalls }) {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
+        setLoading(true);
         const response = await fetch(`${IP}/leads/getByClosure/${email}`);
         if (!response.ok) throw new Error('Failed to fetch leads');
         const data = await response.json();
         setLeads(data);
       } catch (error) {
         console.error('Error fetching leads:', error.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchLeads();
@@ -118,53 +122,43 @@ function FollowUpTable({ onSelectClient, setCalls }) {
           </tr>
         </thead>
         <tbody className="bg-white text-gray-800 divide-y divide-gray-100">
-          {filtered.map((lead, index) => (
-            <tr
-              key={lead._id}
-              className="hover:bg-gray-50 transition cursor-pointer"
-              onClick={() => handleClick(lead)}
-              tabIndex={0}
-            >
-              <td className="px-2 py-2">{index + 1}</td>
-              <td className="px-2 py-2">
-                <div className="font-medium">{lead.person_name}</div>
-                <div className="text-[10px] text-gray-500">{lead.business_name}</div>
-              </td>
-              <td className="px-2 py-2">{lead.personal_email}</td>
-              <td className="px-2 py-2">{lead.contact}</td>
-              <td className="px-2 py-2">{getBadge(lead.status)}</td>
-              <td className="px-2 py-2">{lead.date}</td>
-              <td className="px-2 py-2 flex gap-2 items-center">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedLead(lead);
-                  }}
-                  className="text-clr1 hover:text-orange-700"
-                  title="Schedule Follow-up"
-                >
-                  <FaCalendarPlus />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditLead(lead);
-                  }}
-                  className="text-blue-500 hover:text-blue-700"
-                  title="Edit Lead"
-                >
-                  <FaEdit />
-                </button>
-              </td>
-            </tr>
-          ))}
-          {filtered.length === 0 && (
+          {loading ? (
             <tr>
-              <td colSpan="7" className="text-center py-4 text-gray-400">No leads found</td>
+              <td colSpan="7" className="text-center py-6">
+                <FaSpinner className="animate-spin text-clr1 text-lg mx-auto" />
+              </td>
             </tr>
+          ) : (
+            <>
+              {filtered.map((lead, index) => (
+                <tr key={lead._id} className="hover:bg-gray-50 transition cursor-pointer" onClick={() => handleClick(lead)} tabIndex={0}>
+                  <td className="px-2 py-2">{index + 1}</td>
+                  <td className="px-2 py-2">
+                    <div className="font-medium">{lead.person_name}</div>
+                    <div className="text-[10px] text-gray-500">{lead.business_name}</div>
+                  </td>
+                  <td className="px-2 py-2">{lead.personal_email}</td>
+                  <td className="px-2 py-2">{lead.contact}</td>
+                  <td className="px-2 py-2">{getBadge(lead.status)}</td>
+                  <td className="px-2 py-2">{lead.date}</td>
+                  <td className="px-2 py-2 flex gap-2 items-center">
+                    <button onClick={(e) => { e.stopPropagation(); setSelectedLead(lead); }} className="text-clr1 hover:text-orange-700" title="Schedule Follow-up">
+                      <FaCalendarPlus />
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); setEditLead(lead); }} className="text-blue-500 hover:text-blue-700" title="Edit Lead">
+                      <FaEdit />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="text-center py-4 text-gray-400">No leads found</td>
+                </tr>
+              )}
+            </>
           )}
         </tbody>
-
       </table>
     </div>
       {showForm && (
