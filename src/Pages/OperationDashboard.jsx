@@ -82,7 +82,7 @@ function OperationDashboard() {
         </div>
 
         {/* Sales List */}
-        <div className="overflow-y-auto h-[calc(100%-110px)] group-hover:overflow-y-auto space-y-3 pr-2">
+        <div className="overflow-hidden h-[calc(100%-110px)] group-hover:overflow-y-auto space-y-3 pr-2">
           {filteredSales.length > 0 ? (
             filteredSales.map((sale) => (
               <SaleCard

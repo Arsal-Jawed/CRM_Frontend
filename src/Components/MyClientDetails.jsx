@@ -78,7 +78,7 @@ function MyClientDetails({ client }) {
               <div>
                 <h2 className="text-[1.1vw] font-semibold text-gray-800 flex items-center">
                   <FiUser className="mr-2 text-clr1" />
-                  {client.person_name} {'('+client.legal_name+')'}
+                  {client.person_name} {client.legal_name ? `(${client.legal_name})` : ''}
                 </h2>
                 <p className="text-gray-600 text-[0.9vw] flex items-center mt-1">
                   <FiBriefcase className="mr-2 text-clr2" />

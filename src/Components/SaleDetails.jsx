@@ -199,11 +199,8 @@ const handleApplicationStatusUpdate = async (status) => {
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <Detail label="Submit Date" value={formatDate(sale.sale.submitDate)} />
-            <Detail label="Marked Submitted By" value={sale.sale.submitBy} />
             <Detail label="Approve Date" value={formatDate(sale.sale.approveDate)} />
-            <Detail label="Marked Approved By" value={sale.sale.approveBy} />
             <Detail label="Delivered Date" value={formatDate(sale.deliveredDate)} />
-            <Detail label="Marked Delivered By" value={sale.sale.deliveredBy} />
             <Detail label="Activation Date" value={formatDate(sale.activationDate)} />
             <Detail label="Marked Activated By" value={sale.sale.activatedBy} />
           </div>
@@ -231,9 +228,8 @@ const handleApplicationStatusUpdate = async (status) => {
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <Detail label="Lease Submit Date" value={formatDate(sale.sale.leaseSubmitDate)} />
-            <Detail label="Marked Submitted By" value={sale.sale.leaseSubmitBy} />
             <Detail label="Approval Status Update Date" value={formatDate(sale.sale.leaseApprovalDate)} />
-            <Detail label="Approval Status Updated By" value={sale.sale.leaseApprovedBy} />
+            <Detail label="Leasing Company" value={sale.sale.leasingCompany} />
           </div>
           
           <div className="col-span-2 pt-4 mt-2">
@@ -255,6 +251,7 @@ const handleApplicationStatusUpdate = async (status) => {
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <Detail label="Client Name" value={lead.person_name} />
+            <Detail label="Legal Name" value={lead.legal_name} />
             <Detail label="Personal Email" value={lead.personal_email} />
             <Detail label="Contact" value={lead.contact} />
             <Detail label="DOB" value={formatDate(lead.dob)} />
@@ -275,12 +272,9 @@ const handleApplicationStatusUpdate = async (status) => {
             <Detail label="Business Name" value={lead.business_name} />
             <Detail label="Business Email" value={lead.business_email} />
             <Detail label="Business Contact" value={lead.business_contact} />
-            <Detail label="Business Role" value={lead.businessRole} />
-            <Detail label="Years in Business" value={lead.yearsInBusiness} />
-            <Detail label="Incorporate State" value={lead.incorporateState} />
-            <Detail label="Locations" value={lead.locations} />
-            <Detail label="Sale Type" value={lead.saleType} />
-            <Detail label="Sale Closed On" value={formatDate(lead.saleCloseDateTime)} />
+            <Detail label="Designation" value={lead.businessRole} />
+            <Detail label="Established" value={lead.established} />
+            <Detail label="Business Address" value={lead.business_address} />
           </div>
         </div>
 
@@ -293,7 +287,6 @@ const handleApplicationStatusUpdate = async (status) => {
             <Detail label="Bank Name" value={lead.bankName} />
             <Detail label="RTN" value={lead.rtn} />
             <Detail label="Account #" value={lead.accountNumber} />
-            <Detail label="Account Type" value={lead.accountType} />
           </div>
         </div>
         <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition">
