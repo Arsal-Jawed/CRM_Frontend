@@ -16,6 +16,7 @@ function LeadForm({ onClose }) {
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState('');
   const IP = CONFIG.API_URL;
   const user = JSON.parse(localStorage.getItem('user'));
   const email = user.email;
@@ -26,6 +27,7 @@ function LeadForm({ onClose }) {
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: null }));
     }
+    if (serverError) setServerError('');
   };
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -49,7 +51,7 @@ function LeadForm({ onClose }) {
     return Object.keys(newErrors).length === 0;
   };
 
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   if (!validateForm()) return;
 
@@ -74,21 +76,20 @@ function LeadForm({ onClose }) {
       headers: { 'Content-Type': 'application/json' }
     });
 
+    const result = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to create lead');
+      throw new Error(result.error || 'Failed to create lead');
     }
 
     alert(`Lead created successfully!\nClient: ${formData.clientName}`);
     onClose();
   } catch (error) {
-    alert(`Error: ${error.message}`);
-    console.error('Error creating lead:', error);
+    setServerError(error.message || 'Something went wrong');
   } finally {
     setLoading(false);
   }
 };
-
 
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-30 backdrop-blur-sm">
@@ -185,7 +186,9 @@ function LeadForm({ onClose }) {
           {Object.keys(errors).length > 0 && (
             <p className="text-red-500 text-xs text-right mt-1">Please fill all required fields correctly</p>
           )}
-
+          {serverError && (
+            <p className="text-xs text-red-500 text-right font-medium">{serverError}</p>
+          )}
           <div className="flex justify-end space-x-2 pt-2">
           <button
             type="button"

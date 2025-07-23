@@ -1,58 +1,108 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiUser, FiLock, FiArrowRight, FiHelpCircle } from 'react-icons/fi';
-import { FaChartLine } from 'react-icons/fa';
 import CONFIG from '../Configuration';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
+  const [countdown, setCountdown] = useState('');
+  
   const navigate = useNavigate();
-
   const IP = CONFIG.API_URL;
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  const res = await fetch(`${IP}/users/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  });
+  useEffect(() => {
+    const timer = setInterval(() => {
+      updateCountdown();
+    }, 1000);
 
-  const data = await res.json();
+    return () => clearInterval(timer);
+  }, []);
 
-  if (res.ok) {
-    localStorage.setItem('user', JSON.stringify(data.user));
+  const updateCountdown = () => {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentTime = now.getTime();
 
-    try {
-      await fetch(`${IP}/attendance/mark`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: data.user.email })
-      });
-    } catch (err) {
-      console.error('Attendance marking failed:', err);
-    }
+  const today = new Date();
+  const sevenPM = new Date(today.setHours(19, 0, 0, 0));  // 7:00 PM today
+  const ninePM = new Date(today.setHours(21, 0, 0, 0));   // 9:00 PM today
+  const midnight = new Date(today.setHours(23, 59, 59, 999));  // 11:59:59 PM today
 
-    navigate('/dashboard');
+  // Set 7PM of today or yesterday based on current time
+  const nextSevenPM = new Date();
+  if (currentHour < 19) {
+    nextSevenPM.setHours(19, 0, 0, 0); // today 7PM
   } else {
-    alert(data.error || 'Login failed');
+    nextSevenPM.setDate(nextSevenPM.getDate() + 1);
+    nextSevenPM.setHours(19, 0, 0, 0); // tomorrow 7PM
+  }
+
+  if (currentHour >= 19 && currentHour < 21) {
+    // Between 7PM and 9PM
+    const diff = ninePM - now;
+    const hrs = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+    setCountdown(`Attendance window will open in ${hrs} hrs ${mins} minutes ${secs} seconds`);
+  } 
+  else if (currentHour >= 21 && currentTime <= midnight.getTime()) {
+    // 9PM to 11:59 PM
+    setCountdown('Attendance window is open');
+  } 
+  else if (currentHour >= 0 && currentHour < 19) {
+    // From midnight till 7PM
+    setCountdown('Attendance window closed, contact the HR manager');
+  } 
+  else if (currentHour >= 19 && currentHour >= 21) {
+    // After 9PM till midnight
+    setCountdown('Attendance window is open');
   }
 };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const res = await fetch(`${IP}/users/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      try {
+        await fetch(`${IP}/attendance/mark`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: data.user.email })
+        });
+      } catch (err) {
+        console.error('Attendance marking failed:', err);
+      }
+
+      navigate('/dashboard');
+    } else {
+      alert(data.error || 'Login failed');
+    }
+  };
 
   return (
     <div className="w-[30vw] p-8 bg-white rounded-xl shadow-2xl border border-orange-100">
       <div className="flex justify-center mb-6">
-        <img src='/logo.PNG' className='w-[6vw] h-[6vw]'/>
+        <img src='/logo.PNG' className='w-[6vw] h-[6vw]' alt="Logo" />
       </div>
 
       <h2 className="text-3xl font-bold text-center text-orange-600 mb-2">CallSid CRM</h2>
       <p className="text-center text-orange-400 mb-8">Sales Performance Dashboard</p>
 
       <form onSubmit={handleSubmit}>
+        {/* Email Input */}
         <div className="mb-5">
           <div className="flex items-center mb-2">
             <FiUser className="text-orange-500 mr-2" />
@@ -72,6 +122,7 @@ const handleSubmit = async (e) => {
           </div>
         </div>
 
+        {/* Password Input */}
         <div className="mb-5">
           <div className="flex items-center mb-2">
             <FiLock className="text-orange-500 mr-2" />
@@ -93,17 +144,17 @@ const handleSubmit = async (e) => {
 
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="showPassword"
-            className="mr-2 accent-orange-500"
-            checked={showPassword}
-            onChange={() => setShowPassword(!showPassword)}
-          />
-          <label htmlFor="showPassword" className="text-sm text-orange-600">Show Password</label>
-        </div>
+            <input
+              type="checkbox"
+              id="showPassword"
+              className="mr-2 accent-orange-500"
+              checked={showPassword}
+              onChange={() => setShowPassword(!showPassword)}
+            />
+            <label htmlFor="showPassword" className="text-sm text-orange-600">Show Password</label>
+          </div>
 
-                  <a href="#" className="text-sm text-orange-500 hover:text-orange-700 flex items-center">
+          <a href="#" className="text-sm text-orange-500 hover:text-orange-700 flex items-center">
             <FiHelpCircle className="mr-1" /> Forgot password?
           </a>
         </div>
@@ -114,6 +165,19 @@ const handleSubmit = async (e) => {
         >
           Sign In <FiArrowRight className="ml-2" />
         </button>
+
+        {/* Timer Display */}
+        {countdown && (
+          <p
+            className={`text-center text-[0.9vw] mt-1 ${
+              countdown.includes('will open') ? 'text-[clr1]' :
+              countdown.includes('closed') ? 'text-red-500' :
+              'text-green-500'
+            }`}
+          >
+            {countdown}
+          </p>
+        )}
       </form>
     </div>
   );

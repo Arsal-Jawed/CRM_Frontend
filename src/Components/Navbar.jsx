@@ -35,6 +35,12 @@ const Navbar = ({onNavigate}) => {
     { icon: FiFileText, label: 'Tickets', page: 'ticket-dashboard' },
     { icon: FaUserTie, label: 'Clients', page: 'clients' },
     { icon: FiSearch, label: 'Data', page: 'data' }
+  ],
+  5: [ // Support / Ops
+    { icon: FiFileText, label: 'Tickets', page: 'ticket-dashboard' },
+    { icon: FaUserTie, label: 'Clients', page: 'clients' },
+    { icon: FiSearch, label: 'Data', page: 'data' },
+    { icon: FiUserCheck, label: 'Attendance', page: 'attendance' },
   ]
 };
 

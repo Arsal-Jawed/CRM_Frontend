@@ -15,7 +15,8 @@ function EditUserForm({ onClose, reload, userData }) {
     cnic: '',
     accountNo: '',
     achademics: '',
-    profilePic: null
+    profilePic: null,
+    joining_date: ''
   });
 
   const [previewImage, setPreviewImage] = useState(null);
@@ -35,13 +36,17 @@ function EditUserForm({ onClose, reload, userData }) {
         role: userData.role === 1 ? 'Manager' : 
               userData.role === 2 ? 'Sales Closure' : 
               userData.role === 3 ? 'Lead Gen' : 
-              userData.role === 4 ? 'Operation Agent' : '',
+              userData.role === 4 ? 'Operation Agent' :
+              userData.role === 5 ? 'HR Manager' : 
+              userData.role === 6 ? 'Team Lead' :'',
         password: '',
         confirmPassword: '',
         cnic: userData.cnic || '',
         accountNo: userData.accountNo || '',
         achademics: userData.achademics || '',
-        profilePic: null
+        profilePic: null,
+        joining_date: userData.joining_date ? userData.joining_date.split('T')[0] : '',
+
       });
       
       if (userData.profilePic) {
@@ -107,7 +112,9 @@ function EditUserForm({ onClose, reload, userData }) {
     "Manager": 1,
     "Sales Closure": 2,
     "Lead Gen": 3,
-    "Operation Agent": 4
+    "Operation Agent": 4,
+    "HR Manager": 5,
+    "Team Lead": 6
   };
 
   const payload = new FormData();
@@ -122,6 +129,7 @@ function EditUserForm({ onClose, reload, userData }) {
   if (formData.accountNo) payload.append('accountNo', formData.accountNo);
   if (formData.achademics) payload.append('achademics', formData.achademics);
   if (formData.profilePic) payload.append('profilePic', formData.profilePic);
+  if (formData.joining_date) payload.append('joining_date', formData.joining_date);
 
   try {
     const res = await fetch(`${IP}/users/editUser/${userData._id}`, {
@@ -190,11 +198,30 @@ function EditUserForm({ onClose, reload, userData }) {
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-2">
           <div className="flex items-center border rounded-md px-2 py-1 text-sm">
             <FaEnvelope className="text-gray-400 mr-1 text-xs" />
-            <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} className="w-full outline-none text-xs" />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full outline-none text-xs"
+            />
           </div>
-
+          <div className="flex items-center border rounded-md px-2 py-1 text-sm">
+            <FaBriefcase className="text-gray-400 mr-1 text-xs" />
+            <input
+              type="date"
+              name="joining_date"
+              placeholder="Joining Date"
+              value={formData.joining_date}
+              onChange={handleChange}
+              className="w-full outline-none text-xs"
+            />
+          </div>
+        </div>
           <div className="grid grid-cols-2 gap-2">
             <div className="flex items-center border rounded-md px-2 py-1 text-sm">
               <FaLock className="text-gray-400 mr-1 text-xs" />
@@ -221,6 +248,8 @@ function EditUserForm({ onClose, reload, userData }) {
                 <option value="Sales Closure">Sales Closure</option>
                 <option value="Lead Gen">Lead Gen</option>
                 <option value="Operation Agent">Operation Agent</option>
+                <option value="HR Manager">HR Manager</option>
+                <option value="Team Lead">Team Lead</option>
               </select>
             </div>
           </div>

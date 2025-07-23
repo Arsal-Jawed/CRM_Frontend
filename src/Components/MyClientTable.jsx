@@ -116,8 +116,8 @@ function MyClientTable({ clients, onSelect }) {
               <th className="px-2 py-2 text-left">Name</th>
               <th className="px-2 py-2 text-left">Email</th>
               <th className="px-2 py-2 text-left">Business Email</th>
-              <th className="px-2 py-2 text-left">Contact</th>
-              <th className="px-2 py-2 text-left">Rating</th>
+              {/* <th className="px-2 py-2 text-left">Contact</th> */}
+              <th className="px-2 py-2 text-left">Date</th>
               <th className="px-2 py-2 text-left">Status</th>
             </tr>
           </thead>
@@ -133,13 +133,20 @@ function MyClientTable({ clients, onSelect }) {
               >
                 <td className="px-2 py-2">{index + 1}</td>
                 <td className="px-2 py-2">
-                  <div className="font-medium">{client.person_name}</div>
-                  <div className="text-[10px] text-gray-500">{client.business_name}</div>
+                  <div className="font-medium">{client.business_name}</div>
+                  <div className="text-[10px] text-gray-500">{client.person_name}</div>
                 </td>
                 <td className="px-2 py-2">{client.personal_email}</td>
                 <td className="px-2 py-2">{client.business_email || '-'}</td>
-                <td className="px-2 py-2">{client.contact}</td>
-                <td className="px-2 py-2 flex gap-[2px]">{renderStars(client.rating || 0)}</td>
+                {/* <td className="px-2 py-2">{client.contact}</td> */}
+                <td className="px-2 py-2">
+                <span className="text-clr2 font-medium">
+                  {client.saleCloseDateTime 
+                    ? new Date(client.saleCloseDateTime).toLocaleDateString() 
+                    : (client.date || '-')
+                  }
+                </span>
+              </td>
                 <td className="px-2 py-2">
                   {getBadge(client.sale?.approvalStatus || (client.status === 'lost' ? 'Lost' : 'Pending'))}
                 </td>

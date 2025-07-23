@@ -15,24 +15,23 @@ function FollowUpTable({ onSelectClient, setCalls }) {
   const email = JSON.parse(localStorage.getItem('user')).email;
   const IP = CONFIG.API_URL;
 
-  useEffect(() => {
-    const fetchLeads = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`${IP}/leads/getByClosure/${email}`);
-        if (!response.ok) throw new Error('Failed to fetch leads');
-        const data = await response.json();
-        setLeads(data);
-      } catch (error) {
-        console.error('Error fetching leads:', error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchLeads();
-    const intervalId = setInterval(fetchLeads, 20000);
-    return () => clearInterval(intervalId);
-  }, []);
+ useEffect(() => {
+  const fetchLeads = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${IP}/leads/getByClosure/${email}`);
+      if (!response.ok) throw new Error('Failed to fetch leads');
+      const data = await response.json();
+      setLeads(data);
+    } catch (error) {
+      console.error('Error fetching leads:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  fetchLeads();
+}, []);
 
   const handleClick = async (client) => {
     onSelectClient(client);

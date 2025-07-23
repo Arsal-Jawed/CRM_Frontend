@@ -123,7 +123,7 @@ function EmployeeTable() {
                   <td className="px-3 py-2 text-gray-600 w-1/5">{user.designation || '-'}</td>
                   <td className="px-3 py-2 text-gray-500 w-1/5">
                     {new Date(user.joining_date).toLocaleDateString('en-US', {
-                      year: 'numeric', month: 'short', day: 'numeric'
+                      year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC'
                     })}
                   </td>
                   <td className="px-3 py-2 w-1/5">

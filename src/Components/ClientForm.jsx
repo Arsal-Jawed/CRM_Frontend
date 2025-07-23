@@ -87,9 +87,9 @@ function ClientForm({ onComplete }) {
 }, []);
   const validateFields = () => {
     const requiredFields = {
-      0: ['person_name', 'personal_email', 'contact', 'dob', 'ssn', 'driversLicenseNumber', 'address'],
-      1: ['business_name', 'business_email', 'businessRole', 'business_contact', 'ownershipPercentage', 'yearsInBusiness', 'locations', 'incorporateState'],
-      2: ['bankName', 'rtn', 'accountNumber', 'accountType']
+      0: ['person_name', 'legal_name','personal_email', 'contact', 'dob', 'ssn', 'driversLicenseNumber', 'address'],
+      1: ['business_name', 'business_email', 'businessRole', 'business_contact', 'ownershipPercentage', 'established', 'business_address'],
+      2: ['bankName', 'rtn', 'accountNumber']
     };
 
     if (requiredFields[step]) {
@@ -325,7 +325,7 @@ function ClientForm({ onComplete }) {
       {field('Lease Approval Status', (
         <select value={saleData.leaseApprovalStatus} onChange={e => setSaleData(p => ({ ...p, leaseApprovalStatus: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300">
           <option value="" disabled>Select lease approval</option>
-          {['Pending', 'Approved', 'Rejected'].map(opt => <option key={opt}>{opt}</option>)}
+          {['Pending', 'Approved', 'Rejected', 'Buyback','Funded','Verification Call'].map(opt => <option key={opt}>{opt}</option>)}
         </select>
       ), <FiCheck />)}
       {field('Lease Approval Date', <input type="date" max={today} value={saleData.leaseApprovalDate} onChange={e => setSaleData(p => ({ ...p, leaseApprovalDate: e.target.value }))} className="border px-3 py-2 text-sm rounded-lg outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300" />, <FiCalendar />)}

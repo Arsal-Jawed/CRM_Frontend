@@ -37,7 +37,7 @@ const menuByRole = {
     { label: 'Messages', icon: FiMessageSquare, key: 'messages' }
   ],
   3: [
-    { label: 'Lead Dashboard', icon: FiList, key: 'lead-dashboard' },
+    { label: 'Leads', icon: FiList, key: 'lead-dashboard' },
     { label: 'MyTeam', icon: FiUsers, key: 'myteam' },
     { label: 'Messages', icon: FiMessageSquare, key: 'messages' },
     { label: 'Data', icon: FiDatabase, key: 'data' },

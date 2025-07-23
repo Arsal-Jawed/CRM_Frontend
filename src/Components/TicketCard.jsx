@@ -11,7 +11,7 @@ function TicketCard({ ticket }) {
   const [resolver, setResolver] = useState(ticket.resolver);
   const [resolveDate, setResolveDate] = useState(ticket.resolveDate);
   const [showEdit, setShowEdit] = useState(false);
-  const [newComment, setNewComment] = useState(ticket.comment || '');
+  const [newComment, setNewComment] = useState('');
   const [shouldResolveAfterComment, setShouldResolveAfterComment] = useState(false);
 
   const IP = CONFIG.API_URL;
@@ -65,12 +65,12 @@ function TicketCard({ ticket }) {
       <div className="flex items-start justify-between mb-2">
         <div>
           <div className="flex items-center text-sm font-semibold text-gray-800">
-            <FiUser className="mr-1 text-clr1" size={14} />
-            {ticket.clientName || 'N/A'}
+            <FiBriefcase className="mr-1 text-gray-400" size={14} />
+            {ticket.businessName || 'No business name'}
           </div>
           <div className="flex items-center text-xs text-gray-600 mt-0.5">
-            <FiBriefcase className="mr-1 text-gray-400" size={12} />
-            {ticket.businessName || 'No business name'}
+            <FiUser className="mr-1 text-clr1" size={12} />
+            {ticket.clientName || 'N/A'}
           </div>
         </div>
         <div className={`px-2 py-0.5 rounded-full text-xs ${

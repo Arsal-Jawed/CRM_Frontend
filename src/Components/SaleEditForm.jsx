@@ -151,7 +151,7 @@ function SaleEditForm({ sale, clientId, onClose, onSave }) {
                   onChange={handleChange}
                   className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-clr1 focus:border-transparent"
                 >
-                  {['Pending','Approved','Rejected'].map(s => <option key={s} value={s}>{s}</option>)}
+                  {['Pending','Approved','Rejected','Buyback','Funded','Verification Call'].map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
 
