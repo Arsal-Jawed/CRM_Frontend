@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { LeadForm, LeadInfo } from './index';
+import { LeadForm, LeadInfo, VerifyLeadModal } from './index';
 import CONFIG from '../Configuration';
 import { FaEye, FaStickyNote, FaEdit } from 'react-icons/fa';
 
@@ -15,6 +15,7 @@ function Leads() {
   const [noteLead, setNoteLead] = useState(null);
   const [notes, setNotes] = useState('');
   const [editingNote, setEditingNote] = useState(false);
+  const [showVerifyPopup, setShowVerifyPopup] = useState(false);
 
   const tableContainerRef = useRef(null);
   const tableBodyRef = useRef(null);
@@ -76,7 +77,6 @@ function Leads() {
     setFocusedRowIndex(-1);
   }, [search, filterStatus, leads]);
 
-  // Handle keyboard navigation and scroll
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (filteredLeads.length === 0) return;
@@ -123,6 +123,10 @@ function Leads() {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-800">Leads</h2>
             <div className="flex gap-2">
+               <button onClick={() => setShowVerifyPopup(true)}
+                  className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:opacity-90">
+                  Verify Lead
+                </button>
               <button
                 onClick={() => setShowAddPopup(true)}
                 className="bg-grd1 text-white text-sm px-4 py-2 rounded-md hover:opacity-90"
@@ -261,6 +265,7 @@ function Leads() {
           </div>
         </div>
       )}
+      {showVerifyPopup && (<VerifyLeadModal onClose={() => setShowVerifyPopup(false)} />)}
     </>
   );
 }

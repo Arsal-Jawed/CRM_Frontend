@@ -29,7 +29,7 @@ const menuByRole = {
     { label: 'Follow Ups', icon: FiRepeat, key: 'followup' }
   ],
   2: [
-    { label: 'Assigned Leads', icon: FiTrendingUp, key: 'assigned-leads' },
+    { label: 'FollowUps', icon: FiTrendingUp, key: 'assigned-leads' },
     { label: 'Data', icon: FiDatabase, key: 'data' },
     { label: 'MyTeam', icon: FiUsers, key: 'myteam' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
@@ -44,7 +44,7 @@ const menuByRole = {
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
   ],
   4: [
-    { label: 'OperationDashboard', icon: FiGrid, key: 'operation-dashboard' },
+    { label: 'Operation', icon: FiGrid, key: 'operation-dashboard' },
     { label: 'Tickets', icon: FiFileText, key: 'ticket-dashboard' },
     { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
@@ -53,7 +53,7 @@ const menuByRole = {
   ],
   5: [
     { label: 'Accounts', icon: FiUserCheck, key: 'accounts' },
-    { label: 'OperationDashboard', icon: FiGrid, key: 'operation-dashboard' },
+    { label: 'Operation', icon: FiGrid, key: 'operation-dashboard' },
     { label: 'Tickets', icon: FiFileText, key: 'ticket-dashboard' },
     { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },

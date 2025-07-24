@@ -24,6 +24,9 @@ function Attendance() {
   const [remarks, setRemarks] = useState('');
   const [halfDayDate, setHalfDayDate] = useState(moment().format('YYYY-MM-DD'));
   const [selectedRemarks, setSelectedRemarks] = useState('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingBulkStatus, setPendingBulkStatus] = useState(null);
+
 
   const fetchAttendance = async (monthStr) => {
     setLoading(true);
@@ -49,6 +52,30 @@ function Attendance() {
     setRemarks('');
     setHalfDayDate(moment().format('YYYY-MM-DD'));
   };
+  const handleBulkMark = async (status) => {
+  const endpoint = {
+    P: 'all-present',
+    A: 'all-absent',
+    L: 'all-late',
+    LV: 'all-leave'
+  }[status];
+
+  if (!endpoint) return;
+
+  try {
+    await fetch(`${CONFIG.API_URL}/attendance/${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: moment().format('YYYY-MM-DD'),
+        remarks: `Bulk marked as ${status}`
+      })
+    });
+    fetchAttendance(currentMonth.format('YYYY-MM'));
+  } catch (err) {
+    alert('Failed to mark attendance.');
+  }
+};
 
   const handleGrantLeave = async () => {
     if (!selectedEmployee || !leaveFrom || !leaveTo || leaveTo < leaveFrom) {
@@ -153,14 +180,31 @@ function Attendance() {
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-lg font-semibold text-gray-700">Monthly Attendance</h2>
           <div className="flex gap-2">
-            <button onClick={() => setShowLeaveModal(true)} className="bg-clr1 hover:bg-clr2 text-white px-3 rounded text-[1vw]">Grant Leave</button>
-            <button onClick={() => setShowHalfDayModal(true)} className="bg-gray-200 hover:bg-gray-400 text-gray-700 px-3 rounded text-[1vw]">Mark Half-Day</button>
-            <button onClick={prevMonth} className="p-2 bg-clr1 text-white rounded"><FaChevronLeft /></button>
-            <span className="px-2">{currentMonth.format('MMMM YYYY')}</span>
-            <button onClick={nextMonth} className="p-2 bg-clr1 text-white rounded"><FaChevronRight /></button>
-          </div>
-        </div>
+            {/* Bulk Buttons */}
+            {[
+              { label: 'All Present', icon: <FaCheck className="mr-1 text-clr1" />, status: 'P' },
+              // { label: 'All Absent', icon: <FaTimes className="mr-1 text-clr1" />, status: 'A' },
+              // { label: 'All Late', icon: <FaClock className="mr-1 text-clr1" />, status: 'L' },
+              { label: 'All Leave', icon: <FaHourglassHalf className="mr-1 text-clr1" />, status: 'LV' }
+            ].map(({ label, icon, status }) => (
+              <button
+                key={status}
+                onClick={() => { setPendingBulkStatus(status); setShowConfirmModal(true); }}
+                className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded-md text-sm transition"
+              >
+                {icon}
+                {label}
+              </button>
+            ))}
 
+                        {/* Existing Buttons */}
+                        <button onClick={() => setShowLeaveModal(true)} className="bg-clr1 hover:bg-clr2 text-white px-3 rounded text-[1vw]">Grant Leave</button>
+                        <button onClick={() => setShowHalfDayModal(true)} className="bg-gray-200 hover:bg-gray-400 text-gray-700 px-3 rounded text-[1vw]">Mark Half-Day</button>
+                        <button onClick={prevMonth} className="p-2 bg-clr1 text-white rounded"><FaChevronLeft /></button>
+                        <span className="px-2">{currentMonth.format('MMMM YYYY')}</span>
+                        <button onClick={nextMonth} className="p-2 bg-clr1 text-white rounded"><FaChevronRight /></button>
+                      </div>
+                    </div>
         {loading ? (
           <div className="flex justify-center items-center h-40">
             <div className="animate-spin h-6 w-6 border-4 border-clr1 border-t-transparent rounded-full"></div>
@@ -241,6 +285,48 @@ function Attendance() {
           </div>
         </div>
       )}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md border border-gray-200 overflow-hidden animate-fadeIn">
+            <div className="bg-red-600 p-4 text-white text-lg font-semibold">
+              Confirm Action
+            </div>
+            <div className="p-5 space-y-4 text-gray-700 text-sm">
+              <p>
+                Are you sure you want to mark <strong>
+                  {pendingBulkStatus === 'P' && 'All Present'}
+                  {pendingBulkStatus === 'A' && 'All Absent'}
+                  {pendingBulkStatus === 'L' && 'All Late'}
+                  {pendingBulkStatus === 'LV' && 'All Leave'}
+                </strong> for <strong>{moment().format('Do MMMM YYYY')}</strong>?
+              </p>
+              <p>This will overwrite any existing attendance entries for that day.</p>
+              <div className="flex justify-end gap-2 pt-3">
+                <button
+                  onClick={() => {
+                    setShowConfirmModal(false);
+                    setPendingBulkStatus(null);
+                  }}
+                  className="px-4 py-1.5 border rounded text-gray-600 hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    await handleBulkMark(pendingBulkStatus);
+                    setShowConfirmModal(false);
+                    setPendingBulkStatus(null);
+                  }}
+                  className="px-4 py-1.5 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Yes, Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
