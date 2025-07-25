@@ -109,6 +109,12 @@ function MyClientDetails({ client }) {
                   <FiBriefcase className="mr-2 text-clr2" />
                   {client.business_name}
                 </p>
+                {client.notes && (
+                  <p className="text-gray-500 text-[0.7vw] flex items-center mt-1">
+                    <FiFileText className="mr-2 text-clr3" />
+                    {client.notes}
+                  </p>
+                )}
               </div>
               <div className="flex flex-col items-end">
                 <button

@@ -4,7 +4,7 @@ import { TicketForm,ClientForm } from './index';
 
 function MyClientTable({ clients, onSelect }) {
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('Pending');
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
   const [showAddClientForm, setShowAddClientForm] = useState(false);

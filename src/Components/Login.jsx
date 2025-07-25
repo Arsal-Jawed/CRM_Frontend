@@ -20,47 +20,43 @@ const Login = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const updateCountdown = () => {
+const updateCountdown = () => {
   const now = new Date();
   const currentHour = now.getHours();
   const currentTime = now.getTime();
 
   const today = new Date();
-  const sevenPM = new Date(today.setHours(19, 0, 0, 0));  // 7:00 PM today
-  const ninePM = new Date(today.setHours(21, 0, 0, 0));   // 9:00 PM today
-  const midnight = new Date(today.setHours(23, 59, 59, 999));  // 11:59:59 PM today
+  const sevenAM = new Date(today.setHours(7, 0, 0, 0));
+  const nineAM = new Date(today.setHours(9, 0, 0, 0));
+  const noon = new Date(today.setHours(11, 59, 59, 999));
 
-  // Set 7PM of today or yesterday based on current time
-  const nextSevenPM = new Date();
-  if (currentHour < 19) {
-    nextSevenPM.setHours(19, 0, 0, 0); // today 7PM
+  const nextSevenAM = new Date();
+  if (currentHour < 7) {
+    nextSevenAM.setHours(7, 0, 0, 0);
   } else {
-    nextSevenPM.setDate(nextSevenPM.getDate() + 1);
-    nextSevenPM.setHours(19, 0, 0, 0); // tomorrow 7PM
+    nextSevenAM.setDate(nextSevenAM.getDate() + 1);
+    nextSevenAM.setHours(7, 0, 0, 0);
   }
 
-  if (currentHour >= 19 && currentHour < 21) {
-    // Between 7PM and 9PM
-    const diff = ninePM - now;
+  if (currentHour >= 7 && currentHour < 9) {
+    const diff = nineAM - now;
     const hrs = Math.floor(diff / (1000 * 60 * 60));
     const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
     setCountdown(`Attendance window will open in ${hrs} hrs ${mins} minutes ${secs} seconds`);
   } 
-  else if (currentHour >= 21 && currentTime <= midnight.getTime()) {
-    // 9PM to 11:59 PM
+  else if (currentHour >= 9 && currentTime <= noon.getTime()) {
     setCountdown('Attendance window is open');
   } 
-  else if (currentHour >= 0 && currentHour < 19) {
-    // From midnight till 7PM
+  else if (currentHour >= 0 && currentHour < 7) {
     setCountdown('Attendance window closed, contact the HR manager');
   } 
-  else if (currentHour >= 19 && currentHour >= 21) {
-    // After 9PM till midnight
-    setCountdown('Attendance window is open');
+  else if (currentHour >= 12 && currentHour < 24) {
+    setCountdown('Attendance window is closed, contact HR Manager');
   }
 };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
