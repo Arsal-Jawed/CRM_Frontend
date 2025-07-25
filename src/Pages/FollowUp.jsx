@@ -36,9 +36,14 @@ function FollowUp() {
 
   const fetchDocs = async () => {
     try {
-      const res = await fetch(`${CONFIG.API_URL}/docs/clientDocs/${selectedClient._id}`);
+      const leadId = selectedClient?.lead_id;
+      const clientId = selectedClient?._id;
+      const res = await fetch(
+      `${CONFIG.API_URL}/docs/clientDocs?lead_id=${leadId}&client_id=${clientId}`
+    );
       const data = await res.json();
       setDocuments(data);
+      console.log(data)
     } catch (err) {
       console.error('Failed to fetch documents:', err);
     }
