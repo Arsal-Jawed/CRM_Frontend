@@ -50,3 +50,4 @@ export {default as SaleEditForm} from './SaleEditForm';
 export {default as FollowUpModal} from './FollowUpModal';
 export {default as VerifyLeadModal} from './VerifyLeadModal';
 export {default as SelectClosureModel} from './SelectClosureModel';
+export {default as SelectSecondClosure} from './SelectSecondClosure';

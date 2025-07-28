@@ -135,17 +135,17 @@ function MyClientDetails({ client }) {
                   {client.ratingDate?.slice(0, 10) || ''}
                 </div>
 
-                <div className="flex items-center text-[0.75vw] text-gray-600 mt-1 space-x-2">
+                <div className="flex items-center text-[0.8vw] text-gray-500 mt-1 space-x-2">
                   <FiUser className="text-clr1" />
                   <span>
-                    {client.closure1 ? client.closure1 : 'Not Specified'}
+                    {client.closure1 ? client.closure1Name : 'Not Specified'}
                   </span>
                   <button
                     onClick={() => setShowFollowUpPopup(true)}
                     title="Assign Follow-up"
                     className="text-clr1 hover:text-clr2"
                   >
-                    <FaUserPlus className="text-base" />
+                    <FiEdit2 className="text-base" />
                   </button>
                 </div>
               </div>

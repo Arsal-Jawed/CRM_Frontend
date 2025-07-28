@@ -5,7 +5,6 @@ import { FaUserPlus } from 'react-icons/fa';
 function SelectClosureModel({ onClose, lead }) {
   const [users, setUsers] = useState([]);
   const [closure1, setClosure1] = useState('');
-  const [closure2, setClosure2] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,37 +25,30 @@ function SelectClosureModel({ onClose, lead }) {
       const user1 = users.find(u => u.email === lead.closure1);
       if (user1) setClosure1(user1._id);
     }
-    if (lead?.closure2) {
-      const user2 = users.find(u => u.email === lead.closure2);
-      if (user2) setClosure2(user2._id);
-    }
   }, [lead, users]);
 
   const handleAssign = async () => {
-    if (!closure1 && closure2) {
-      setErrorMsg('Please select Closure 1 first');
+    if (!closure1) {
+      setErrorMsg('Please select Closure 1');
       return;
     }
 
-    const payload = {};
-    if (closure1) payload.closure1 = closure1;
-    if (closure2) payload.closure2 = closure2;
-
-    if (Object.keys(payload).length === 0) return;
-
     setLoading(true);
     try {
-      const res = await fetch(`${IP}/leads/assign/${leadId}`, {
+      const res = await fetch(`${IP}/leads/setClosure/${leadId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ closure1 })
       });
       if (res.ok) {
         setErrorMsg('');
         setShowSuccess(true);
+      } else {
+        setErrorMsg('Failed to assign closure');
       }
     } catch (err) {
-      console.error('Error assigning follow-up:', err);
+      console.error('Error assigning closure:', err);
+      setErrorMsg('Server error');
     } finally {
       setLoading(false);
     }
@@ -68,7 +60,7 @@ function SelectClosureModel({ onClose, lead }) {
         <div className="bg-white rounded-xl shadow-2xl p-8 w-[95%] max-w-lg space-y-6 border border-gray-200">
           <div className="flex items-center gap-3">
             <FaUserPlus className="text-clr1 text-xl" />
-            <h2 className="text-2xl font-semibold text-gray-800">Assign Follow-up</h2>
+            <h2 className="text-2xl font-semibold text-gray-800">Select Closure</h2>
           </div>
 
           {errorMsg && (
@@ -76,7 +68,7 @@ function SelectClosureModel({ onClose, lead }) {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">Select Closure 1</label>
+            <label className="block text-sm font-medium text-gray-600 mb-2">Select Closure</label>
             <select
               value={closure1}
               onChange={(e) => setClosure1(e.target.value)}
@@ -88,24 +80,6 @@ function SelectClosureModel({ onClose, lead }) {
                   {user.firstName + ' ' + user.lastName} ({user.role === 1 ? 'Admin' : 'Sales'})
                 </option>
               ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">Select Closure 2</label>
-            <select
-              value={closure2}
-              onChange={(e) => setClosure2(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-clr1 transition-all"
-            >
-              <option value="">-- Choose User --</option>
-              {users
-                .filter(user => user._id !== closure1)
-                .map(user => (
-                  <option key={user._id} value={user._id}>
-                    {user.firstName + ' ' + user.lastName} ({user.role === 1 ? 'Admin' : 'Sales'})
-                  </option>
-                ))}
             </select>
           </div>
 
@@ -131,7 +105,7 @@ function SelectClosureModel({ onClose, lead }) {
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-2xl p-8 w-[90%] max-w-sm space-y-6 border border-green-200 text-center">
-          <h2 className="text-xl font-semibold text-green-700">Follow-up Assigned Successfully!</h2>
+          <h2 className="text-xl font-semibold text-green-700">Closure Assigned Successfully!</h2>
           <button
             onClick={onClose}
             className="bg-clr1 text-white px-6 py-2 rounded hover:bg-clr1/90 transition"
