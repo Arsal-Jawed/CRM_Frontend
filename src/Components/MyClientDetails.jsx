@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import CONFIG from '../Configuration';
-import { DocumentCard, LeadEditForm, EquipementForm, EquipmentCard, AddEquipmentForm,SaleEditForm, DocForm } from '../Components';
+import { DocumentCard, LeadEditForm, EquipementForm, EquipmentCard, AddEquipmentForm,SaleEditForm, DocForm,SelectClosureModel } from '../Components';
 import {
   FiUser, FiBriefcase, FiStar, FiMail, FiPhone, FiHome,
   FiCalendar, FiFileText, FiDollarSign, FiCreditCard,
   FiPercent, FiMapPin, FiClock, FiCheckCircle, FiTruck,
   FiAward, FiGlobe, FiLayers, FiEdit2,FiPlus
 } from 'react-icons/fi';
+import { FaUserPlus } from 'react-icons/fa';
 
 function MyClientDetails({ client }) {
   const [docs, setDocs] = useState([]);
@@ -17,6 +18,7 @@ function MyClientDetails({ client }) {
   const [showDocForm, setShowDocForm] = useState(false);
   const [showNotesEdit, setShowNotesEdit] = useState(false);
   const [notesText, setNotesText] = useState(client?.notes || '');
+  const [showFollowUpPopup, setShowFollowUpPopup] = useState(false);
 
 
   const containerRef = useRef(null);
@@ -123,10 +125,30 @@ function MyClientDetails({ client }) {
                 >
                   <FiEdit2 className="text-lg" />
                 </button>
-                <div className="flex items-center justify-end mt-2">
+                <div className="flex flex-col items-end mt-2">
+                <div className="flex items-center">
                   <span className="text-gray-700 font-medium">Rating:</span>
                   {renderStars(client.rating)}
                 </div>
+
+                <div className="text-gray-400 text-xs mt-1">
+                  {client.ratingDate?.slice(0, 10) || ''}
+                </div>
+
+                <div className="flex items-center text-[0.75vw] text-gray-600 mt-1 space-x-2">
+                  <FiUser className="text-clr1" />
+                  <span>
+                    {client.closure1 ? client.closure1 : 'Not Specified'}
+                  </span>
+                  <button
+                    onClick={() => setShowFollowUpPopup(true)}
+                    title="Assign Follow-up"
+                    className="text-clr1 hover:text-clr2"
+                  >
+                    <FaUserPlus className="text-base" />
+                  </button>
+                </div>
+              </div>
                 <div className="text-gray-400 text-xs mt-1">
                   {client.ratingDate?.slice(0, 10) || ''}
                 </div>
@@ -384,6 +406,12 @@ function MyClientDetails({ client }) {
               </div>
             </div>
           </div>
+        )}
+        {showFollowUpPopup && (
+          <SelectClosureModel
+            lead={client}
+            onClose={() => setShowFollowUpPopup(false)}
+          />
         )}
       </div>
     </div>
