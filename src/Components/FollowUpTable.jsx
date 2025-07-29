@@ -33,7 +33,6 @@ function FollowUpTable({ onSelectClient, setCalls }) {
 
   const email = JSON.parse(localStorage.getItem('user')).email;
   const IP = CONFIG.API_URL;
-
   useEffect(() => {
     const fetchLeads = async () => {
       try {
@@ -98,21 +97,22 @@ function FollowUpTable({ onSelectClient, setCalls }) {
             <FaPlus className="text-xs" />
             Create New Lead
           </button>
-
-          <button
-            onClick={() => {
-              if (!selectedLead) {
-                setToast('Select a client first');
-                setTimeout(() => setToast(''), 3000);
-                return;
-              }
-              setShowClosureModal(true);
-            }}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-800 to-blue-400 text-white px-3 py-1.5 rounded text-xs hover:from-blue-900 hover:to-blue-500 transition"
-          >
-            <FaUserTimes className="text-sm" />
-            Give Up Lead
-          </button>
+          {selectedLead?.closure1 === email && (
+            <button
+              onClick={() => {
+                if (!selectedLead) {
+                  setToast('Select a client first');
+                  setTimeout(() => setToast(''), 3000);
+                  return;
+                }
+                setShowClosureModal(true);
+              }}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-800 to-blue-400 text-white px-3 py-1.5 rounded text-xs hover:from-blue-900 hover:to-blue-500 transition"
+            >
+              <FaUserTimes className="text-sm" />
+              Give Up Lead
+            </button>
+          )}
 
           <div className="relative min-w-[200px]">
             <FaSearch className="absolute left-3 top-2.5 text-gray-400 text-xs" />
@@ -183,7 +183,7 @@ function FollowUpTable({ onSelectClient, setCalls }) {
                     <td className="px-2 py-2">{lead.contact}</td>
                     <td className="px-2 py-2">{getBadge(lead.status)}</td>
                     <td className="px-2 py-2">{lead.date}</td>
-                    <td className="px-2 py-2 flex gap-2 items-center">
+                    <td className="px-2 py-2 flex mt-3 gap-2 items-center">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -207,17 +207,19 @@ function FollowUpTable({ onSelectClient, setCalls }) {
                         <FaEdit />
                       </button>
 
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowSecondClosureModal(true);
-                          setSelectedLead(lead);
-                        }}
-                        className="text-purple-500 hover:text-purple-700"
-                        title="Assign Second Closure"
-                      >
-                        <FaUserPlus />
-                      </button>
+                      {lead.closure1 === email && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowSecondClosureModal(true);
+                            setSelectedLead(lead);
+                          }}
+                          className="text-purple-500 hover:text-purple-700"
+                          title="Assign Second Closure"
+                        >
+                          <FaUserPlus />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
