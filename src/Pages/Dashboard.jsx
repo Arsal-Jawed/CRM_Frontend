@@ -91,7 +91,7 @@ const Dashboard = () => {
             {renderContent()}
           </div>
           {user.role === 1 &&
-            !['followup', 'messages', 'clients','myclient','ticket-dashboard','attendance'].includes(activePage) && (
+            !['followup', 'messages', 'clients','myclient','ticket-dashboard','attendance','performance'].includes(activePage) && (
               <div className="p-4 bg-gray-50">
                 <NotificationContainer />
               </div>
