@@ -23,18 +23,19 @@ function MyClientDetails({ client }) {
 
   const containerRef = useRef(null);
 
-  useEffect(() => {
-    if (client?._id) {
-      fetch(`${CONFIG.API_URL}/docs/clientDocs/${client.lead_id}`)
-        .then(res => res.json())
-        .then(data => setDocs(data || []))
-        .catch(() => setDocs([]));
-    } else {
-      setDocs([]);
-    }
-  }, [client]);
-  useEffect(() => {
-  setNotesText(client?.notes || '');
+ useEffect(() => {
+  if (client?.lead_id || client?._id) {
+    const params = new URLSearchParams();
+    if (client.lead_id) params.append('lead_id', client.lead_id);
+    if (client._id) params.append('client_id', client._id);
+
+    fetch(`${CONFIG.API_URL}/docs/clientDocs?${params.toString()}`)
+      .then(res => res.json())
+      .then(data => setDocs(data || []))
+      .catch(() => setDocs([]));
+  } else {
+    setDocs([]);
+  }
 }, [client]);
 
   useEffect(() => {
