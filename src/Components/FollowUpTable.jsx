@@ -1,7 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { FaSearch, FaFilter, FaPlus, FaCalendarPlus, FaEdit,FaSpinner } from 'react-icons/fa';
+import {
+  FaSearch,
+  FaFilter,
+  FaPlus,
+  FaCalendarPlus,
+  FaEdit,
+  FaSpinner,
+  FaUserPlus,
+  FaUserTimes,
+} from 'react-icons/fa';
 import CONFIG from '../Configuration';
-import { LeadForm, FollowUpModal,LeadEditForm } from './index.js';
+import {
+  LeadForm,
+  FollowUpModal,
+  LeadEditForm,
+  SelectClosureModel,
+  SelectSecondClosure,
+} from './index.js';
 
 function FollowUpTable({ onSelectClient, setCalls }) {
   const [leads, setLeads] = useState([]);
@@ -10,33 +25,36 @@ function FollowUpTable({ onSelectClient, setCalls }) {
   const [showForm, setShowForm] = useState(false);
   const [editLead, setEditLead] = useState(null);
   const [selectedLead, setSelectedLead] = useState(null);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showClosureModal, setShowClosureModal] = useState(false);
+  const [showSecondClosureModal, setShowSecondClosureModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState('');
 
   const email = JSON.parse(localStorage.getItem('user')).email;
   const IP = CONFIG.API_URL;
+  useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${IP}/leads/getByClosure/${email}`);
+        if (!response.ok) throw new Error('Failed to fetch leads');
+        const data = await response.json();
+        setLeads(data);
+      } catch (error) {
+        console.error('Error fetching leads:', error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLeads();
+  }, [IP, email]);
 
- useEffect(() => {
-  const fetchLeads = async () => {
+  const handleClick = async (lead) => {
+    onSelectClient(lead);
+    setSelectedLead(lead);
     try {
-      setLoading(true);
-      const response = await fetch(`${IP}/leads/getByClosure/${email}`);
-      if (!response.ok) throw new Error('Failed to fetch leads');
-      const data = await response.json();
-      setLeads(data);
-    } catch (error) {
-      console.error('Error fetching leads:', error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  fetchLeads();
-}, []);
-
-  const handleClick = async (client) => {
-    onSelectClient(client);
-    try {
-      const response = await fetch(`${CONFIG.API_URL}/calls/client/${client._id}`);
+      const response = await fetch(`${CONFIG.API_URL}/calls/client/${lead._id}`);
       const data = await response.json();
       setCalls(data);
     } catch (error) {
@@ -46,21 +64,21 @@ function FollowUpTable({ onSelectClient, setCalls }) {
   };
 
   const filtered = leads
-    .filter(lead =>
-      (lead.person_name || '').toLowerCase().includes(search.toLowerCase())
-    )
-    .filter(lead =>
-      statusFilter === 'all' ? true : lead.status === statusFilter
-    );
+    .filter((lead) => (lead.person_name || '').toLowerCase().includes(search.toLowerCase()))
+    .filter((lead) => (statusFilter === 'all' ? true : lead.status === statusFilter));
 
   const getBadge = (status) => {
     const map = {
       'in process': 'bg-yellow-100 text-yellow-700',
-      'won': 'bg-green-100 text-green-700',
-      'lost': 'bg-red-100 text-red-700'
+      won: 'bg-green-100 text-green-700',
+      lost: 'bg-red-100 text-red-700',
     };
     return (
-      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${map[status] || 'bg-gray-100 text-gray-700'}`}>
+      <span
+        className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+          map[status] || 'bg-gray-100 text-gray-700'
+        }`}
+      >
         {status}
       </span>
     );
@@ -68,7 +86,6 @@ function FollowUpTable({ onSelectClient, setCalls }) {
 
   return (
     <div className="bg-white shadow-md h-[42vh] rounded-lg border border-gray-200 p-4 space-y-3 overflow-hidden hover:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-
       <div className="flex items-center justify-between flex-wrap gap-4">
         <h2 className="text-base font-semibold text-clr1">Follow Ups</h2>
 
@@ -80,6 +97,22 @@ function FollowUpTable({ onSelectClient, setCalls }) {
             <FaPlus className="text-xs" />
             Create New Lead
           </button>
+          {selectedLead?.closure1 === email && (
+            <button
+              onClick={() => {
+                if (!selectedLead) {
+                  setToast('Select a client first');
+                  setTimeout(() => setToast(''), 3000);
+                  return;
+                }
+                setShowClosureModal(true);
+              }}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-800 to-blue-400 text-white px-3 py-1.5 rounded text-xs hover:from-blue-900 hover:to-blue-500 transition"
+            >
+              <FaUserTimes className="text-sm" />
+              Give Up Lead
+            </button>
+          )}
 
           <div className="relative min-w-[200px]">
             <FaSearch className="absolute left-3 top-2.5 text-gray-400 text-xs" />
@@ -107,80 +140,150 @@ function FollowUpTable({ onSelectClient, setCalls }) {
           </div>
         </div>
       </div>
-     <div className="overflow-hidden hover:overflow-y-auto max-h-[26vh] hover:scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-      <table className="min-w-full text-xs divide-y divide-gray-200 select-none">
-        <thead className="bg-gray-50 text-gray-600 uppercase tracking-wider font-semibold">
-          <tr>
-            <th className="px-2 py-2 text-left">#</th>
-            <th className="px-2 py-2 text-left">Name</th>
-            <th className="px-2 py-2 text-left">Email</th>
-            <th className="px-2 py-2 text-left">Contact</th>
-            <th className="px-2 py-2 text-left">Status</th>
-            <th className="px-2 py-2 text-left">Date</th>
-            <th className="px-2 py-2 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white text-gray-800 divide-y divide-gray-100">
-          {loading ? (
+
+      {toast && (
+        <div className="text-red-500 text-xs font-medium text-center">{toast}</div>
+      )}
+
+      <div className="overflow-hidden hover:overflow-y-auto max-h-[26vh] hover:scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+        <table className="min-w-full text-xs divide-y divide-gray-200 select-none">
+          <thead className="bg-gray-50 text-gray-600 uppercase tracking-wider font-semibold">
             <tr>
-              <td colSpan="7" className="text-center py-6">
-                <FaSpinner className="animate-spin text-clr1 text-lg mx-auto" />
-              </td>
+              <th className="px-2 py-2 text-left">#</th>
+              <th className="px-2 py-2 text-left">Name</th>
+              <th className="px-2 py-2 text-left">Email</th>
+              <th className="px-2 py-2 text-left">Contact</th>
+              <th className="px-2 py-2 text-left">Status</th>
+              <th className="px-2 py-2 text-left">Date</th>
+              <th className="px-2 py-2 text-left">Actions</th>
             </tr>
-          ) : (
-            <>
-              {filtered.map((lead, index) => (
-                <tr key={lead._id} className="hover:bg-gray-50 transition cursor-pointer" onClick={() => handleClick(lead)} tabIndex={0}>
-                  <td className="px-2 py-2">{index + 1}</td>
-                  <td className="px-2 py-2">
-                    <div className="font-medium">{lead.person_name}</div>
-                    <div className="text-[10px] text-gray-500">{lead.business_name}</div>
-                  </td>
-                  <td className="px-2 py-2">{lead.personal_email}</td>
-                  <td className="px-2 py-2">{lead.contact}</td>
-                  <td className="px-2 py-2">{getBadge(lead.status)}</td>
-                  <td className="px-2 py-2">{lead.date}</td>
-                  <td className="px-2 py-2 flex gap-2 items-center">
-                    <button onClick={(e) => { e.stopPropagation(); setSelectedLead(lead); }} className="text-clr1 hover:text-orange-700" title="Schedule Follow-up">
-                      <FaCalendarPlus />
-                    </button>
-                    <button onClick={(e) => { e.stopPropagation(); setEditLead(lead); }} className="text-blue-500 hover:text-blue-700" title="Edit Lead">
-                      <FaEdit />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan="7" className="text-center py-4 text-gray-400">No leads found</td>
-                </tr>
-              )}
-            </>
-          )}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody className="bg-white text-gray-800 divide-y divide-gray-100">
+            {loading ? (
+              <tr>
+                <td colSpan="7" className="text-center py-6">
+                  <FaSpinner className="animate-spin text-clr1 text-lg mx-auto" />
+                </td>
+              </tr>
+            ) : (
+              <>
+                {filtered.map((lead, index) => (
+                  <tr
+                    key={lead._id}
+                    className="hover:bg-gray-50 transition cursor-pointer"
+                    onClick={() => handleClick(lead)}
+                    tabIndex={0}
+                  >
+                    <td className="px-2 py-2">{index + 1}</td>
+                    <td className="px-2 py-2">
+                      <div className="font-medium">{lead.person_name}</div>
+                      <div className="text-[10px] text-gray-500">{lead.business_name}</div>
+                    </td>
+                    <td className="px-2 py-2">{lead.personal_email}</td>
+                    <td className="px-2 py-2">{lead.contact}</td>
+                    <td className="px-2 py-2">{getBadge(lead.status)}</td>
+                    <td className="px-2 py-2">{lead.date}</td>
+                    <td className="px-2 py-2 flex mt-3 gap-2 items-center">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowScheduleModal(true);
+                          setSelectedLead(lead);
+                        }}
+                        className="text-clr1 hover:text-orange-700"
+                        title="Schedule Follow-up"
+                      >
+                        <FaCalendarPlus />
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditLead(lead);
+                        }}
+                        className="text-blue-500 hover:text-blue-700"
+                        title="Edit Lead"
+                      >
+                        <FaEdit />
+                      </button>
+
+                      {lead.closure1 === email && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowSecondClosureModal(true);
+                            setSelectedLead(lead);
+                          }}
+                          className="text-purple-500 hover:text-purple-700"
+                          title="Assign Second Closure"
+                        >
+                          <FaUserPlus />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan="7" className="text-center py-4 text-gray-400">
+                      No leads found
+                    </td>
+                  </tr>
+                )}
+              </>
+            )}
+          </tbody>
+        </table>
+      </div>
+
       {showForm && (
         <LeadForm
           onClose={() => setShowForm(false)}
-          onCreated={() => {
-            setShowForm(false);
+          onCreated={() => setShowForm(false)}
+        />
+      )}
+
+      {showScheduleModal && selectedLead && (
+        <FollowUpModal
+          lead={selectedLead}
+          onClose={() => {
+            setShowScheduleModal(false);
+            setSelectedLead(null);
+          }}
+          onScheduled={() => {
+            setShowScheduleModal(false);
+            setSelectedLead(null);
           }}
         />
       )}
 
-      {selectedLead && (
-        <FollowUpModal
-          lead={selectedLead}
-          onClose={() => setSelectedLead(null)}
-          onScheduled={() => setSelectedLead(null)}
-        />
-      )}
       {editLead && (
         <LeadEditForm
           lead={editLead}
           onClose={() => setEditLead(null)}
           onUpdated={() => setEditLead(null)}
+        />
+      )}
+
+      {showClosureModal && selectedLead && (
+        <SelectClosureModel
+          lead={selectedLead}
+          onClose={() => setShowClosureModal(false)}
+          onUpdated={() => {
+            setShowClosureModal(false);
+            setSelectedLead(null);
+          }}
+        />
+      )}
+
+      {showSecondClosureModal && selectedLead && (
+        <SelectSecondClosure
+          lead={selectedLead}
+          onClose={() => setShowSecondClosureModal(false)}
+          onUpdated={() => {
+            setShowSecondClosureModal(false);
+            setSelectedLead(null);
+          }}
         />
       )}
     </div>

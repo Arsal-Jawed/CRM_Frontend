@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CONFIG from '../Configuration';
 import { FaUserPlus } from 'react-icons/fa';
 
-function FollowUpPopup({ onClose, lead }) {
+function SelectClosureModel({ onClose, lead }) {
   const [users, setUsers] = useState([]);
   const [closure1, setClosure1] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
@@ -29,25 +29,26 @@ function FollowUpPopup({ onClose, lead }) {
 
   const handleAssign = async () => {
     if (!closure1) {
-      setErrorMsg('Please select a user for Closure 1');
+      setErrorMsg('Please select Closure 1');
       return;
     }
 
-    const payload = { closure1 };
-
     setLoading(true);
     try {
-      const res = await fetch(`${IP}/leads/assign/${leadId}`, {
+      const res = await fetch(`${IP}/leads/setClosure/${leadId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ closure1 })
       });
       if (res.ok) {
         setErrorMsg('');
         setShowSuccess(true);
+      } else {
+        setErrorMsg('Failed to assign closure');
       }
     } catch (err) {
-      console.error('Error assigning follow-up:', err);
+      console.error('Error assigning closure:', err);
+      setErrorMsg('Server error');
     } finally {
       setLoading(false);
     }
@@ -59,7 +60,7 @@ function FollowUpPopup({ onClose, lead }) {
         <div className="bg-white rounded-xl shadow-2xl p-8 w-[95%] max-w-lg space-y-6 border border-gray-200">
           <div className="flex items-center gap-3">
             <FaUserPlus className="text-clr1 text-xl" />
-            <h2 className="text-2xl font-semibold text-gray-800">Assign Follow-up</h2>
+            <h2 className="text-2xl font-semibold text-gray-800">Select Closure</h2>
           </div>
 
           {errorMsg && (
@@ -67,7 +68,7 @@ function FollowUpPopup({ onClose, lead }) {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">Select Closure 1</label>
+            <label className="block text-sm font-medium text-gray-600 mb-2">Select Closure</label>
             <select
               value={closure1}
               onChange={(e) => setClosure1(e.target.value)}
@@ -104,7 +105,7 @@ function FollowUpPopup({ onClose, lead }) {
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-2xl p-8 w-[90%] max-w-sm space-y-6 border border-green-200 text-center">
-          <h2 className="text-xl font-semibold text-green-700">Follow-up Assigned Successfully!</h2>
+          <h2 className="text-xl font-semibold text-green-700">Closure Assigned Successfully!</h2>
           <button
             onClick={onClose}
             className="bg-clr1 text-white px-6 py-2 rounded hover:bg-clr1/90 transition"
@@ -117,4 +118,4 @@ function FollowUpPopup({ onClose, lead }) {
   );
 }
 
-export default FollowUpPopup;
+export default SelectClosureModel;
