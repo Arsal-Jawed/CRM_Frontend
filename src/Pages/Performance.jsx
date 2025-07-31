@@ -120,81 +120,132 @@ useEffect(() => {
         lossPenalty: lossPenalty.toFixed(2)
       };
     } else {
-      const userLeads = leads.filter(lead => 
-        lead.closure1 === user.email || lead.closure2 === user.email
-      );
-      
-      const userSales = sales.filter(sale => 
+  const userLeads = leads.filter(lead => 
+    lead.closure1 === user.email || lead.closure2 === user.email
+  );
+
+  const userSales = sales.filter(sale => 
         userLeads.some(lead => lead._id.toString() === sale.clientId || lead.lead_id.toString() === sale.clientId)
       );
-      
-      const userEquipment = equipment.filter(eq => 
-        userLeads.some(lead => lead.lead_id === eq.clientId)
-      );
-      
-      const userDocs = docs.filter(doc => 
-        userLeads.some(lead => lead._id.toString() === doc.clientId || lead.lead_id.toString() === doc.clientId)
-      );
 
-      const totalLeads = userLeads.length;
-      const wonLeads = userLeads.filter(lead => lead.status === 'won').length;
-      const lostLeads = userLeads.filter(lead => ['rejected', 'loss'].includes(lead.status)).length;
-      const approvedSales = userSales.filter(sale => sale.approvalStatus === 'Approved').length;
-      const rejectedSales = userSales.filter(sale => sale.approvalStatus === 'Rejected').length;
-      const buybackCases = userSales.filter(sale => sale.approvalStatus === 'Buyback').length;
-      const totalEquipments = userEquipment.length;
-      const totalLeaseAmount = userEquipment.reduce((sum, eq) => {
-  const leaseAmount = eq.leaseAmount?.$numberDecimal || eq.leaseAmount || 0;
-  return sum + parseFloat(leaseAmount);
-}, 0);
-      const winScore = totalLeads ? (wonLeads / totalLeads) * 40 : 0;
-      const approvedSalesScore = wonLeads ? (approvedSales / wonLeads) * 20 : 0;
-      const leaseAmountScore = Math.min((totalLeaseAmount / (diffDays/30)) / 500, 15);
-      const equipmentScore = Math.min((totalEquipments / (diffDays/30)) / 5, 5);
-      const docsScore = wonLeads ? Math.min((userDocs.length / wonLeads) * 5, 5) : 0;
-      
-      const lossPenalty = totalLeads ? (lostLeads / totalLeads) * 10 : 0;
-      const rejectionPenalty = wonLeads ? (rejectedSales / wonLeads) * 5 : 0;
-      const buybackPenalty = wonLeads ? (buybackCases / wonLeads) * 10 : 0;
+  const userEquipment = equipment.filter(eq => 
+    userLeads.some(lead => lead.lead_id === eq.clientId)
+  );
 
-      const totalScore = Math.min(
-        winScore + 
-        approvedSalesScore + 
-        leaseAmountScore + 
-        equipmentScore + 
-        docsScore - 
-        lossPenalty - 
-        rejectionPenalty - 
-        buybackPenalty,
-        100
-      );
+  const userDocs = docs.filter(doc => 
+    userLeads.some(lead => lead._id.toString() === doc.clientId || lead.lead_id.toString() === doc.clientId)
+  );
 
-      const index = (totalScore / 10).toFixed(2);
+  const totalLeads = userLeads.length;
+  const wonLeads = userLeads.filter(lead => lead.status === 'won').length;
+  const lostLeads = userLeads.filter(lead => ['rejected', 'loss'].includes(lead.status)).length;
+  const approvedSales = userSales.filter(sale => sale.approvalStatus === 'Approved');
+  const rejectedSales = userSales.filter(sale => sale.approvalStatus === 'Rejected');
+  const buybackCases = userSales.filter(sale => sale.approvalStatus === 'Buyback');
+  console.log("Approved: "+approvedSales.length+" Rejected: "+rejectedSales.length+" BuyBack: "+buybackCases.length);
+  
+  const initialLeaseAmount = userEquipment.reduce((sum, eq) => {
+    const leaseAmount = eq.leaseAmount?.$numberDecimal || eq.leaseAmount || 0;
+    return sum + parseFloat(leaseAmount);
+  }, 0);
 
-      return {
-        name: `${user.firstName} ${user.lastName}`,
-        role: 'Sales Closure',
-        totalLeads,
-        wonLeads,
-        lostLeads,
-        approvedSales,
-        rejectedSales,
-        buybackCases,
-        totalEquipments,
-        totalLeaseAmount,
-        totalDocuments: userDocs.length,
-        joinDate: joiningDate.toLocaleDateString(),
-        index,
-        performanceDetails: {
-          winScore: winScore.toFixed(2),
-          approvedSalesScore: approvedSalesScore.toFixed(2),
-          leaseAmountScore: leaseAmountScore.toFixed(2),
-          equipmentScore: equipmentScore.toFixed(2),
-          docsScore: docsScore.toFixed(2),
-          lossPenalty: lossPenalty.toFixed(2),
-          rejectionPenalty: rejectionPenalty.toFixed(2),
-          buybackPenalty: buybackPenalty.toFixed(2)
-    }}}};
+  let totalDeductions = 0;
+
+  // Updated rejection deduction calculation
+  const rejectedDeductions = rejectedSales.reduce((sum, sale) => {
+    const connectedLeads = userLeads.filter(lead => 
+      lead._id.toString() === sale.clientId || 
+      lead.lead_id.toString() === sale.clientId
+    );
+    
+    const saleEquipment = connectedLeads.flatMap(lead => 
+      userEquipment.filter(eq => eq.clientId === lead.lead_id)
+    );
+    
+    return sum + saleEquipment.reduce((equipSum, equip) => {
+      const amount = equip.leaseAmount?.$numberDecimal || equip.leaseAmount || 0;
+      return equipSum + parseFloat(amount);
+    }, 0);
+  }, 0);
+
+  // Updated buyback deduction calculation
+  const buybackDeductions = buybackCases.reduce((sum, sale) => {
+    const connectedLeads = userLeads.filter(lead => 
+      lead._id.toString() === sale.clientId || 
+      lead.lead_id.toString() === sale.clientId
+    );
+    
+    const saleEquipment = connectedLeads.flatMap(lead => 
+      userEquipment.filter(eq => eq.clientId === lead.lead_id)
+    );
+    
+    return sum + saleEquipment.reduce((equipSum, equip) => {
+      const amount = equip.leaseAmount?.$numberDecimal || equip.leaseAmount || 0;
+      return equipSum + (parseFloat(amount) * 1.5);
+    }, 0);
+  }, 0);
+
+  totalDeductions = rejectedDeductions + buybackDeductions;
+  const adjustedLeaseAmount = Math.max(0, initialLeaseAmount - totalDeductions);
+
+const LOSS_PENALTY_FACTOR = 0.5;
+const REJECTION_PENALTY_FACTOR = 0.3;
+const BUYBACK_PENALTY_FACTOR = 1;
+
+const winScore = Math.min(wonLeads * 4, 40);
+const approvedSalesScore = Math.min(approvedSales.length * 2, 20);
+const leaseAmountScore = adjustedLeaseAmount / 1000;
+const equipmentScore = userEquipment.length * 0.5;
+const docsScore = userDocs.length * 0.2;
+
+const lossPenalty = lostLeads * LOSS_PENALTY_FACTOR;
+const rejectionPenalty = rejectedSales.length * REJECTION_PENALTY_FACTOR;
+const buybackPenalty = buybackCases.length * BUYBACK_PENALTY_FACTOR;
+
+const totalScore = Math.min(
+  winScore +
+  approvedSalesScore +
+  leaseAmountScore +
+  equipmentScore +
+  docsScore -
+  lossPenalty -
+  rejectionPenalty -
+  buybackPenalty,
+  100
+);
+
+  const index = (totalScore / 10).toFixed(2);
+
+  return {
+    name: `${user.firstName} ${user.lastName}`,
+    role: 'Sales Closure',
+    totalLeads,
+    wonLeads,
+    lostLeads,
+    approvedSales: approvedSales.length,
+    rejectedSales: rejectedSales.length,
+    buybackCases: buybackCases.length,
+    totalEquipments: userEquipment.length,
+    totalLeaseAmount: adjustedLeaseAmount,
+    initialLeaseAmount, // For reference
+    rejectedDeductions, // For reference
+    buybackDeductions, // For reference
+    totalDocuments: userDocs.length,
+    joinDate: joiningDate.toLocaleDateString(),
+    index,
+    performanceDetails: {
+      winScore: winScore.toFixed(2),
+      approvedSalesScore: approvedSalesScore.toFixed(2),
+      leaseAmountScore: leaseAmountScore.toFixed(2),
+      equipmentScore: equipmentScore.toFixed(2),
+      docsScore: docsScore.toFixed(2),
+      lossPenalty: lossPenalty.toFixed(2),
+      rejectionPenalty: rejectionPenalty.toFixed(2),
+      buybackPenalty: buybackPenalty.toFixed(2)
+    }
+  };
+}
+  };
 
   const allData = users
     .filter(u => (activeTab === 'LeadGen' ? u.role === 3 : u.role === 2))
@@ -259,7 +310,7 @@ useEffect(() => {
           </div>
 
           <select
-            className="text-xs px-2 py-1.5 border border-gray-300 rounded-md focus:ring-1 focus:ring-clr1"
+            className="text-[0.6vw] px-2 py-1.5 border border-gray-300 rounded-md focus:ring-1 focus:ring-clr1"
             value={indexRange.join(',')}
             onChange={(e) => setIndexRange(e.target.value.split(',').map(Number))}
           >
@@ -276,190 +327,133 @@ useEffect(() => {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                <div className="group relative inline-block">
-                  Employee
-                  <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                    <div className="text-xs font-semibold text-gray-700">Name</div>
-                  </div>
-                </div>
+                Employee
               </th>
               <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                <div className="group relative inline-block">
-                  <span className={`px-1.5 py-0.5 text-xs rounded-full ${activeTab === 'LeadGen' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>
-                    Role
-                  </span>
-                  <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                    <div className="text-xs font-semibold text-gray-700">Role</div>
-                  </div>
+                <span className={`px-1.5 py-0.5 text-xs rounded-full ${activeTab === 'LeadGen' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>
+                  Role
+                </span>
+              </th>
+              <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
+                <div className="flex flex-col items-start">
+                  <FiCalendar className="text-lg mb-1" />
+                  <span className="text-[0.6vw]">Joining</span>
                 </div>
               </th>
               
               {activeTab === 'LeadGen' ? (
                 <>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiTrendingUp className="inline text-lg" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Total Leads</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FiTrendingUp className="text-lg mb-1" />
+                      <span className="text-[0.6vw]">Leads</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiThumbsUp className="inline text-lg text-green-600" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Won</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FiThumbsUp className="text-lg text-green-600 mb-1" />
+                      <span className="text-[0.6vw]">Won</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiThumbsDown className="inline text-lg text-red-600" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Lost</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FiThumbsDown className="text-lg text-red-600 mb-1" />
+                      <span className="text-[0.6vw]">Lost</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiClock className="inline text-lg text-yellow-600" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">In Process</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FiClock className="text-lg text-yellow-600 mb-1" />
+                      <span className="text-[0.6vw]">In-Process</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiCalendar className="inline text-lg" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Joining Date</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FiCheckCircle className="text-lg text-blue-600 mb-1" />
+                      <span className="text-[0.6vw]">Win Score</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiCheckCircle className="inline text-lg text-blue-600" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Win Score</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FiStar className="text-lg text-yellow-500 mb-1" />
+                      <span className="text-[0.6vw]">Rating Score</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiStar className="inline text-lg text-yellow-500" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Rating Score</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FiZap className="text-lg text-orange-500 mb-1" />
+                      <span className="text-[0.6vw]">Lead Efficiency</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiZap className="inline text-lg text-orange-500" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Lead Efficiency</div>
-                      </div>
-                    </div>
-                  </th>
-                  <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiXCircle className="inline text-lg text-red-600" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Loss Penalty</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FiXCircle className="text-lg text-red-600 mb-1" />
+                      <span className="text-[0.6vw]">Loss Penalty</span>
                     </div>
                   </th>
                 </>
               ) : (
                 <>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiCalendar className="inline text-lg" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Joining Date</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FiCheckCircle className="text-lg text-green-600 mb-1" />
+                      <span className="text-[0.6vw]">Won Leads</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiCheckCircle className="inline text-lg text-green-600" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Won Leads</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FaStamp className="text-lg text-blue-600 mb-1" />
+                      <span className="text-[0.6vw]">Approved Sales</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FaStamp className="inline text-lg text-blue-600" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Approved Sales</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FaMoneyBillWave className="text-lg text-green-700 mb-1" />
+                      <span className="text-[0.6vw]">Total Lease</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FaMoneyBillWave className="inline text-lg text-green-700" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Total Lease</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FaFileAlt className="text-lg mb-1" />
+                      <span className="text-[0.6vw]">Documents</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FaFileAlt className="inline text-lg" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Documents</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FaCubes className="text-lg mb-1" />
+                      <span className="text-[0.6vw]">Equipments</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FaCubes className="inline text-lg" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Equipments</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FiTrendingUp className="text-lg mb-1" />
+                      <span className="text-[0.6vw]">Total Leads</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiTrendingUp className="inline text-lg" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Total Leads</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FiThumbsDown className="text-lg text-red-600 mb-1" />
+                      <span className="text-[0.6vw]">Lost Leads</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FiThumbsDown className="inline text-lg text-red-600" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Lost Leads</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FaBan className="text-lg text-red-500 mb-1" />
+                      <span className="text-[0.6vw]">Rejected Sales</span>
                     </div>
                   </th>
                   <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FaBan className="inline text-lg text-red-500" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Rejected Sales</div>
-                      </div>
-                    </div>
-                  </th>
-                  <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="group relative inline-block">
-                      <FaUndoAlt className="inline text-lg text-orange-600" />
-                      <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                        <div className="text-xs font-semibold text-gray-700">Buybacks</div>
-                      </div>
+                    <div className="flex flex-col items-start">
+                      <FaUndoAlt className="text-lg text-orange-600 mb-1" />
+                      <span className="text-[0.6vw]">Buybacks</span>
                     </div>
                   </th>
                 </>
               )}
-              
               <th className="px-3 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">
-                <div className="group relative inline-block">
-                  <FiBarChart2 className="inline text-lg" />
-                  <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-white shadow-lg rounded-md p-2 border border-gray-200 min-w-[120px] text-center">
-                    <div className="text-xs font-semibold text-gray-700">Performance Score</div>
-                  </div>
+                <div className="flex flex-col items-start">
+                  <FiBarChart2 className="text-lg mb-1" />
+                  <span className="text-[0.6vw]">Performance</span>
                 </div>
               </th>
             </tr>
@@ -467,45 +461,45 @@ useEffect(() => {
           <tbody className="bg-white divide-y divide-gray-200">
             {filtered.map((user, i) => (
               <tr key={i} className="hover:bg-gray-50 transition-colors">
-                <td className="px-3 py-2 whitespace-nowrap font-medium text-gray-900">{user.name}</td>
-                <td className="px-3 py-2 whitespace-nowrap">
-                  <span className={`px-1.5 py-0.5 text-xs rounded-full ${
+                <td className="px-3 py-2 whitespace-nowrap font-medium text-gray-900 text-left">{user.name}</td>
+                <td className="px-3 py-2 whitespace-nowrap text-left">
+                  <span className={`px-1.5 py-0.5 text-[0.6vw] rounded-full ${
                     user.role === 'LeadGen' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
                   }`}>
                     {user.role === 'LeadGen' ? 'Lead Gen' : 'Sales Closure'}
                   </span>
                 </td>
+                <td className="px-3 py-2 whitespace-nowrap text-gray-600 text-left">{user.joinDate}</td>
                 
                 {activeTab === 'LeadGen' ? (
                   <>
-                    <td className="px-3 py-2 whitespace-nowrap text-gray-600">{user.total}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-green-600">{user.won}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-red-600">{user.lost}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-yellow-600">{user.inProcess}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-gray-600">{user.joinDate}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-blue-600">{user.winScore}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-yellow-600">{user.ratingScore}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-orange-500">{user.leadEfficiencyScore}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-red-600">{user.lossPenalty}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-gray-600 text-left">{user.total}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-green-600 text-left">{user.won}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-red-600 text-left">{user.lost}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-yellow-600 text-left">{user.inProcess}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-blue-600 text-left">{user.winScore}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-yellow-600 text-left">{user.ratingScore}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-orange-500 text-left">{user.leadEfficiencyScore}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-red-600 text-left">{user.lossPenalty}</td>
                   </>
                 ) : (
                   <>
-                    <td className="px-3 py-2 whitespace-nowrap text-gray-600">{user.joinDate}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-green-600">{user.wonLeads}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-blue-600">{user.approvedSales}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-green-700">
+                    <td className="px-3 py-2 whitespace-nowrap text-green-600 text-left">{user.wonLeads}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-blue-600 text-left">{user.approvedSales}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-green-700 text-left">
                       {user.totalLeaseAmount?.toLocaleString('en-US', {style: 'currency',currency: 'USD',
-                        minimumFractionDigits: 0,maximumFractionDigits: 0})}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-gray-600">{user.totalDocuments}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-gray-600">{user.totalEquipments}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-gray-600">{user.totalLeads}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-red-600">{user.lostLeads}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-red-500">{user.rejectedSales}</td>
-                    <td className="px-3 py-2 whitespace-nowrap text-orange-600">{user.buybackCases}</td>
+                        minimumFractionDigits: 0,maximumFractionDigits: 0})}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-gray-600 text-left">{user.totalDocuments}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-gray-600 text-left">{user.totalEquipments}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-gray-600 text-left">{user.totalLeads}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-red-600 text-left">{user.lostLeads}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-red-500 text-left">{user.rejectedSales}</td>
+                    <td className="px-3 py-2 whitespace-nowrap text-orange-600 text-left">{user.buybackCases}</td>
                   </>
                 )}
                 
-                <td className="px-3 py-2 whitespace-nowrap">
+                <td className="px-3 py-2 whitespace-nowrap text-left">
                   <div className={`font-semibold ${getIndexColor(user.index)}`}>
                     {user.index}
                     <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1">

@@ -103,6 +103,8 @@ function MyClientTable({ clients, onSelect }) {
                 <option value="Approved">Approved</option>
                 <option value="Activated">Activated</option>
                 <option value="Declined">Declined</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Buyback">Buyback</option>
                 <option value="Lost">Lost</option>
               </select>
             </div>
