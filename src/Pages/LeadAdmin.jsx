@@ -16,6 +16,10 @@ function LeadAdmin() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState('');
   const [showAllLeads, setShowAllLeads] = useState(true);
+  const [showTodayLeads, setShowTodayLeads] = useState(false);
+
+
+  const role = JSON.parse(localStorage.getItem("user")).role;
 
   const toggleShowAll = () => {
     const filtered = allLeads.filter(lead =>
@@ -36,6 +40,17 @@ function LeadAdmin() {
     setLeads(filtered);
     setSelected(filtered[0] || null);
   };
+  
+  const showTodaysLeads = () => {
+  const today = new Date().toLocaleDateString();
+  const filtered = allLeads.filter(
+    lead => new Date(lead.date).toLocaleDateString() === today
+  );
+  setLeads(filtered);
+  setSelected(filtered[0] || null);
+  setShowTodayLeads(true);
+  };
+
 
   useEffect(() => {
     const fetchAllLeads = async () => {
@@ -43,7 +58,7 @@ function LeadAdmin() {
         const res = await fetch(`${CONFIG.API_URL}/leads/all`);
         const data = await res.json();
         setAllLeads(data);
-        setLeads(data.filter(lead => lead.status === 'in process'));
+        setLeads(data.filter(lead => lead.status === 'in process' && lead.closure1 === 'not specified'));
         setSelected(data[0] || null);
         setLoading(false);
       } catch (err) {
@@ -89,6 +104,13 @@ function LeadAdmin() {
   const formatDate = (date) => date || 'N/A';
   const formatTime = (time) => time || 'N/A';
 
+  const getUserNameByEmail = (email) => {
+  if (!email || email === 'not specified') return 'Not Assigned';
+  const user = users.find(u => u.email === email);
+  return user ? `${user.firstName} ${user.lastName}` : email;
+};
+
+
   return (
     <div className="flex h-[85vh] bg-white rounded-xl overflow-hidden shadow z-20">
       <div className="w-[38%] border-r border-gray-100 p-4 bg-white flex flex-col">
@@ -111,38 +133,46 @@ function LeadAdmin() {
               </button>
           </h2>
           <div className="flex items-center justify-between flex-wrap gap-3">
-            <div>
-              <select
-                value={selectedUser}
-                onChange={e => filterByUser(e.target.value)}
-                className="border px-3 py-2 rounded text-sm text-gray-700 bg-white shadow-sm focus:ring-1 focus:ring-clr1 focus:outline-none w-[20vw]"
-              >
-                <option value="">Filter by User</option>
-                {users.map(user => (
-                  <option key={user._id} value={user.email}>
-                    {user.firstName} {user.lastName}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedUser}
+              onChange={e => filterByUser(e.target.value)}
+              className="border px-3 py-2 rounded text-sm text-gray-700 bg-white shadow-sm focus:ring-1 focus:ring-clr1 focus:outline-none w-[18vw]"
+            >
+              <option value="">Filter by User</option>
+              {users.map(user => (
+                <option key={user._id} value={user.email}>
+                  {user.firstName} {user.lastName}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={showTodaysLeads}
+              className="p-2 rounded bg-clr1 text-white hover:bg-clr1/80"
+              title="Show Today's Leads"
+            >
+              <FaCalendarAlt className="text-sm" />
+            </button>
           </div>
+          </div>
+
         </div>
         <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-2 scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent hover:scrollbar-thumb-gray-300 hover:scrollbar-track-gray-100">
-  {loading ? (
-    <div className="flex items-center justify-center h-full">
-      <div className="w-6 h-6 border-2 border-t-transparent border-clr1 rounded-full animate-spin"></div>
-    </div>
-  ) : (
-    leads.map(lead => (
-      <LeadCard
-        key={lead._id}
-        lead={lead}
-        onSelect={setSelected}
-        selected={selected?._id === lead._id}
-      />
-    ))
-  )}
-</div>
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="w-6 h-6 border-2 border-t-transparent border-clr1 rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            leads.map(lead => (
+              <LeadCard
+                key={lead._id}
+                lead={lead}
+                onSelect={setSelected}
+                selected={selected?._id === lead._id}
+              />
+            ))
+          )}
+        </div>
       </div>
       <div className="w-[65%] flex flex-col">
         {selected ? (
@@ -155,7 +185,7 @@ function LeadAdmin() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-gray-800">{selected.person_name}</h2>
-                    <p className="text-gray-500 flex items-center gap-1 text-sm">
+                    <p className="text-gray-500 flex items-center gap-1 text-[0.8vw]">
                       <FaBuilding className="text-sm" />
                       <span>{selected.business_name}</span>
                     </p>
@@ -180,9 +210,19 @@ function LeadAdmin() {
                   <FaClock className="text-gray-400" />
                   <span>{formatTime(selected.time)}</span>
                 </div>
+                <div className="flex flex-col text-xs text-gray-500 mt-1">
+                  <div className="flex items-center gap-2 justify-end">
+                    <span className="font-medium text-gray-500">Closure 1:</span>
+                    <span>{getUserNameByEmail(selected.closure1)}</span>
+                  </div>
+                  <div className="flex items-center gap-2 justify-end">
+                    <span className="font-medium text-gray-500">Closure 2:</span>
+                    <span>{getUserNameByEmail(selected.closure2)}</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="space-y-5">
+            <div className="space-y-5 mt-[-2vw]">
               <div className="space-y-4">
                 <h3 className="font-semibold text-gray-700 flex items-center gap-2 text-base border-b pb-2">
                   <FaEnvelope className="text-clr1" />
@@ -206,15 +246,17 @@ function LeadAdmin() {
                 </div>
               </div>
             </div>
-            <div className="mt-8 flex justify-between gap-3">
-              <ActionButton
-                onClick={() => setShowFollowUp(true)}
-                className="bg-white text-clr1 border border-clr1 hover:text-white hover:bg-clr1"
-                icon={<FaCalendarPlus className="text-lg" />}
-                label="Followup"
-                disabled={selected?.status === 'won' || selected?.status === 'lost'}
-              />
-            </div>
+            {role === 1 && (
+              <div className="mt-8 flex justify-between gap-3">
+                <ActionButton
+                  onClick={() => setShowFollowUp(true)}
+                  className="bg-white text-clr1 border border-clr1 hover:text-white hover:bg-clr1"
+                  icon={<FaCalendarPlus className="text-lg" />}
+                  label="Followup"
+                  disabled={selected?.status === 'won' || selected?.status === 'lost'}
+                />
+              </div>
+            )}
           </div>
         ) : (
           <div className="h-full flex items-center justify-center text-gray-400">

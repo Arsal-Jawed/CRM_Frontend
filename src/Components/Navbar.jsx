@@ -25,7 +25,7 @@ const Navbar = ({onNavigate}) => {
     { icon: FiDatabase, label: 'Data', page: 'data' }
   ],
   2: [ // Team Lead
-    { icon: FaUserTie, label: 'Clients', page: 'clients' },
+    { icon: FaUserTie, label: 'Clients', page: 'myclient' },
     { icon: FiDatabase, label: 'Data', page: 'data' }
   ],
   3: [ // Agent
@@ -33,13 +33,22 @@ const Navbar = ({onNavigate}) => {
   ],
   4: [ // Support / Ops
     { icon: FiFileText, label: 'Tickets', page: 'ticket-dashboard' },
-    { icon: FaUserTie, label: 'Clients', page: 'clients' },
-    { icon: FiSearch, label: 'Data', page: 'data' }
+    { icon: FaUserTie, label: 'Clients', page: 'myclient' },
+    { icon: FiSearch, label: 'Data', page: 'data' },
   ],
   5: [ // Support / Ops
     { icon: FiFileText, label: 'Tickets', page: 'ticket-dashboard' },
-    { icon: FaUserTie, label: 'Clients', page: 'clients' },
+    { icon: FiTrendingUp, label: 'Leads', page: 'leads' },
+    { icon: FaUserTie, label: 'Clients', page: 'myclient' },
+    { icon: FiBarChart2, label: 'Performance', page: 'performance' },
     { icon: FiSearch, label: 'Data', page: 'data' },
+    { icon: FiUserCheck, label: 'Attendance', page: 'attendance' },
+  ],
+  6: [ // LeaDGen Supervisor
+    { icon: FiTrendingUp, label: 'Leads', page: 'leads' },
+    { icon: FaUserTie, label: 'Clients', page: 'myclient' },
+    { icon: FiDatabase, label: 'Data', page: 'data' },
+    { icon: FiBarChart2, label: 'Performance', page: 'performance' },
     { icon: FiUserCheck, label: 'Attendance', page: 'attendance' },
   ]
 };

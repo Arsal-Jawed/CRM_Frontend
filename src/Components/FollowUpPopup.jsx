@@ -15,7 +15,7 @@ function FollowUpPopup({ onClose, lead }) {
     fetch(`${IP}/users/getAllUsers`)
       .then(res => res.json())
       .then(data => {
-        const filtered = data.filter(user => user.role === 1 || user.role === 2);
+        const filtered = data.filter(user => user.role === 1 || user.role === 2 || user.role === 6);
         setUsers(filtered);
       });
   }, []);

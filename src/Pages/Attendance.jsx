@@ -26,7 +26,8 @@ function Attendance() {
   const [selectedRemarks, setSelectedRemarks] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingBulkStatus, setPendingBulkStatus] = useState(null);
-
+  
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const fetchAttendance = async (monthStr) => {
     setLoading(true);
@@ -68,7 +69,8 @@ function Attendance() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         date: moment().format('YYYY-MM-DD'),
-        remarks: `Bulk marked as ${status}`
+        remarks: `Bulk marked as ${status}`,
+        manager: user.email
       })
     });
     fetchAttendance(currentMonth.format('YYYY-MM'));
@@ -89,7 +91,8 @@ function Attendance() {
         email: selectedEmployee,
         fromDate: leaveFrom,
         toDate: leaveTo,
-        remarks
+        remarks,
+        manager: user.email
       })
     });
     setShowLeaveModal(false);
@@ -108,7 +111,8 @@ function Attendance() {
       body: JSON.stringify({
         email: selectedEmployee,
         date: halfDayDate,
-        remarks
+        remarks,
+        manager: user.email
       })
     });
     setShowHalfDayModal(false);

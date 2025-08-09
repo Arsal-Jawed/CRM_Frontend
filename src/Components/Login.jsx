@@ -166,7 +166,7 @@ const updateCountdown = () => {
         {countdown && (
           <p
             className={`text-center text-[0.9vw] mt-1 ${
-              countdown.includes('will open') ? 'text-[clr1]' :
+              countdown.includes('will open') ? 'text-clr2' :
               countdown.includes('closed') ? 'text-red-500' :
               'text-green-500'
             }`}

@@ -34,6 +34,7 @@ const menuByRole = {
     { label: 'MyTeam', icon: FiUsers, key: 'myteam' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
     { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
+    { label: 'Tickets', icon: FiFileText, key: 'ticket-dashboard' },
     { label: 'Messages', icon: FiMessageSquare, key: 'messages' }
   ],
   3: [
@@ -59,6 +60,14 @@ const menuByRole = {
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
     { label: 'Messages', icon: FiMessageSquare, key: 'messages' },
     { label: 'Data', icon: FiDatabase, key: 'data' }
+  ],
+  6: [
+    { label: 'FollowUps', icon: FiTrendingUp, key: 'assigned-leads' },
+    { label: 'Data', icon: FiDatabase, key: 'data' },
+    { label: 'MyTeam', icon: FiUsers, key: 'myteam' },
+    { label: 'Schedules', icon: FiClock, key: 'schedules' },
+    { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
+    { label: 'Messages', icon: FiMessageSquare, key: 'messages' }
   ]
 };
 
@@ -72,7 +81,7 @@ const Sidebar = ({ role, onSelect, active }) => {
   const allItems = [...menu, ...common];
 
   return (
-    <div className="w-20 h-screen bg-clr1 shadow-lg border-r flex flex-col items-center py-6 space-y-[2vh]">
+    <div className="w-20 h-screen bg-clr1 shadow-lg border-r flex flex-col items-center py-6 space-y-[1vh]">
       {allItems.map(item => {
         const Icon = item.icon;
         const isActive = active === item.key;

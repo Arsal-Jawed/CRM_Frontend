@@ -32,6 +32,7 @@ function FollowUpTable({ onSelectClient, setCalls }) {
   const [toast, setToast] = useState('');
 
   const email = JSON.parse(localStorage.getItem('user')).email;
+  const role = JSON.parse(localStorage.getItem("user")).role;
   const IP = CONFIG.API_URL;
   useEffect(() => {
     const fetchLeads = async () => {

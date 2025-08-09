@@ -2,10 +2,17 @@ import React from 'react';
 import { FaUser, FaBuilding, FaCalendarAlt } from 'react-icons/fa';
 
 function LeadCard({ lead, onSelect, selected }) {
+
   const isClosureAssigned = lead.closure1 && lead.closure1 !== 'not specified';
+  const truncateText = (text, maxLength = 15) => {
+  if (!text) return '';
+  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+  };
+
+
   return (
     <div
-      className={`cursor-pointer w-[20vw] p-3 rounded-md shadow-sm transition-all duration-200 mb-2 border-l-4
+      className={`cursor-pointer w-[100%] p-3 rounded-md shadow-sm transition-all duration-200 mb-2 border-l-4
       ${selected ? 'border-clr1 bg-gradient-to-r from-clr1/10 to-white'
         : isClosureAssigned ? 'border-green-500 bg-green-50 hover:shadow-md'
         : 'border-gray-200 bg-white hover:shadow-md'}`}
@@ -26,7 +33,7 @@ function LeadCard({ lead, onSelect, selected }) {
 
           <div className="flex items-center text-xs">
             <FaBuilding className="text-clr2 mr-1" size={10} />
-            <span className="text-gray-600 truncate">{lead.business_name}</span>
+            <span className="text-gray-600 truncate">{truncateText(lead.business_name, 15)}</span>
           </div>
 
           <div className="flex items-center text-xs text-gray-500">

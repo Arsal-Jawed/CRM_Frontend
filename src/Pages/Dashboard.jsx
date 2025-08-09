@@ -21,6 +21,7 @@ const Dashboard = () => {
         case 3: setActivePage('dashboard'); break;
         case 4: setActivePage('operation-dashboard'); break;
         case 5: setActivePage('accounts'); break;
+        case 6: setActivePage('performance'); break;
         default: setActivePage('profile');
       }
       fetch(`${IP}/schedules/scheduler/${parsedUser.email}`)

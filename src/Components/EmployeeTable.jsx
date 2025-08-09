@@ -8,7 +8,8 @@ const roleIcons = {
   2: <FaHandshake className="text-green-500" />,
   3: <FaUserFriends className="text-orange-500" />,
   4: <FaCogs className="text-purple-500" />,
-  5: <FaCogs className="text-purple-500" />
+  5: <FaCogs className="text-purple-500" />,
+  6: <FaHandshake className="text-green-500" />,
 };
 
 function EmployeeTable() {
@@ -41,13 +42,18 @@ function EmployeeTable() {
     fetchUsers();
   }, []);
 
-  const filtered = users
-    .filter(u => filterRole ? u.role === Number(filterRole) : true)
-    .filter(u => `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => {
-      if (a.role !== b.role) return a.role - b.role;
-      return new Date(a.joining_date) - new Date(b.joining_date);
-    });
+  const roleOrder = [1, 6, 2, 3, 5, 4];
+
+const filtered = users
+  .filter(u => filterRole ? u.role === Number(filterRole) : true)
+  .filter(u => `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()))
+  .sort((a, b) => {
+    const roleIndexA = roleOrder.indexOf(a.role);
+    const roleIndexB = roleOrder.indexOf(b.role);
+    if (roleIndexA !== roleIndexB) return roleIndexA - roleIndexB;
+    return new Date(a.joining_date) - new Date(b.joining_date);
+  });
+
 
   return (
     <div className="bg-white rounded-lg h-[52vh] shadow-sm border border-gray-100 p-4">
@@ -117,7 +123,7 @@ function EmployeeTable() {
                   <td className="px-3 py-2 w-1/5">
                     <div className="flex items-center">
                       <span className="mr-1">{roleIcons[user.role]}</span>
-                      {user.role === 1 ? 'Manager' : user.role === 2 ? 'Sales' : user.role === 3 ?'Lead Gen': user.role === 4 ? 'Operation Agent': 'Operation Agent'}
+                      {user.role === 1 ? 'Manager' : user.role === 2 ? 'Sales' : user.role === 3 ?'Lead Gen': user.role === 4 ? 'Operation Agent': user.role === 6 ? 'Sales' : 'Operation Agent'}
                     </div>
                   </td>
                   <td className="px-3 py-2 text-gray-600 w-1/5">{user.designation || '-'}</td>

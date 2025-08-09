@@ -7,7 +7,7 @@ import {
 import { 
   FaUserTie, FaUserTag, FaCalendarAlt, FaCheckCircle, FaStamp,
   FaMoneyBillWave, FaFileAlt, FaCubes, FaChartLine, FaTimesCircle,
-  FaBan, FaUndoAlt
+  FaBan, FaUndoAlt, FaCrown, FaMedal
 } from 'react-icons/fa';
 import CONFIG from '../Configuration';
 
@@ -23,6 +23,7 @@ function Performance() {
   const [indexRange, setIndexRange] = useState([0, 10]);
 
   const IP = CONFIG.API_URL;
+  const role = JSON.parse(localStorage.getItem("user")).role;
 
 useEffect(() => {
   async function fetchData() {
@@ -96,11 +97,12 @@ useEffect(() => {
 
       const winScore = total ? (won / total) * 4 : 0;
       const ratingScore = (avgRating / 5) * 2;
-      const leadEfficiencyScore = Math.min((total / diffDays) * 90, 3);
+      const totalLeadsScore = Math.min(total * 0.07, 3);
+      const leadEfficiencyScore = Math.min((total / diffDays) * 0.15, 1);
       const lossPenalty = total ? (lost / total) * 1 : 0;
 
       const index = Math.min(
-        winScore + ratingScore + leadEfficiencyScore - lossPenalty,
+        (winScore + ratingScore + totalLeadsScore + leadEfficiencyScore - lossPenalty) * 2,
         10
       ).toFixed(2);
 
@@ -299,14 +301,18 @@ const totalScore = Math.min(
             >
               <FiUser /> Lead Gens
             </button>
-            <button
-              onClick={() => setActiveTab('Sales')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'Sales' 
-                ? 'bg-gradient-to-r from-clr2 to-clr1 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-            >
-              <FiTrendingUp /> Sales Closures
-            </button>
+            {role !== 6 && (
+              <button
+                onClick={() => setActiveTab('Sales')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  activeTab === 'Sales' 
+                    ? 'bg-gradient-to-r from-clr2 to-clr1 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <FiTrendingUp /> Sales Closures
+              </button>
+            )}
           </div>
 
           <select
@@ -461,7 +467,24 @@ const totalScore = Math.min(
           <tbody className="bg-white divide-y divide-gray-200">
             {filtered.map((user, i) => (
               <tr key={i} className="hover:bg-gray-50 transition-colors">
-                <td className="px-3 py-2 whitespace-nowrap font-medium text-gray-900 text-left">{user.name}</td>
+                 <td className="px-3 py-2 whitespace-nowrap font-medium text-gray-900 text-left">
+                <div className="relative inline-block">
+                  {user.name}
+                  {i === 0 && (
+                    <FaCrown className="text-yellow-500 text-sm absolute -top-2 -right-2 transform rotate-12"/>)}
+                  {/* {i === 1 && (
+                    <FaCrown 
+                      className="text-gray-400 text-sm absolute -top-2.5 -right-3 transform rotate-12"
+                    />
+                  )}
+                  {i === 2 && (
+                    <FaMedal 
+                      className="text-amber-700 text-sm absolute -top-1.5 -right-2 transform rotate-12"
+                    />
+                  )} */}
+                </div>
+              </td>
+
                 <td className="px-3 py-2 whitespace-nowrap text-left">
                   <span className={`px-1.5 py-0.5 text-[0.6vw] rounded-full ${
                     user.role === 'LeadGen' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
