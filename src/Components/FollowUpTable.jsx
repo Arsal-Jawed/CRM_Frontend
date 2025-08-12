@@ -9,6 +9,7 @@ import {
   FaUserPlus,
   FaUserTimes,
 } from 'react-icons/fa';
+import { VerifyLeadModal } from './index.js';
 import CONFIG from '../Configuration';
 import {
   LeadForm,
@@ -30,6 +31,7 @@ function FollowUpTable({ onSelectClient, setCalls }) {
   const [showSecondClosureModal, setShowSecondClosureModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState('');
+  const [showVerifyPopup, setShowVerifyPopup] = useState(false);
 
   const email = JSON.parse(localStorage.getItem('user')).email;
   const role = JSON.parse(localStorage.getItem("user")).role;
@@ -91,6 +93,13 @@ function FollowUpTable({ onSelectClient, setCalls }) {
         <h2 className="text-base font-semibold text-clr1">Follow Ups</h2>
 
         <div className="flex items-center gap-3 flex-wrap flex-1 justify-end">
+          <button
+            onClick={() => setShowVerifyPopup(true)}
+            className="flex items-center gap-2 bg-blue-400 text-white px-3 py-1.5 rounded text-xs hover:bg-green-700 transition"
+          >
+            <FaSearch className="text-xs" />
+            Verify Lead
+          </button>
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 bg-clr1 text-white px-3 py-1.5 rounded text-xs hover:bg-orange-600 transition"
@@ -286,6 +295,9 @@ function FollowUpTable({ onSelectClient, setCalls }) {
             setSelectedLead(null);
           }}
         />
+      )}
+      {showVerifyPopup && (
+        <VerifyLeadModal onClose={() => setShowVerifyPopup(false)} />
       )}
     </div>
   );
