@@ -16,7 +16,7 @@ function Accounts() {
   useEffect(fetchUsers, []);
 
   return (
-    <div className="p-6">
+    <div className="p-2">
       <UserStats users={users} />
       <EmployeeTable users={users} reload={fetchUsers} />
     </div>

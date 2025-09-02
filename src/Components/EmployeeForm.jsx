@@ -80,7 +80,8 @@ function EmployeeForm({ onClose, reload }) {
     "Manager": 1,
     "Sales Closure": 2,
     "Lead Gen": 3,
-    "Operation Agent": 4
+    "Operation Agent": 4,
+    "OutSource": 81
   };
 
   const payload = new FormData();
@@ -195,6 +196,7 @@ function EmployeeForm({ onClose, reload }) {
                 <option value="Sales Closure">Sales Closure</option>
                 <option value="Lead Gen">Lead Gen</option>
                 <option value="Operation Agent">Operation Agent</option>
+                <option value="OutSource">OutSource Agent</option>
               </select>
             </div>
           </div>

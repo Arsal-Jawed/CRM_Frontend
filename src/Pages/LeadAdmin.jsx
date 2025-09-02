@@ -4,7 +4,7 @@ import { LeadCard, FollowUpPopup } from '../Components';
 import {
   FaUser, FaBuilding, FaEnvelope, FaPhone, FaMapMarkerAlt,
   FaStar, FaCalendarAlt, FaClock, FaCalendarPlus, FaListUl,
-  FaEye
+  FaEye, FaStickyNote, FaQuoteLeft, FaTimes
 } from 'react-icons/fa';
 
 function LeadAdmin() {
@@ -17,7 +17,7 @@ function LeadAdmin() {
   const [selectedUser, setSelectedUser] = useState('');
   const [showAllLeads, setShowAllLeads] = useState(true);
   const [showTodayLeads, setShowTodayLeads] = useState(false);
-
+  const [showNotes, setShowNotes] = useState(false);
 
   const role = JSON.parse(localStorage.getItem("user")).role;
 
@@ -184,7 +184,9 @@ function LeadAdmin() {
                     <FaUser className="text-lg" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-800">{selected.person_name}</h2>
+                    <h2 className=" flex flex-row gap-2 text-2xl font-bold text-gray-800">{selected.person_name} <button onClick={() => setShowNotes(true)} className="flex items-center gap-1 text-gray-400 hover:underline">
+                  <FaStickyNote className='text-[1vw]' />
+                </button></h2>
                     <p className="text-gray-500 flex items-center gap-1 text-[0.8vw]">
                       <FaBuilding className="text-sm" />
                       <span>{selected.business_name}</span>
@@ -247,7 +249,7 @@ function LeadAdmin() {
               </div>
             </div>
             {role === 1 && (
-              <div className="mt-8 flex justify-between gap-3">
+              <div className="mt-6 flex justify-between gap-3">
                 <ActionButton
                   onClick={() => setShowFollowUp(true)}
                   className="bg-white text-clr1 border border-clr1 hover:text-white hover:bg-clr1"
@@ -266,6 +268,37 @@ function LeadAdmin() {
         {showFollowUp && selected && (
           <FollowUpPopup lead={selected} onClose={() => setShowFollowUp(false)} />
         )}
+        {showNotes && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+                  <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 p-5">
+                    <div className="flex justify-between items-center border-b pb-3 mb-4">
+                      <div className="flex items-center gap-2 text-clr1">
+                        <FaStickyNote className="text-lg" />
+                        <h3 className="text-base font-semibold text-gray-800">
+                          {selected.lead_gen || 'LeadGen'}'s Notes on this Client
+                        </h3>
+                      </div>
+                      <button
+                        onClick={() => setShowNotes(false)}
+                        className="text-gray-400 hover:text-clr1 transition"
+                      >
+                        <FaTimes size={16} />
+                      </button>
+                    </div>
+        
+                    <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed bg-gray-50 p-4 rounded-lg border">
+                      {selected.notes ? (
+                        <>
+                          <FaQuoteLeft className="text-gray-300 inline-block mr-2 mb-1" />
+                          {selected.notes}
+                        </>
+                      ) : (
+                        <p className="italic text-gray-400">No notes available</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
       </div>
     </div>
   );
