@@ -1,14 +1,18 @@
 import React from 'react';
 import { FaUser, FaBuilding, FaCalendarAlt } from 'react-icons/fa';
 
-function LeadCard({ lead, onSelect, selected }) {
-
+function LeadCard({ lead, onSelect, selected, users }) {
   const isClosureAssigned = lead.closure1 && lead.closure1 !== 'not specified';
   const truncateText = (text, maxLength = 15) => {
-  if (!text) return '';
-  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+    if (!text) return '';
+    return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
   };
 
+  // User mapping
+  const createdByUser = users.find(u => u.email === lead.email);
+  const displayName = createdByUser
+    ? `${createdByUser.firstName} ${createdByUser.lastName}${createdByUser.isFired ? ' (Fired)' : ''}`
+    : 'Unknown User';
 
   return (
     <div
@@ -24,7 +28,7 @@ function LeadCard({ lead, onSelect, selected }) {
         </div>
 
         <div className="space-y-[2px]">
-          <h3 className="font-semibold text-sm text-gray-800 leading-tight">{lead.userName}</h3>
+          <h3 className="font-semibold text-sm text-gray-800 leading-tight">{displayName}</h3>
 
           <div className="flex items-center text-xs">
             <FaUser className="text-clr2 mr-1" size={10} />

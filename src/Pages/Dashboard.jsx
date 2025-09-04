@@ -91,12 +91,12 @@ const Dashboard = () => {
           <div className="flex-1 p-2 overflow-y-auto bg-gray-50">
             {renderContent()}
           </div>
-          {user.role === 1 &&
-            !['followup', 'messages', 'clients','myclient','ticket-dashboard','attendance','performance'].includes(activePage) && (
+          {/* {user.role === 1 &&
+            !['accounts','followup', 'messages', 'clients','myclient','ticket-dashboard','attendance','performance'].includes(activePage) && (
               <div className="p-4 bg-gray-50">
                 <NotificationContainer />
               </div>
-            )}
+            )} */}
         </div>
       </div>
     </div>

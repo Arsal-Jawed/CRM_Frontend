@@ -15,7 +15,14 @@ function SelectSecondClosure({ onClose, lead }) {
     fetch(`${IP}/users/getAllUsers`)
       .then(res => res.json())
       .then(data => {
-        const filtered = data.filter(user => user.role === 1 || user.role === 2);
+        const filtered = data
+          .filter(user => user.role === 1 || user.role === 2 || user.role === 6)
+          .sort((a, b) => {
+            if (a.role !== b.role) return a.role - b.role; // role wise sort
+            const nameA = (a.firstName + ' ' + a.lastName).toLowerCase();
+            const nameB = (b.firstName + ' ' + b.lastName).toLowerCase();
+            return nameA.localeCompare(nameB); // name wise sort
+          });
         setUsers(filtered);
       });
   }, []);

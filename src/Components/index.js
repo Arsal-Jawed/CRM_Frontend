@@ -1,3 +1,5 @@
+import RolePieChart from './RolePieChart';
+
 export {default as Login} from './Login';
 export {default as Navbar} from './Navbar';
 export {default as Sidebar} from './Sidebar';
@@ -51,3 +53,14 @@ export {default as FollowUpModal} from './FollowUpModal';
 export {default as VerifyLeadModal} from './VerifyLeadModal';
 export {default as SelectClosureModel} from './SelectClosureModel';
 export {default as SelectSecondClosure} from './SelectSecondClosure';
+export {default as PerformanceHeader} from './PerformanceHeader';
+export {default as PerformanceTableHeaders} from './PerformanceTableHeaders';
+export {default as PerformanceTableRow} from './PerformanceTableRow';
+export {default as LeadAdminHeader} from './LeadAdminHeader';
+export {default as LeadAdminDetails} from './LeadAdminDetails';
+export {default as FollowUpTableHeader} from './FollowUpTableHeader';
+export {default as FollowUpTableRow} from './FollowUpTableRow';
+export {default as TeamsHeader} from './TeamsHeader';
+export {default as TeamDetails} from './TeamDetails';
+export {default as RolePieChart} from './RolePieChart';
+export {default as FiredUsers} from './FiredUsers';
