@@ -40,7 +40,7 @@ function FiredUsers() {
   }
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-5 w-full border border-red-100 flex flex-col" style={{ height: '34vh' }}>
+    <div className="bg-white shadow-lg rounded-xl p-5 w-full border border-red-100 flex flex-col" style={{ height: '30vh' }}>
       {/* Fixed Header Section */}
       <div className="flex justify-between items-center mb-4 pb-2 border-b border-red-200">
         <div className="flex items-center gap-2">

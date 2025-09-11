@@ -56,7 +56,7 @@ const filtered = users
 
 
   return (
-    <div className="bg-white rounded-lg h-[55vh] shadow-sm border border-gray-100 p-4">
+    <div className="bg-white rounded-lg h-[52vh] shadow-sm border border-gray-100 p-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <h2 className="text-lg font-semibold text-gray-800">Employee Management</h2>

@@ -21,12 +21,12 @@ function TicketForm({ onClose, prefill = {} }) {
       fetch(`${IP}/leads/all`)
         .then(res => res.json())
         .then(data => {
-          const match = data.find(
+          const leads = Array.isArray(data) ? data : data.leads || []; // ensure it's always an array
+          const match = leads.find(
             l => l.person_name === prefill.clientName && l.business_name === prefill.businessName
           );
           if (match) setLeadId(match.lead_id);
-        })
-        .catch(err => console.error('Failed to load leadId:', err));
+        }).catch(err => console.error('Failed to load leadId:', err));
     }
   }, [prefill.clientName, prefill.businessName]);
 
