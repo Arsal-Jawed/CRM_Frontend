@@ -15,7 +15,7 @@ import FollowUpTableRow from './FollowUpTableRow';
 function FollowUpTable({ onSelectClient, setCalls }) {
   const [leads, setLeads] = useState([]);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('in process');
   const [showForm, setShowForm] = useState(false);
   const [editLead, setEditLead] = useState(null);
   const [selectedLead, setSelectedLead] = useState(null);
@@ -46,6 +46,19 @@ function FollowUpTable({ onSelectClient, setCalls }) {
     };
     fetchLeads();
   }, [IP, email]);
+  
+    useEffect(() => {
+      if (leads.length > 0 && !selectedLead) {
+        const firstLead = leads[0];
+        setSelectedLead(firstLead);
+        onSelectClient(firstLead);
+
+        fetch(`${CONFIG.API_URL}/calls/client/${firstLead._id}`)
+          .then(res => res.json())
+          .then(data => setCalls(data))
+          .catch(() => setCalls([]));
+      }
+    }, [leads, selectedLead, onSelectClient, setCalls]);
 
   const handleClick = async (lead) => {
     onSelectClient(lead);

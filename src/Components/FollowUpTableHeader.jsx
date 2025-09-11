@@ -15,7 +15,7 @@ function FollowUpTableHeader({
   setStatusFilter 
 }) {
   return (
-    <div className="flex items-center justify-between flex-wrap gap-4">
+    <div className="flex flex-row items-center justify-center flex-wrap gap-1">
       <h2 className="text-base font-semibold text-clr1">Follow Ups</h2>
 
       <div className="flex items-center gap-3 flex-wrap flex-1 justify-end">
@@ -31,7 +31,7 @@ function FollowUpTableHeader({
           className="flex items-center gap-2 bg-clr1 text-white px-3 py-1.5 rounded text-xs hover:bg-orange-600 transition"
         >
           <FaPlus className="text-xs" />
-          Create New Lead
+          New Lead
         </button>
         {selectedLead?.closure1 === email && (
           <button
@@ -50,7 +50,7 @@ function FollowUpTableHeader({
           </button>
         )}
 
-        <div className="relative min-w-[200px]">
+        <div className="relative min-w-[100px]">
           <FaSearch className="absolute left-3 top-2.5 text-gray-400 text-xs" />
           <input
             type="text"

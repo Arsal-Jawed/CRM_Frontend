@@ -165,7 +165,6 @@ function LeadAdminDetails({
         </div>
       </div>
 
-      {role === 1 && (
         <div className="mt-6 flex justify-between gap-3">
           <ActionButton
             onClick={() => setShowFollowUp(true)}
@@ -182,7 +181,6 @@ function LeadAdminDetails({
             disabled={selected?.status === 'won' || selected?.status === 'lost'}
           />
         </div>
-      )}
 
       {showNotes && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">

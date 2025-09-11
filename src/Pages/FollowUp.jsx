@@ -69,7 +69,7 @@ function FollowUp() {
   return (
     <div className="p-4 flex gap-4 z-20">
       <div className="w-[64vw] space-y-2">
-        <ClientDetails client={selectedClient} />
+        <ClientDetails client={selectedClient} setCalls={setCalls} />
         <FollowUpTable onSelectClient={setSelectedClient} setCalls={setCalls} />
       </div>
 
@@ -194,7 +194,7 @@ function FollowUp() {
           onSave={(newCall) =>
             setCalls(prev => [...prev, { _id: Date.now().toString(), ...newCall }])
           }
-          clientId={selectedClient._id}
+          clientId={selectedClient?._id}
         />
       )}
     </div>
