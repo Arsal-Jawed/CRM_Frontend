@@ -73,9 +73,17 @@ function FollowUpTable({ onSelectClient, setCalls }) {
     }
   };
 
+  const today = new Date().toISOString().split("T")[0];
+
   const filtered = leads
     .filter((lead) => (lead.person_name || '').toLowerCase().includes(search.toLowerCase()))
-    .filter((lead) => (statusFilter === 'all' ? true : lead.status === statusFilter));
+    .filter((lead) => {
+      if (statusFilter === 'all') return true;
+      if (statusFilter === 'today') {
+        return lead.followupDate && lead.followupDate.split("T")[0] === today;
+      }
+      return lead.status === statusFilter;
+    });
 
   return (
     <div className="bg-white shadow-md h-[42vh] rounded-lg border border-gray-200 p-4 space-y-3 overflow-hidden hover:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
@@ -91,6 +99,7 @@ function FollowUpTable({ onSelectClient, setCalls }) {
         setSearch={setSearch}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
+        leads={leads}
       />
 
       {toast && (

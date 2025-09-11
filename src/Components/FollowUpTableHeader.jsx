@@ -12,11 +12,19 @@ function FollowUpTableHeader({
   search, 
   setSearch, 
   statusFilter, 
-  setStatusFilter 
+  setStatusFilter,
+  leads
 }) {
+  const today = new Date().toISOString().split("T")[0];
+  const todayFollowupsCount = leads.filter(
+    (lead) => lead.followupDate && lead.followupDate.split("T")[0] === today
+  ).length;
+
   return (
     <div className="flex flex-row items-center justify-center flex-wrap gap-1">
-      <h2 className="text-base font-semibold text-clr1">Follow Ups</h2>
+      <h2 className="text-base font-semibold text-clr1">
+        Follow Ups ({todayFollowupsCount})
+      </h2>
 
       <div className="flex items-center gap-3 flex-wrap flex-1 justify-end">
         <button
@@ -72,6 +80,7 @@ function FollowUpTableHeader({
             <option value="in process">In Process</option>
             <option value="won">Won</option>
             <option value="lost">Lost</option>
+            <option value="today">Today's Followup</option>
           </select>
         </div>
       </div>
