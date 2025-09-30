@@ -21,6 +21,11 @@ function FollowUpModal({ lead, onClose, onScheduled }) {
     });
 
     if (res.ok) {
+      await fetch(`${CONFIG.API_URL}/leads/edit/${lead._id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ followupDate: date }),
+    });
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
