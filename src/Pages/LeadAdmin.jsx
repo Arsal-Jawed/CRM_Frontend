@@ -93,8 +93,9 @@ const filterBySpecificDate = (dateStr) => {
       try {
         const res = await fetch(`${CONFIG.API_URL}/leads/all`);
         const data = await res.json();
-        setAllLeads(data);
-        const unassigned = data.filter(lead => lead.closure1 === 'not specified');
+        const leadsArray = Array.isArray(data) ? data : data.leads || [];
+        setAllLeads(leadsArray);
+        const unassigned = leadsArray.filter(lead => lead.closure1 === 'not specified');
         setLeads(unassigned);
         setSelected(unassigned[0] || null);
         setLoading(false);

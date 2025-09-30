@@ -30,8 +30,8 @@ useEffect(() => {
 
 
   return (
-    <div className="flex p-4 gap-4 z-20">
-      <MyClientTable clients={clients} onSelect={setSelectedClient} />
+    <div className="flex h-[87.4vh] p-4 gap-4 z-20">
+      <div className='w-[55vw]'><MyClientTable clients={clients} onSelect={setSelectedClient} /></div> 
       <MyClientDetails client={selectedClient} />
     </div>
   );

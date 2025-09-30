@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   FiCheckCircle, FiUser, FiBriefcase, FiClock,
-  FiAlertCircle, FiCheck, FiCalendar, FiEdit
+  FiAlertCircle, FiCheck, FiCalendar, FiEdit, FiEye
 } from 'react-icons/fi';
 import CONFIG from '../Configuration';
 
@@ -13,6 +13,7 @@ function TicketCard({ ticket }) {
   const [showEdit, setShowEdit] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [shouldResolveAfterComment, setShouldResolveAfterComment] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const IP = CONFIG.API_URL;
 
@@ -81,19 +82,20 @@ function TicketCard({ ticket }) {
         </div>
       </div>
 
-      <div className="bg-gray-50 p-2 rounded-lg mb-2 text-xs">
-        <p className="text-gray-700 pr-6">{ticket.details}</p>
-      </div>
-
-      <div className="bg-gray-50 p-2 rounded-lg mb-2 text-xs relative">
-        <label className="block text-[11px] font-medium text-gray-500 mb-0.5">Resolver Remarks</label>
-        <p className="text-gray-700 pr-6">{ticket.comment || 'No remarks yet.'}</p>
+      {/* Shortened details with view icon */}
+      <div className="bg-gray-50 p-2 rounded-lg mb-2 text-xs flex justify-between items-center">
+        <p className="text-gray-700 pr-2 truncate w-[90%]">
+          {ticket.details?.length > 50 ? ticket.details.substring(0, 50) + '...' : ticket.details}
+        </p>
+        <button onClick={() => setShowDetails(true)} className="text-gray-400 hover:text-blue-500">
+          <FiEye size={14} />
+        </button>
         <button
           onClick={() => {
             setShowEdit(true);
             setShouldResolveAfterComment(false);
           }}
-          className="absolute top-1 right-1 text-gray-400 hover:text-blue-500"
+          className="text-gray-400 hover:text-blue-500"
         >
           <FiEdit size={12} />
         </button>
@@ -136,6 +138,32 @@ function TicketCard({ ticket }) {
         </div>
       )}
 
+      {/* Details Popup */}
+      {showDetails && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-white p-5 rounded-lg shadow-xl w-[90%] max-w-md space-y-4">
+            <h2 className="text-sm font-semibold text-gray-700 flex items-center">
+              <FiEye size={14} className="mr-1" /> Ticket Details
+            </h2>
+            <div>
+              <p className="text-gray-800 text-sm mb-2">{ticket.details}</p>
+              <p className="text-gray-600 text-xs">
+                <span className="font-semibold">Resolver Remarks: </span>{ticket.comment || 'No remarks yet.'}
+              </p>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowDetails(false)}
+                className="px-3 py-1 text-xs bg-clr1 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Comment Edit Popup */}
       {showEdit && (
         <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-white p-4 rounded-lg shadow-xl w-[90%] max-w-sm space-y-3">

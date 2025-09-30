@@ -1,122 +1,163 @@
-import { useEffect, useState } from 'react';
-import { SaleCard, SaleDetails } from '../Components';
-import CONFIG from '../Configuration';
-import { FaSearch, FaFilter, FaTrophy } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react'
+import CONFIG from '../Configuration'
+import { MyClientDetails, MyClientTableRow, TicketMiniCard } from '../Components'
+import OperationDashboardHeader from '../Components/OperationDashboardHeader'
+import { FiClock, FiList } from 'react-icons/fi'
 
 function OperationDashboard() {
-  const [sales, setSales] = useState([]);
-  const [selectedSale, setSelectedSale] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [clients, setClients] = useState([])
+  const [selectedClient, setSelectedClient] = useState(null)
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('Pending')
+  const [tickets, setTickets] = useState([])
+  const [ticketView, setTicketView] = useState('pending')
 
-  const IP = CONFIG.API_URL;
+  const user = JSON.parse(localStorage.getItem('user'))
+  const email = user.email
+  const role = user.role
 
   useEffect(() => {
-    const fetchSales = async () => {
-      try {
-        const res = await fetch(`${IP}/sales/getSales`);
-        const data = await res.json();
-        setSales(data);
-      } catch (err) {
-        console.error('Failed to fetch sales:', err);
-      }
-    };
-    fetchSales();
-  }, []);
+    const endpoint = [1, 4, 5].includes(role)
+      ? `${CONFIG.API_URL}/leads/allClients`
+      : `${CONFIG.API_URL}/leads/getMyClients/${email}`
 
-  const filteredSales = sales.filter((sale) => {
-    const lead = sale.lead || {};
-    const term = searchTerm.toLowerCase();
+    fetch(endpoint)
+      .then(res => res.json())
+      .then(data => {
+        const filtered = Array.isArray(data)
+          ? data.filter(client => client.status === 'won')
+          : []
+        setClients(filtered)
+        if (filtered.length > 0 && !selectedClient) {
+          setSelectedClient(filtered[0])
+        }
+      })
+      .catch(() => setClients([]))
+  }, [role, email])
 
+  useEffect(() => {
+    fetch(`${CONFIG.API_URL}/tickets/getTickets`)
+      .then(res => res.json())
+      .then(data => {
+        setTickets(Array.isArray(data) ? data : [])
+      })
+      .catch(() => setTickets([]))
+  }, [])
+
+  const filteredClients = clients.filter(client => {
     const matchesSearch =
-      lead.person_name?.toLowerCase().includes(term) ||
-      lead.business_name?.toLowerCase().includes(term) ||
-      lead.business_email?.toLowerCase().includes(term) ||
-      lead.ratedBy?.toLowerCase().includes(term);
+      client.person_name?.toLowerCase().includes(search.toLowerCase()) ||
+      client.business_name?.toLowerCase().includes(search.toLowerCase())
+    const matchesStatus =
+      statusFilter === 'all' ||
+      client.sale?.approvalStatus === statusFilter ||
+      (statusFilter === 'Declined' && client.status === 'lost')
+    return matchesSearch && matchesStatus
+  })
 
-    const matchesStatus = statusFilter ? sale.currentStatus === statusFilter : true;
-
-    return matchesSearch && matchesStatus;
-  });
+  const displayedTickets =
+    ticketView === 'pending'
+      ? tickets.filter(t => t.status?.toLowerCase() === 'pending')
+      : tickets
 
   return (
-    <div className="h-[87vh] w-[92vw] flex gap-6 bg-gray-50 p-6 z-20">
-      {/* Left Panel - Sales List */}
-      <div className="w-[35%] bg-white rounded-lg shadow-sm p-4 overflow-hidden group border border-gray-100">
-        {/* Header with title */}
-        <div className="flex items-center mb-4 pb-2 border-b border-gray-100">
-          <FaTrophy className="text-clr1 mr-2" />
-          <h2 className="text-lg font-semibold text-gray-800">Won Sales</h2>
-          <span className="ml-auto bg-clr1 text-white text-xs px-2 py-1 rounded-full">
-            {filteredSales.length}
-          </span>
-        </div>
+    <div className="flex flex-col gap-2">
+      <OperationDashboardHeader
+        clientsCount={clients.length}
+        search={search}
+        setSearch={setSearch}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        onNewTicket={() => console.log('New Ticket')}
+        onNewClient={() => console.log('New Client')}
+        selectedClient={selectedClient}
+      />
 
-        {/* Search and Filter Row */}
-        <div className="flex gap-2 mb-4">
-          <div className="relative flex-1">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
-            <input
-              type="text"
-              placeholder="Search by name, business or email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 border rounded-md text-sm outline-none focus:ring-1 focus:ring-clr1 focus:border-clr1"
-            />
-          </div>
-          <div className="relative w-40">
-            <FaFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 border rounded-md text-sm outline-none focus:ring-1 focus:ring-clr1 focus:border-clr1 appearance-none bg-white"
-            >
-              <option value="">All Statuses</option>
-              <option value="Pending">Pending</option>
-              <option value="Submitted">Submitted</option>
-              <option value="Approved">Approved</option>
-              <option value="Activated">Activated</option>
-              <option value="Declined">Declined</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Sales List */}
-        <div className="overflow-hidden h-[calc(100%-110px)] group-hover:overflow-y-auto space-y-3 pr-2">
-          {filteredSales.length > 0 ? (
-            filteredSales.map((sale) => (
-              <SaleCard
-                key={sale._id}
-                sale={sale}
-                isSelected={selectedSale?._id === sale._id}
-                onClick={() => setSelectedSale(sale)}
-              />
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              No sales match your criteria
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Right Panel - Sale Details */}
-      <div className="flex-1 bg-white rounded-lg shadow-sm p-5 overflow-hidden group border border-gray-100">
-        <div className="overflow-hidden h-full group-hover:overflow-y-auto pr-2">
-          {selectedSale ? (
-            <SaleDetails sale={selectedSale} />
-          ) : (
-            <div className="h-full flex items-center justify-center text-gray-400">
-              <div className="text-center">
-                <div className="text-5xl mb-2">👈</div>
-                <p>Select a sale to view details</p>
+      <div className="flex gap-2 w-full">
+        <div className="w-[56vw] flex flex-row gap-1">
+          {/* 🔹 Tickets Section */}
+          <div className="bg-white rounded-xl shadow p-4 flex flex-col gap-2 w-[26vw] h-[62vh]">
+            <div className="flex items-center justify-between">
+              <h2 className="font-semibold text-sm">Tickets</h2>
+              <div className="flex gap-2">
+                <FiClock
+                  className={`cursor-pointer ${
+                    ticketView === 'pending'
+                      ? 'text-blue-600'
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                  size={16}
+                  onClick={() => setTicketView('pending')}
+                />
+                <FiList
+                  className={`cursor-pointer ${
+                    ticketView === 'all'
+                      ? 'text-blue-600'
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                  size={16}
+                  onClick={() => setTicketView('all')}
+                />
               </div>
             </div>
-          )}
+            <div className="h-[55vh] overflow-hidden hover:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 space-y-2">
+              {displayedTickets.length > 0 ? (
+                displayedTickets.map(ticket => (
+                  <TicketMiniCard key={ticket._id} ticket={ticket} />
+                ))
+              ) : (
+                <p className="text-gray-400 text-xs text-center mt-10">
+                  No tickets found
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* 🔹 Clients Section */}
+          <div className="w-[30vw] h-[62vh] bg-white rounded-xl shadow p-4 overflow-hidden group">
+            <table className="min-w-full text-[11px] divide-y divide-gray-200">
+              <thead className="bg-gray-50 text-gray-600 uppercase tracking-wider font-semibold sticky top-0 z-10">
+                <tr>
+                  <th className="px-2 py-2 text-left">#</th>
+                  <th className="px-2 py-2 text-left">Name</th>
+                  <th className="px-2 py-2 text-left">Date</th>
+                  <th className="px-2 py-2 text-left">Status</th>
+                </tr>
+              </thead>
+            </table>
+            <div className="max-h-[55vh] overflow-hidden group-hover:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+              <table className="min-w-full text-[11px] divide-y divide-gray-200">
+                <tbody className="bg-white text-gray-800 divide-y divide-gray-100">
+                  {filteredClients.map((client, index) => (
+                    <MyClientTableRow
+                      key={client._id}
+                      client={client}
+                      index={index}
+                      onSelect={setSelectedClient}
+                      setSelectedClient={setSelectedClient}
+                      compact={true}
+                    />
+                  ))}
+                  {filteredClients.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="text-center py-4 text-gray-400">
+                        No clients found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* 🔹 Client Details */}
+        <div className="w-[36vw] h-[62vh] [&>*]:h-full">
+          <MyClientDetails client={selectedClient} />
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default OperationDashboard;
+export default OperationDashboard
