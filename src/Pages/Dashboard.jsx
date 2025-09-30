@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Sidebar, NotificationCard } from '../Components';
-import {NotificationContainer,LeadDashboard,Profile,Accounts,LeadAdmin,Schedules,Teams,FollowUp,MessagePage,Clients,MyTeam,Performance,OperationDashbaord,TicketDashboard,MyClient,DataPage,Attendance} from './index';
+import {NotificationContainer,LeadDashboard,Profile,Accounts,LeadAdmin,Schedules,Teams,FollowUp,MessagePage,MyTeam,Performance,OperationDashbaord,TicketDashboard,MyClient,DataPage,Attendance} from './index';
 import CONFIG from '../Configuration';
 
 const Dashboard = () => {
@@ -47,10 +47,8 @@ const Dashboard = () => {
       case 'messages': return <MessagePage />;
       case 'performance': return <Performance />;
       case 'schedules': return <Schedules />;
-      case 'clients': return <Clients />;
       case 'followup': return <FollowUp />;
       case 'assigned-leads': return <FollowUp />;
-      case 'client-data': return <Clients />;
       case 'lead-dashboard': return <LeadDashboard />;
       case 'profile': return <Profile />;
       case 'myteam': return <MyTeam />;

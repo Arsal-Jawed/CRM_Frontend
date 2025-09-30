@@ -1,103 +1,94 @@
-import React, { useEffect, useState } from 'react'
-import { FaUserCircle, FaEdit, FaStar, FaCheckCircle, FaHourglassHalf, FaTimesCircle } from 'react-icons/fa'
-import CONFIG from '../Configuration';
+import React from 'react';
+import {
+  FiUser, FiBriefcase, FiFileText, FiEdit2
+} from 'react-icons/fi';
 
-function ClientHeader({ client, onEditClick }) {
-  const [leadStats, setLeadStats] = useState({ won: 0, inProcess: 0, lost: 0 })
-  const [saleStats, setSaleStats] = useState({ won: 0, inProcess: 0, lost: 0 })
-
-  const IP = CONFIG.API_URL;
-
-  const rating = client.rating || 0
-  const stars = Array(5).fill(0).map((_, i) => (
-    <FaStar key={i} className={`${i < rating ? 'text-yellow-400' : 'text-gray-300'} text-xs`} />
-  ))
-
-  useEffect(() => {
-    const email = JSON.parse(localStorage.getItem("user")).email
-
-    const fetchLeads = async () => {
-      try {
-        const res = await fetch(`${IP}/leads/email/${email}`)
-        const data = await res.json()
-        const won = data.filter(l => l.status === 'won').length
-        const lost = data.filter(l => l.status === 'lost').length
-        const inProcess = data.filter(l => l.status === 'in process').length
-        setLeadStats({ won, lost, inProcess })
-      } catch (err) {
-        console.error("Error fetching leads:", err)
-      }
-    }
-
-    const fetchSales = async () => {
-      try {
-        const res = await fetch(`${IP}/leads/getByClosure/${email}`)
-        const data = await res.json()
-        const won = data.filter(l => l.status === 'won').length
-        const lost = data.filter(l => l.status === 'lost').length
-        const inProcess = data.filter(l => l.status === 'in process').length
-        setSaleStats({ won, lost, inProcess })
-      } catch (err) {
-        console.error("Error fetching sales:", err)
-      }
-    }
-
-    fetchLeads()
-    fetchSales()
-  }, [])
+function ClientHeader({ client, onEditClick, onFollowUpClick, renderStars }) {
+  const getApplicationStatus = () => {
+    if (client?.status === 'won') return client.sale?.approvalStatus || 'Pending';
+    return client.sale?.leaseApprovalStatus || 'Pending';
+  };
 
   return (
-  <div className="flex flex-col mb-3">
-    <div className="flex justify-between items-start w-full">
-      <div>
-        <div className="flex items-center gap-2">
-          <FaUserCircle className="text-clr1 text-lg" />
-          <h2 className="text-base font-semibold text-gray-800">
-            {client.person_name || 'Client'}
+    <>
+      <div className="pb-4 border-b border-gray-100 flex justify-between items-start">
+        <div>
+          <h2 className="text-[1.1vw] font-semibold text-gray-800 flex items-center">
+            <FiUser className="mr-2 text-clr1" />
+            {client.person_name} {client.legal_name ? `(${client.legal_name})` : ''}
           </h2>
-          <div className="flex items-center gap-1 ml-1">
-            {stars}
-            <span className="text-xs text-gray-500 ml-1">({rating.toFixed(1)})</span>
+          <p className="text-gray-600 text-[0.9vw] flex items-center mt-1">
+            <FiBriefcase className="mr-2 text-clr2" />
+            {client.business_name}
+          </p>
+          <div className="flex flex-col mt-2">
+            <div className="flex items-center">
+              {renderStars(client.rating)}<span className='text-gray-400 text-[0.7vw] ml-[1vw]'> ({client.ratingDate?.slice(0, 10) || ''})</span>
+            </div>
+            <div className="flex items-center text-[0.8vw] text-gray-500 mt-1 space-x-2">
+              <FiUser className="text-clr1" />
+              <span>
+                {client.closure1 ? client.closure1Name : 'Not Specified'}
+              </span>
+              <button
+                onClick={onFollowUpClick}
+                title="Assign Follow-up"
+                className="text-clr1 hover:text-clr2"
+              >
+                <FiEdit2 className="text-base" />
+              </button>
+            </div>
           </div>
+          {client.notes && (
+            <p className="text-gray-500 text-[0.7vw] flex items-center mt-1">
+              <FiFileText className="mr-2 text-clr3" />
+              {client.notes}
+            </p>
+          )}
         </div>
-        <p className="text-xs text-gray-500 mt-1">{client.business_name}</p>
-      </div>
-
-      {/* Stats moved here */}
-      <div className="flex items-center gap-5 text-xs mx-4">
-        <div className="flex items-center gap-1 text-gray-400">
-          <FaCheckCircle /> {leadStats.won} Leads
-        </div>
-        <div className="flex items-center gap-1 text-gray-400">
-          <FaHourglassHalf /> {leadStats.inProcess} Leads
-        </div>
-        <div className="flex items-center gap-1 text-gray-400">
-          <FaTimesCircle /> {leadStats.lost} Leads
-        </div>
-        <div className="flex items-center gap-1 text-gray-400">
-          <FaCheckCircle /> {saleStats.won} Sales
-        </div>
-        <div className="flex items-center gap-1 text-gray-400">
-          <FaHourglassHalf /> {saleStats.inProcess} Sales
-        </div>
-        <div className="flex items-center gap-1 text-gray-400">
-          <FaTimesCircle /> {saleStats.lost} Sales
+        <div className="flex flex-col items-end">
+          <button
+            className="text-sm text-clr1 hover:text-clr2"
+            onClick={onEditClick}
+          >
+            <FiEdit2 className="text-lg" />
+          </button>
         </div>
       </div>
 
-      <div className="flex flex-col items-end">
-        <button
-          onClick={onEditClick}
-          className="text-gray-400 hover:text-clr1 p-1 rounded-full hover:bg-clr1/10 transition"
+      <div className="flex space-x-3 mt-3">
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${client.status === 'won' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+          {client.status}
+        </span>
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+          getApplicationStatus() === 'Approved'
+            ? 'bg-green-100 text-green-800'
+            : getApplicationStatus() === 'Pending'
+              ? 'bg-yellow-100 text-yellow-800' : getApplicationStatus() === 'Underwriting'
+              ? 'bg-yellow-100 text-yellow-800'
+              : 'bg-red-100 text-red-800'
+        }`}>
+          {client.status === 'won' ? 'Application' : 'Lease'}: {getApplicationStatus()}
+        </span>
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            client.sale?.leaseApprovalStatus === 'Approved'
+              ? 'bg-green-100 text-green-800'
+              : client.sale?.leaseApprovalStatus === 'Pending'
+                ? 'bg-yellow-100 text-yellow-800'
+                : 'bg-red-100 text-red-800'
+          }`}
         >
-          <FaEdit size={12} />
-        </button>
-        <span className="text-xs text-gray-400 mt-1">{client.lead_gen || 'Lead Source'}</span>
-      </div>
-    </div>
-  </div>
-)
+          Lease: {client.sale?.leaseApprovalStatus || 'N/A'}
+        </span>
 
+        <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+          Credit Score: {client.sale?.creditScore ? client.sale.creditScore : " --"}
+        </span>
+
+      </div>
+    </>
+  );
 }
 
-export default ClientHeader
+export default ClientHeader;
