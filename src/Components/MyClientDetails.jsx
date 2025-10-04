@@ -3,7 +3,7 @@ import CONFIG from '../Configuration';
 import {
   DocumentCard, LeadEditForm, EquipementForm, EquipmentCard, AddEquipmentForm,
   SaleEditForm, DocForm, SelectClosureModel, ClientPersonalInfo,
-  ClientEquipmentSection, ClientSaleDetails, ClientDocumentsAndNotes
+  ClientEquipmentSection, ClientSaleDetails, ClientDocumentsAndNotes, UpdateRMModal
 } from '../Components';
 import MyClientHeader from './MyClientHeader';
 import { FiUser } from 'react-icons/fi';
@@ -19,6 +19,8 @@ function MyClientDetails({ client }) {
   const [showNotesEdit, setShowNotesEdit] = useState(false);
   const [notesText, setNotesText] = useState(client?.notes || '');
   const [showFollowUpPopup, setShowFollowUpPopup] = useState(false);
+  const [showRMPopup, setShowRMPopup] = useState(false);
+  const [currentClient, setCurrentClient] = useState(client);
 
 
   const containerRef = useRef(null);
@@ -53,6 +55,10 @@ function MyClientDetails({ client }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+   useEffect(() => {
+    setCurrentClient(client);
+  }, [client]);
+
   const renderStars = (rating) => {
     const filled = '★'.repeat(rating);
     const empty = '☆'.repeat(5 - rating);
@@ -69,9 +75,10 @@ function MyClientDetails({ client }) {
         {client ? (
           <>
             <MyClientHeader
-              client={client}
+              client={currentClient}
               onEditClick={() => setShowLeadEdit(true)}
               onFollowUpClick={() => setShowFollowUpPopup(true)}
+              onRMClick={() => setShowRMPopup(true)}
               renderStars={renderStars}
             />
 
@@ -128,6 +135,20 @@ function MyClientDetails({ client }) {
             onClose={() => setShowFollowUpPopup(false)}
           />
         )}
+
+        {showRMPopup && (
+          <UpdateRMModal
+            client={currentClient}
+            onClose={() => setShowRMPopup(false)}
+            onSuccess={(updatedSale) => {
+              setCurrentClient((prev) => ({
+                ...prev,
+                sale: { ...prev.sale, rm: updatedSale.rm }
+              }));
+            }}
+          />
+        )}
+
       </div>
     </div>
   );

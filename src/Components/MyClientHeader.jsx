@@ -3,7 +3,7 @@ import {
   FiUser, FiBriefcase, FiFileText, FiEdit2
 } from 'react-icons/fi';
 
-function MyClientHeader({ client, onEditClick, onFollowUpClick, renderStars }) {
+function MyClientHeader({ client, onEditClick, onFollowUpClick, onRMClick, renderStars }) {
   const getApplicationStatus = () => {
     if (client?.status === 'won') return client.sale?.approvalStatus || 'Pending';
     return client.sale?.leaseApprovalStatus || 'Pending';
@@ -33,6 +33,18 @@ function MyClientHeader({ client, onEditClick, onFollowUpClick, renderStars }) {
               <button
                 onClick={onFollowUpClick}
                 title="Assign Follow-up"
+                className="text-clr1 hover:text-clr2"
+              >
+                <FiEdit2 className="text-base" />
+              </button>
+            </div>
+            <div className="flex items-center text-[0.8vw] text-gray-500 mt-1 space-x-2">
+              <span>
+                <span className='text-clr1 font-bold'>RM:</span> {client.sale.rm ? client.sale.rm : 'Not Specified'}
+              </span>
+              <button
+                onClick={onRMClick}
+                title="Assign RM"
                 className="text-clr1 hover:text-clr2"
               >
                 <FiEdit2 className="text-base" />

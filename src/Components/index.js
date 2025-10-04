@@ -71,3 +71,4 @@ export {default as ClientEquipmentSection} from './ClientEquipmentSection';
 export {default as ClientSaleDetails} from './ClientSaleDetails';
 export {default as ClientDocumentsAndNotes} from './ClientDocumentsAndNotes';
 export {default as OperationDashboardHeader} from './OperationDashboardHeader';
+export {default as UpdateRMModal} from './UpdateRMModel';
