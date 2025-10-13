@@ -4,11 +4,18 @@ import {
 } from 'react-icons/fi';
 
 function MyClientHeader({ client, onEditClick, onFollowUpClick, onRMClick, renderStars }) {
+    if (!client) {
+    return (
+      <div className="text-gray-400 text-sm italic py-2">
+        Loading client details...
+      </div>
+    );
+  }
+
   const getApplicationStatus = () => {
     if (client?.status === 'won') return client.sale?.approvalStatus || 'Pending';
     return client.sale?.leaseApprovalStatus || 'Pending';
   };
-
   return (
     <>
       <div className="pb-4 border-b border-gray-100 flex justify-between items-start">

@@ -64,7 +64,7 @@ function MyClientDetails({ client }) {
     const empty = '☆'.repeat(5 - rating);
     return <span className="text-yellow-500 text-sm ml-1">{filled}{empty}</span>;
   };
-
+console.log("Curretn Client: "+currentClient)
   return (
     <div className="flex-1 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden group transition-all duration-200 hover:shadow-md">
       <div
