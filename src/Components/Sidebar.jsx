@@ -46,6 +46,7 @@ const menuByRole = {
   ],
   4: [
     { label: 'Operation', icon: FiGrid, key: 'operation-dashboard' },
+    { label: 'Leads', icon: FiTrendingUp, key: 'leads' },
     { label: 'Tickets', icon: FiFileText, key: 'ticket-dashboard' },
     { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },

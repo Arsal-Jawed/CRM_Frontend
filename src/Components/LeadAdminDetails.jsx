@@ -5,6 +5,7 @@ import {
   FaQuoteLeft, FaTimes
 } from 'react-icons/fa';
 import SelectSecondClosure from './SelectSecondClosure';
+import CONFIG from '../Configuration';
 
 function LeadAdminDetails({ 
   selected, 
@@ -109,6 +110,30 @@ function LeadAdminDetails({
             <FaRegCalendarAlt className="text-gray-400" />
             <span>{formatDates(selected.followupDate)}</span>
           </div>
+          {role === 4 && selected.status === 'pending' && (
+            <button
+              onClick={async () => {
+                try {
+                  const res = await fetch(`${CONFIG.API_URL}/leads/approve/${selected._id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                  })
+                  if (res.ok) {
+                    alert('Lead Approved Successfully!')
+                    selected.status = 'in process'
+                  } else {
+                    alert('Failed to approve lead.')
+                  }
+                } catch (err) {
+                  console.error(err)
+                  alert('Error approving lead.')
+                }
+              }}
+              className="mt-2 px-4 py-1.5 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg shadow-sm transition"
+            >
+              Approve
+            </button>
+          )}
         </div>
         <div className="text-right space-y-2">
           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
