@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FaUsers, FaTrophy, FaTimes, FaSync, FaStar } from 'react-icons/fa';
+import { FaUsers, FaTrophy, FaTimes, FaSync, FaStar, FaClock } from 'react-icons/fa';
 import CONFIG from '../Configuration';
 
 function LeadPerformance() {
@@ -8,7 +8,10 @@ function LeadPerformance() {
     wonLeads: 0,
     lostLeads: 0,
     inProcess: 0,
-    rating: 0
+    pending: 0,
+    rejected: 0,
+    rating: 0,
+    points: 0
   });
 
   const IP = CONFIG.API_URL;
@@ -24,6 +27,20 @@ function LeadPerformance() {
         const won = leads.filter(l => l.status === 'won').length;
         const lost = leads.filter(l => l.status === 'lost').length;
         const inProcess = leads.filter(l => l.status === 'in process').length;
+        const pending = leads.filter(l => l.status === 'pending').length;
+        const rejected = leads.filter(l => l.status === 'rejected').length;
+
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+
+        const monthlyInProcess = leads.filter(l => {
+          const date = new Date(l.createdAt);
+          return (
+            l.status === 'in process' &&
+            date.getMonth() === currentMonth &&
+            date.getFullYear() === currentYear
+          );
+        }).length;
 
         const ratings = leads.map(l => l.rating).filter(Boolean);
         const avgRating = ratings.length
@@ -34,8 +51,11 @@ function LeadPerformance() {
           totalLeads: total,
           wonLeads: won,
           lostLeads: lost,
-          inProcess: inProcess,
-          rating: avgRating
+          inProcess,
+          pending,
+          rejected,
+          rating: avgRating,
+          points: monthlyInProcess
         });
       } catch (err) {
         console.error('Failed to fetch leads by email', err);
@@ -61,11 +81,16 @@ function LeadPerformance() {
   return (
     <div className="bg-white rounded-lg shadow p-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-base font-semibold text-gray-700 flex items-center">
-          <svg className="w-4 h-4 text-blue-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="..." clipRule="evenodd" />
-          </svg>
-          Performance
+        <h2 className="text-base font-semibold text-gray-700 flex items-center gap-2">
+          <span className="flex items-center">
+            <svg className="w-4 h-4 text-blue-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="..." clipRule="evenodd" />
+            </svg>
+            Performance
+          </span>
+          <span className="text-xs text-gray-400 font-normal">
+            ({performanceData.points} pts)
+          </span>
         </h2>
         <div className="flex items-center gap-2">
           <div className="flex">{renderStars(performanceData.rating)}</div>
@@ -75,7 +100,7 @@ function LeadPerformance() {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-6 gap-3">
         <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 shadow-sm">
           <div className="flex items-center gap-2 mb-1">
             <FaUsers className="text-blue-500 text-lg" />
@@ -106,6 +131,22 @@ function LeadPerformance() {
             <p className="text-sm font-medium text-yellow-700">In Process</p>
           </div>
           <p className="text-lg font-bold text-yellow-900">{performanceData.inProcess}</p>
+        </div>
+
+        <div className="bg-purple-50 p-3 rounded-lg border border-purple-200 shadow-sm">
+          <div className="flex items-center gap-2 mb-1">
+            <FaClock className="text-purple-500 text-lg" />
+            <p className="text-sm font-medium text-purple-700">Pending</p>
+          </div>
+          <p className="text-lg font-bold text-purple-900">{performanceData.pending}</p>
+        </div>
+
+        <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
+          <div className="flex items-center gap-2 mb-1">
+            <FaTimes className="text-gray-500 text-lg" />
+            <p className="text-sm font-medium text-gray-700">Rejected</p>
+          </div>
+          <p className="text-lg font-bold text-gray-900">{performanceData.rejected}</p>
         </div>
       </div>
     </div>

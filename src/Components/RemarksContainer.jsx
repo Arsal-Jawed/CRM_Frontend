@@ -1,76 +1,138 @@
-import { useEffect, useState, useRef } from 'react';
-import Remarks from './Remarks';
-import CONFIG from '../Configuration';
+import { useEffect, useState, useRef } from 'react'
+import { CheckCircle2, Clock4, XCircle, User, Building2, MessageSquare } from 'lucide-react'
+import CONFIG from '../Configuration'
+
+function QACard({ remark, active, innerRef }) {
+  const getStatusStyle = (status) => {
+    const s = status?.toLowerCase()
+    if (s === 'approved' || s === 'in process')
+      return {
+        text: 'Approved',
+        color: 'text-green-600',
+        icon: <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
+      }
+    if (s === 'pending')
+      return {
+        text: 'Pending',
+        color: 'text-orange-500',
+        icon: <Clock4 className="w-3.5 h-3.5 text-orange-500" />
+      }
+    if (s === 'rejected')
+      return {
+        text: 'Rejected',
+        color: 'text-red-600',
+        icon: <XCircle className="w-3.5 h-3.5 text-red-600" />
+      }
+    return {
+      text: 'Unknown',
+      color: 'text-gray-500',
+      icon: <Clock4 className="w-3.5 h-3.5 text-gray-500" />
+    }
+  }
+
+  const { text, color, icon } = getStatusStyle(remark.status)
+
+  return (
+    <div
+      ref={innerRef}
+      className={`bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-300 ${
+        active ? 'ring-1 ring-[var(--clr1)] scale-[1.01]' : ''
+      }`}
+    >
+      <div className="flex justify-between items-start mb-1">
+        <div>
+          <h3 className="text-gray-800 font-medium text-sm flex items-center gap-1">
+            <User className="w-3.5 h-3.5 text-[var(--clr1)]" />
+            {remark.person_name || 'N/A'}
+          </h3>
+          <p className="text-gray-500 text-xs flex items-center gap-1 mt-1">
+            <Building2 className="w-3.5 h-3.5 text-[var(--clr1)]" />
+            {remark.business_name || 'N/A'}
+          </p>
+          <p className="text-gray-500 italic text-[11px] mt-1">
+            {remark.qa_remarks || 'No QA remarks available.'}
+          </p>
+        </div>
+
+        <div className="text-right">
+          <p className={`text-xs font-semibold flex items-center justify-end gap-1 ${color}`}>
+            {icon}
+            {text}
+          </p>
+          <p className="text-gray-400 text-[10px] mt-1">
+            {remark.createdAt?.slice(0, 10) || remark.date?.slice(0, 10) || '—'}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function RemarksContainer() {
-  const email = JSON.parse(localStorage.getItem('user')).email;
-  const [remarks, setRemarks] = useState([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const IP = CONFIG.API_URL;
-  const remarkRefs = useRef([]);
+  const user = JSON.parse(localStorage.getItem('user'))
+  const email = user?.email
+  const [remarks, setRemarks] = useState([])
+  const [activeIndex, setActiveIndex] = useState(0)
+  const IP = CONFIG.API_URL
+  const remarkRefs = useRef([])
 
   useEffect(() => {
-    const fetchRemarks = async () => {
+    const fetchLeads = async () => {
       try {
-        const res = await fetch(`${IP}/remarks/leadGen/${email}`);
-        const data = await res.json();
-        const sorted = data.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setRemarks(sorted);
-        setActiveIndex(0);
+        const res = await fetch(`${IP}/leads/email/${email}`)
+        const data = await res.json()
+        setRemarks(data)
       } catch (err) {
-        console.error('Failed to fetch remarks', err);
+        console.error('Error fetching leads:', err)
       }
-    };
-
-    fetchRemarks();
-  }, [email]);
+    }
+    fetchLeads()
+  }, [IP, email])
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowDown') {
-        setActiveIndex((prev) => Math.min(prev + 1, remarks.length - 1));
+        setActiveIndex((prev) => Math.min(prev + 1, remarks.length - 1))
       } else if (e.key === 'ArrowUp') {
-        setActiveIndex((prev) => Math.max(prev - 1, 0));
+        setActiveIndex((prev) => Math.max(prev - 1, 0))
       }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [remarks.length]);
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [remarks.length])
 
   useEffect(() => {
     if (remarkRefs.current[activeIndex]) {
       remarkRefs.current[activeIndex].scrollIntoView({
         behavior: 'smooth',
         block: 'center'
-      });
+      })
     }
-  }, [activeIndex]);
+  }, [activeIndex])
+
+  const points = remarks.filter(l => l.status?.toLowerCase() === 'in process').length
 
   return (
-    <div className="w-96 h-[80vh] bg-white rounded-xl shadow-md p-6 overflow-hidden">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Remarks</h2>
-      <div className="space-y-4 h-full">
-        {remarks.map((remark, index) => (
-          <div
-            key={remark.remarkId}
-            ref={(el) => (remarkRefs.current[index] = el)}
-            className={`transition-all duration-200 rounded-xl ${
-              index === activeIndex ? 'bg-blue-50 border-l-4 border-blue-500 scale-100' : 'opacity-60 scale-95'
-            }`}
-          >
-            <Remarks
-              remark={{
-                text: remark.remark,
-                date: new Date(remark.date).toLocaleDateString(),
-                closureName: remark.closureName
-              }}
+    <div className="w-80 h-[80vh] bg-white rounded-xl shadow-md p-5 overflow-y-auto">
+      <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center justify-between">
+        Performance
+        <span className="text-gray-400 text-sm">{points} points</span>
+      </h2>
+      <div className="space-y-3">
+        {remarks
+          .slice()
+          .reverse()
+          .map((r, i) => (
+            <QACard
+              key={i}
+              remark={r}
+              active={activeIndex === i}
+              innerRef={(el) => (remarkRefs.current[i] = el)}
             />
-          </div>
-        ))}
+          ))}
       </div>
     </div>
-  );
+  )
 }
 
-export default RemarksContainer;
+export default RemarksContainer

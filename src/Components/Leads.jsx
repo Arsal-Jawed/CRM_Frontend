@@ -121,7 +121,12 @@ function Leads() {
       <div className={`relative transition-all duration-300 ${isPopupOpen ? 'blur-sm pointer-events-none select-none' : ''}`}>
         <div className="bg-white rounded-xl h-[53vh] shadow-md p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Leads</h2>
+            <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+              Leads
+              <span className="text-sm text-gray-400 font-normal">
+                ({filteredLeads.length} total)
+              </span>
+            </h2>
             <div className="flex gap-2">
                <button onClick={() => setShowVerifyPopup(true)}
                   className="bg-blue-500 text-white text-sm px-4 py-2 rounded-md hover:opacity-90">
@@ -131,7 +136,7 @@ function Leads() {
                 onClick={() => setShowAddPopup(true)}
                 className="bg-grd1 text-white text-sm px-4 py-2 rounded-md hover:opacity-90"
               >
-                + Add Lead
+                + New Lead
               </button>
               <input
                 type="text"
