@@ -87,7 +87,8 @@ function LeadAdminDetails({ selected, users, role, setShowFollowUp, showNotes, s
     }
   };
 
-  const handleUploadAudio = async () => {
+  const handleUploadAudio = async (e) => {
+    e.preventDefault();
     if (!audioFile) {
       alert('Pehle audio file select karein!');
       return;
@@ -499,24 +500,24 @@ function LeadAdminDetails({ selected, users, role, setShowFollowUp, showNotes, s
       )}
 
       {showQARemarks && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 p-6">
-            <div className="flex justify-between items-center border-b pb-3 mb-4">
-              <h3 className="text-base font-semibold text-clr1">QA Remarks</h3>
-              <button onClick={() => setShowQARemarks(false)} className="text-gray-400 hover:text-clr1 transition">
-                <FaTimes size={16} />
-              </button>
-            </div>
-            <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed bg-gray-50 p-4 rounded-lg border">
-              {selected.QARemarks || selected.qaRemarks ? (
-                <p>{selected.QARemarks || selected.qaRemarks}</p>
-              ) : (
-                <p className="italic text-gray-400">No QA remarks available</p>
-              )}
-            </div>
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 p-6">
+          <div className="flex justify-between items-center border-b pb-3 mb-4">
+            <h3 className="text-base font-semibold text-clr1">QA Remarks</h3>
+            <button onClick={() => setShowQARemarks(false)} className="text-gray-400 hover:text-clr1 transition">
+              <FaTimes size={16} />
+            </button>
+          </div>
+          <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed bg-gray-50 p-4 rounded-lg border">
+            {selected.QARemarks || selected.qaRemarks ? (
+              <p>{selected.QARemarks || selected.qaRemarks}</p>
+            ) : (
+              <p className="italic text-gray-400">No QA remarks available</p>
+            )}
           </div>
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 }
