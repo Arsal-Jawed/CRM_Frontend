@@ -17,7 +17,7 @@ function LeadAdminDetails({ selected, users, role, setShowFollowUp, showNotes, s
   const [uploading, setUploading] = useState(false);
   const [showQARemarks, setShowQARemarks] = useState(false);
 
-  
+ 
   // Audio Player State
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -88,10 +88,6 @@ function LeadAdminDetails({ selected, users, role, setShowFollowUp, showNotes, s
   };
 
   const handleUploadAudio = async (e) => {
-
-    e.preventDefault()
-    e.stopPropagation()
-  const handleUploadAudio = async (e) => {
     e.preventDefault();
     if (!audioFile) {
       alert('Pehle audio file select karein!');
@@ -112,6 +108,8 @@ function LeadAdminDetails({ selected, users, role, setShowFollowUp, showNotes, s
       if (res.ok) {
         const data = await res.json();
         alert('Audio successfully upload ho gayi!');
+        selected.file_path = data.data.file_path;
+        selected.record_id = data.data.record_id;
         setShowUploadModal(false);
         setAudioFile(null);
       } else {
@@ -124,15 +122,6 @@ function LeadAdminDetails({ selected, users, role, setShowFollowUp, showNotes, s
       setUploading(false);
     }
   };
-
-  useEffect(() => {
-  const handleEnter = (e) => {
-    if (e.key === 'Enter') e.preventDefault()
-  }
-  window.addEventListener('keydown', handleEnter)
-  return () => window.removeEventListener('keydown', handleEnter)
-}, [])
-
 
   // Audio Player Functions
   const togglePlayPause = () => {
@@ -397,51 +386,47 @@ function LeadAdminDetails({ selected, users, role, setShowFollowUp, showNotes, s
         />
       </div>
 
+      {/* Upload Audio Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 p-6">
             <div className="flex justify-between items-center border-b pb-3 mb-4">
               <h3 className="text-base font-semibold text-clr1">Upload Audio Recording</h3>
-              <button 
-                type="button"
-                onClick={() => setShowUploadModal(false)} 
-                className="text-gray-400 hover:text-clr1 transition"
-              >
+              <button onClick={() => setShowUploadModal(false)} className="text-gray-400 hover:text-clr1 transition">
                 <FaTimes size={16} />
               </button>
             </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Audio File (MP3, WAV, M4A)
-                </label>
-                <input
-                  type="file"
-                  accept="audio/*"
-                  onChange={handleFileChange}
-                  className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-1 focus:ring-clr1"
-                />
-                {audioFile && (
-                  <p className="text-xs text-gray-500 mt-2">Selected: {audioFile.name}</p>
-                )}
-              </div>
+           
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select Audio File (MP3, WAV, M4A)
+              </label>
+              <input
+                type="file"
+                accept="audio/*"
+                onChange={handleFileChange}
+                className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-1 focus:ring-clr1"
+              />
+              {audioFile && (
+                <p className="text-xs text-gray-500 mt-2">Selected: {audioFile.name}</p>
+              )}
+            </div>
 
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowUploadModal(false)} 
-                  className="px-4 py-2 text-sm border rounded-md text-gray-600 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUploadAudio}
-                  type="button"
-                  disabled={uploading || !audioFile}
-                  className="px-4 py-2 text-sm text-white rounded-md bg-clr1 hover:bg-clr2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {uploading ? 'Uploading...' : 'Upload'}
-                </button>
-              </div>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="px-4 py-2 text-sm border rounded-md text-gray-600 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUploadAudio}
+                disabled={uploading || !audioFile}
+                className="px-4 py-2 text-sm text-white rounded-md bg-clr1 hover:bg-clr2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {uploading ? 'Uploading...' : 'Upload'}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -57,6 +57,7 @@ const menuByRole = {
     { label: 'Accounts', icon: FiUserCheck, key: 'accounts' },
     { label: 'Operation', icon: FiGrid, key: 'operation-dashboard' },
     { label: 'Tickets', icon: FiFileText, key: 'ticket-dashboard' },
+    { label: 'Leads', icon: FiTrendingUp, key: 'leads' },
     { label: 'MyClients', icon: FiBriefcase, key: 'myclient' },
     { label: 'Schedules', icon: FiClock, key: 'schedules' },
     { label: 'Messages', icon: FiMessageSquare, key: 'messages' },

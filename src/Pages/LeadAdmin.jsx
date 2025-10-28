@@ -80,7 +80,6 @@ function LeadAdmin() {
         const res = await fetch(`${CONFIG.API_URL}/leads/all`)
         const data = await res.json()
         const leadsArray = Array.isArray(data) ? data : data.leads || []
-
         let filteredLeads = leadsArray
         if (role === 1) filteredLeads = leadsArray.filter((l) => l.status !== 'pending')
         if (role === 4) filteredLeads = leadsArray.filter((l) => l.status === 'pending')
