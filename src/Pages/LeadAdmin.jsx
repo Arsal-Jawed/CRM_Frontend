@@ -67,7 +67,7 @@ function LeadAdmin() {
     setTimeout(() => {
       if (status === 'all') setLeads(allLeads)
       else if (status === 'unassigned')
-        setLeads(allLeads.filter((lead) => lead.closure1 === 'not specified'))
+        setLeads(allLeads.filter((lead) => lead.status === 'in process' && lead.closure1 === 'not specified'))
       else setLeads(allLeads.filter((lead) => lead.status === status))
       setSelected(null)
       setLoading(false)
@@ -86,7 +86,7 @@ function LeadAdmin() {
         if (role === 4) filteredLeads = leadsArray.filter((l) => l.status === 'pending')
 
         setAllLeads(filteredLeads)
-        const unassigned = filteredLeads.filter((lead) => lead.closure1 === 'not specified')
+        const unassigned = filteredLeads.filter((lead) => lead.closure1 === 'not specified' && lead.status === 'in process')
         setLeads(unassigned.length ? unassigned : filteredLeads)
         setSelected((unassigned[0] || filteredLeads[0]) || null)
         setLoading(false)
@@ -130,7 +130,8 @@ function LeadAdmin() {
     won: allLeads.filter((l) => l.status === 'won').length,
     loss: allLeads.filter((l) => l.status === 'loss').length,
     inProcess: allLeads.filter((l) => l.status === 'in process').length,
-    unassigned: allLeads.filter((l) => l.closure1 === 'not specified').length
+    unassigned: allLeads.filter((l) => l.closure1 === 'not specified' && l.status === 'in process').length,
+    rejected: allLeads.filter((l) => l.status === 'rejected').length
   }
 
   return (
