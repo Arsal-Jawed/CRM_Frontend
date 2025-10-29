@@ -8,7 +8,8 @@ import {
   FaHourglassHalf, 
   FaUserSlash, 
   FaGlobe,
-  FaBan
+  FaBan, 
+  FaClock
 } from 'react-icons/fa'
 
 function LeadAdminHeader({ 
@@ -66,34 +67,24 @@ function LeadAdminHeader({
         </h2>
 
         <div className="flex items-center gap-3 text-gray-400 text-sm">
-          <button onClick={() => filterByStatus('won')} title="Won Leads" className="hover:text-green-600">
-            <FaCheckCircle />
-          </button>
-          <button onClick={() => filterByStatus('loss')} title="Loss Leads" className="hover:text-red-600">
-            <FaTimesCircle />
-          </button>
-          <button onClick={() => filterByStatus('in process')} title="In Process Leads" className="hover:text-yellow-600">
-            <FaHourglassHalf />
-          </button>
-          <button onClick={() => filterByStatus('unassigned')} title="Unassigned Leads" className="hover:text-blue-600">
-            <FaUserSlash />
-          </button>
-          <button onClick={() => filterByStatus('rejected')} title="Rejected Leads" className="hover:text-purple-600">
-            <FaBan />
-          </button>
-          <button onClick={() => filterByStatus('all')} title="All Leads" className="hover:text-gray-800">
-            <FaGlobe />
-          </button>
+          <button onClick={() => filterByStatus('won')} title="Won Leads" className="hover:text-green-600"><FaCheckCircle /></button>
+          <button onClick={() => filterByStatus('loss')} title="Loss Leads" className="hover:text-red-600"><FaTimesCircle /></button>
+          <button onClick={() => filterByStatus('in process')} title="In Process Leads" className="hover:text-yellow-600"><FaHourglassHalf /></button>
+          <button onClick={() => filterByStatus('pending')} title="Pending Leads" className="hover:text-orange-600"><FaClock /></button>
+          <button onClick={() => filterByStatus('unassigned')} title="Unassigned Leads" className="hover:text-blue-600"><FaUserSlash /></button>
+          <button onClick={() => filterByStatus('rejected')} title="Rejected Leads" className="hover:text-purple-600"><FaBan /></button>
+          <button onClick={() => filterByStatus('all')} title="All Leads" className="hover:text-gray-800"><FaGlobe /></button>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 text-xs font-medium">
-        {/* <span className="px-2 py-1 rounded bg-gray-100">Total: {stats.total}</span> */}
-        <span className="px-2 py-1 rounded bg-green-100 text-green-700">Won: {stats.won}</span>
-        <span className="px-2 py-1 rounded bg-red-100 text-red-700">Loss: {stats.loss}</span>
-        <span className="px-2 py-1 rounded bg-yellow-100 text-yellow-700">In Process: {stats.inProcess}</span>
-        <span className="px-2 py-1 rounded bg-blue-100 text-blue-700">Unassigned: {stats.unassigned}</span>
-        <span className="px-2 py-1 rounded bg-purple-100 text-purple-700">Rejected: {stats.rejected}</span>
+      <div className="flex flex-wrap gap-2 text-xs font-medium items-center">
+        <span className="px-2 py-1 rounded bg-gray-100 flex items-center gap-1"><FaGlobe className="text-gray-500" />Total: {stats.total}</span>
+        <span className="px-2 py-1 rounded bg-green-100 text-green-700 flex items-center gap-1"><FaCheckCircle />Won: {stats.won}</span>
+        <span className="px-2 py-1 rounded bg-red-100 text-red-700 flex items-center gap-1"><FaTimesCircle />Loss: {stats.loss}</span>
+        <span className="px-2 py-1 rounded bg-orange-100 text-orange-700 flex items-center gap-1"><FaClock />Pending: {stats.pending}</span>
+        <span className="px-2 py-1 rounded bg-yellow-100 text-yellow-700 flex items-center gap-1"><FaHourglassHalf />In Process: {stats.inProcess}</span>
+        <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 flex items-center gap-1"><FaUserSlash />Unassigned: {stats.unassigned}</span>
+        <span className="px-2 py-1 rounded bg-purple-100 text-purple-700 flex items-center gap-1"><FaBan />Rejected: {stats.rejected}</span>
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -123,20 +114,12 @@ function LeadAdminHeader({
           )}
         </select>
 
-        <button
-          onClick={showTodaysLeads}
-          className="p-2 rounded bg-clr1 text-white hover:bg-clr1/80"
-          title="Show Today's Leads"
-        >
+        <button onClick={showTodaysLeads} className="p-2 rounded bg-clr1 text-white hover:bg-clr1/80" title="Show Today's Leads">
           <FaCalendarAlt className="text-sm" />
         </button>
 
         <div className="relative">
-          <button
-            onClick={() => setShowDateInput(!showDateInput)}
-            className="p-2 rounded bg-clr1 text-white hover:bg-clr1/80"
-            title="Filter by Specific Date"
-          >
+          <button onClick={() => setShowDateInput(!showDateInput)} className="p-2 rounded bg-clr1 text-white hover:bg-clr1/80" title="Filter by Specific Date">
             <FaCalendarCheck className="text-sm" />
           </button>
           {showDateInput && (
