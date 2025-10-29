@@ -1,36 +1,24 @@
 import { useEffect, useState, useRef } from 'react'
-import { CheckCircle2, Clock4, XCircle, User, Building2, MessageSquare } from 'lucide-react'
+import { CheckCircle2, Clock4, XCircle, User, Building2, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react'
 import CONFIG from '../Configuration'
 
 function QACard({ remark, active, innerRef }) {
+  const [expanded, setExpanded] = useState(false)
+
   const getStatusStyle = (status) => {
     const s = status?.toLowerCase()
     if (s === 'approved' || s === 'in process')
-      return {
-        text: 'Approved',
-        color: 'text-green-600',
-        icon: <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
-      }
+      return { text: 'Approved', color: 'text-green-600', icon: <CheckCircle2 className="w-3.5 h-3.5 text-green-600" /> }
     if (s === 'pending')
-      return {
-        text: 'Pending',
-        color: 'text-orange-500',
-        icon: <Clock4 className="w-3.5 h-3.5 text-orange-500" />
-      }
+      return { text: 'Pending', color: 'text-orange-500', icon: <Clock4 className="w-3.5 h-3.5 text-orange-500" /> }
     if (s === 'rejected')
-      return {
-        text: 'Rejected',
-        color: 'text-red-600',
-        icon: <XCircle className="w-3.5 h-3.5 text-red-600" />
-      }
-    return {
-      text: 'Unknown',
-      color: 'text-gray-500',
-      icon: <Clock4 className="w-3.5 h-3.5 text-gray-500" />
-    }
+      return { text: 'Rejected', color: 'text-red-600', icon: <XCircle className="w-3.5 h-3.5 text-red-600" /> }
+    return { text: 'Approved', color: 'text-green-600', icon: <Clock4 className="w-3.5 h-3.5 text-gray-500" /> }
   }
 
   const { text, color, icon } = getStatusStyle(remark.status)
+  const qaText = remark.QARemarks || 'No QA remarks available.'
+  const shortText = qaText.split(' ').slice(0, 10).join(' ') + (qaText.split(' ').length > 10 ? '...' : '')
 
   return (
     <div
@@ -49,9 +37,19 @@ function QACard({ remark, active, innerRef }) {
             <Building2 className="w-3.5 h-3.5 text-[var(--clr1)]" />
             {remark.business_name || 'N/A'}
           </p>
-          <p className="text-gray-500 italic text-[11px] mt-1">
-            {remark.qa_remarks || 'No QA remarks available.'}
-          </p>
+          <div className="flex items-start justify-between mt-1">
+            <p className="text-gray-500 italic text-[11px] flex-1">
+              {expanded ? qaText : shortText}
+            </p>
+            {qaText.split(' ').length > 10 && (
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="ml-2 text-[var(--clr1)] hover:opacity-80 transition"
+              >
+                {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="text-right">
@@ -91,11 +89,8 @@ function RemarksContainer() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'ArrowDown') {
-        setActiveIndex((prev) => Math.min(prev + 1, remarks.length - 1))
-      } else if (e.key === 'ArrowUp') {
-        setActiveIndex((prev) => Math.max(prev - 1, 0))
-      }
+      if (e.key === 'ArrowDown') setActiveIndex((prev) => Math.min(prev + 1, remarks.length - 1))
+      else if (e.key === 'ArrowUp') setActiveIndex((prev) => Math.max(prev - 1, 0))
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
@@ -103,10 +98,7 @@ function RemarksContainer() {
 
   useEffect(() => {
     if (remarkRefs.current[activeIndex]) {
-      remarkRefs.current[activeIndex].scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      })
+      remarkRefs.current[activeIndex].scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }, [activeIndex])
 
@@ -119,17 +111,9 @@ function RemarksContainer() {
         <span className="text-gray-400 text-sm">{points} points</span>
       </h2>
       <div className="space-y-3">
-        {remarks
-          .slice()
-          .reverse()
-          .map((r, i) => (
-            <QACard
-              key={i}
-              remark={r}
-              active={activeIndex === i}
-              innerRef={(el) => (remarkRefs.current[i] = el)}
-            />
-          ))}
+        {remarks.slice().reverse().map((r, i) => (
+          <QACard key={i} remark={r} active={activeIndex === i} innerRef={(el) => (remarkRefs.current[i] = el)} />
+        ))}
       </div>
     </div>
   )
