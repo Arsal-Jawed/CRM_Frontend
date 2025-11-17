@@ -80,14 +80,17 @@ function LeadAdmin() {
         const res = await fetch(`${CONFIG.API_URL}/leads/all`)
         const data = await res.json()
         const leadsArray = Array.isArray(data) ? data : data.leads || []
-        let filteredLeads = leadsArray
-        if (role === 1) filteredLeads = leadsArray.filter((l) => l.status !== 'pending')
-        if (role === 4) filteredLeads = leadsArray.filter((l) => l.status === 'pending')
 
-        setAllLeads(filteredLeads)
-        const unassigned = filteredLeads.filter((lead) => lead.closure1 === 'not specified' && lead.status === 'in process')
-        setLeads(unassigned.length ? unassigned : filteredLeads)
-        setSelected((unassigned[0] || filteredLeads[0]) || null)
+        setAllLeads(leadsArray)
+        let defaultLeads = []
+        if (role === 1)
+          defaultLeads = leadsArray.filter((lead) => lead.status === 'in process' && lead.closure1 === 'not specified')
+        else if (role === 4)
+          defaultLeads = leadsArray.filter((lead) => lead.status === 'pending')
+        else
+          defaultLeads = leadsArray
+        setLeads(defaultLeads.length ? defaultLeads : leadsArray)
+        setSelected((defaultLeads[0] || leadsArray[0]) || null)
         setLoading(false)
       } catch (err) {
         console.error(err)
@@ -129,6 +132,7 @@ function LeadAdmin() {
     won: allLeads.filter((l) => l.status === 'won').length,
     loss: allLeads.filter((l) => l.status === 'loss').length,
     inProcess: allLeads.filter((l) => l.status === 'in process').length,
+    pending: allLeads.filter((l) => l.status === 'pending').length,
     unassigned: allLeads.filter((l) => l.closure1 === 'not specified' && l.status === 'in process').length,
     rejected: allLeads.filter((l) => l.status === 'rejected').length
   }

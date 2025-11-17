@@ -22,41 +22,50 @@ const Login = () => {
 
 const updateCountdown = () => {
   const now = new Date();
-  const currentHour = now.getHours();
   const currentTime = now.getTime();
 
   const today = new Date();
-  const sevenAM = new Date(today.setHours(7, 0, 0, 0));
-  const nineAM = new Date(today.setHours(9, 0, 0, 0));
-  const noon = new Date(today.setHours(11, 59, 59, 999));
 
-  const nextSevenAM = new Date();
-  if (currentHour < 7) {
-    nextSevenAM.setHours(7, 0, 0, 0);
-  } else {
-    nextSevenAM.setDate(nextSevenAM.getDate() + 1);
-    nextSevenAM.setHours(7, 0, 0, 0);
-  }
+  const sevenPM = new Date(today.setHours(19, 0, 0, 0));       // 7 PM
+  const ninePM = new Date(today.setHours(21, 0, 0, 0));        // 9 PM
+  const nineFortyPM = new Date(today.setHours(21, 40, 0, 0));  // 9:40 PM
+  const midnight = new Date(today.setHours(24, 0, 0, 0));      // 12 AM (next day)
 
-  if (currentHour >= 7 && currentHour < 9) {
-    const diff = nineAM - now;
+  // 7 PM → 9 PM: SHOW COUNTDOWN
+  if (currentTime >= sevenPM.getTime() && currentTime < ninePM.getTime()) {
+    const diff = ninePM - now;
     const hrs = Math.floor(diff / (1000 * 60 * 60));
     const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
     setCountdown(`Attendance window will open in ${hrs} hrs ${mins} minutes ${secs} seconds`);
-  } 
-  else if (currentHour >= 9 && currentTime <= noon.getTime()) {
-    setCountdown('Attendance window is open');
-  } 
-  else if (currentHour >= 0 && currentHour < 7) {
-    setCountdown('Attendance window closed, contact the HR manager');
-  } 
-  else if (currentHour >= 12 && currentHour < 24) {
-    setCountdown('Attendance window is closed, contact HR Manager');
+    return;
+  }
+
+  // 9 PM → 9:40 PM : ON TIME
+  if (currentTime >= ninePM.getTime() && currentTime < nineFortyPM.getTime()) {
+    setCountdown("Attendance window is open");
+    return;
+  }
+
+  // 9:40 PM → 12 AM : LATE
+  if (currentTime >= nineFortyPM.getTime() && currentTime < midnight.getTime()) {
+    setCountdown("Attendance window is open (You are LATE)");
+    return;
+  }
+
+  // BEFORE 7 PM → CLOSED
+  if (currentTime < sevenPM.getTime()) {
+    setCountdown("Attendance window closed, contact HR Manager");
+    return;
+  }
+
+  // AFTER 12 AM → CLOSED (until next 7 PM)
+  if (currentTime >= midnight.getTime()) {
+    setCountdown("Attendance window is closed, contact HR Manager");
+    return;
   }
 };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();

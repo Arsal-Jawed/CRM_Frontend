@@ -215,29 +215,35 @@ function Attendance() {
           </div>
         ) : (
           <div className="max-h-[65vh] overflow-hidden hover:overflow-y-auto overflow-x-auto">
-            <table className="min-w-max w-full border-collapse text-sm">
-              <thead>
-                <tr>
-                  <th className="px-3 py-2 text-left bg-clr1 text-white font-medium">Employee</th>
-                  {daysInMonth.map(day => (
-                    <th key={day} className="px-1 py-2 text-center bg-clr1 text-white font-medium">{day}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((user, idx) => (
-                  <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="px-3 py-2 font-medium text-gray-700">{user.name}</td>
-                    {daysInMonth.map(day => (
-                      <td key={day} className="px-1 py-2 text-center">
-                        {getStatusCell(user.attendance[day], user.checkInTimes[day], user.remarks?.[day])}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+  <table className="min-w-max w-full border-collapse text-sm">
+    <thead className="sticky top-0 z-10">
+      <tr>
+        <th className="px-3 py-2 text-left bg-clr1 text-white font-medium">Employee</th>
+        {daysInMonth.map(day => (
+          <th
+            key={day}
+            className="px-1 py-2 text-center bg-clr1 text-white font-medium"
+          >
+            {day}
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {data.map((user, idx) => (
+        <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+          <td className="px-3 py-2 font-medium text-gray-700">{user.name}</td>
+          {daysInMonth.map(day => (
+            <td key={day} className="px-1 py-2 text-center">
+              {getStatusCell(user.attendance[day], user.checkInTimes[day], user.remarks?.[day])}
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
         )}
       </div>
 

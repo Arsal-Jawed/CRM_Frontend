@@ -274,7 +274,7 @@ function LeadAdminDetails({ selected, users, role, setShowFollowUp, showNotes, s
               Upload
             </button>
           </div>
-          {role === 4 && selected.status === 'pending' && (
+          {selected.status === 'pending' && (
             <div className="flex gap-2 mt-2 mb-4">
               <button
                 onClick={() => {
